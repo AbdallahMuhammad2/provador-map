@@ -1,0 +1,2192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Infinite AI - Virtual Try-On Experience</title>
+
+    <!-- Load MediaPipe dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3.1620248257/drawing_utils.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1620248257/camera_utils.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js" defer></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <!-- Stylesheets -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- CSS Premium para Experiência de Joalheria de Luxo -->
+    <style>
+        :root {
+            /* NOVA PALETA DE CORES ULTRA PREMIUM 2024 */
+            --color-gold: #FFD700;
+            /* Dourado puro - cor principal de joalheria */
+            --color-rose-gold: #B76E79;
+            /* Ouro rosê - tendência moderna */
+            --color-platinum: #E5E4E2;
+            /* Platina - metal precioso elegante */
+
+            /* Gradientes Dinâmicos */
+            --gradient-gold: linear-gradient(135deg, #FFD700, #FDB931, #FFD700);
+            --gradient-rose: linear-gradient(135deg, #B76E79, #D4A5A5, #B76E79);
+            --gradient-platinum: linear-gradient(135deg, #E5E4E2, #F7F7F7, #E5E4E2);
+
+            /* Cores de Interface */
+            --color-background: #080B10;
+            /* Fundo ultra escuro para máximo contraste */
+            --color-surface: #111418;
+            /* Superfície com profundidade sutil */
+            --color-surface-alt: #1A1E24;
+            /* Superfície alternativa para camadas */
+
+            /* Cores de Texto */
+            --color-text: #FFFFFF;
+            /* Texto principal */
+            --color-text-soft: rgba(255, 255, 255, 0.85);
+            /* Texto suave */
+            --color-text-muted: rgba(255, 255, 255, 0.6);
+            /* Texto secundário */
+
+            /* Cores de Ação */
+            --color-primary: var(--color-gold);
+            --color-secondary: var(--color-rose-gold);
+            --color-accent: var(--color-platinum);
+
+            /* Cores de Estado */
+            --color-success: #4CAF50;
+            /* Verde suave para sucesso */
+            --color-warning: #FFC107;
+            /* Amarelo para avisos */
+            --color-error: #FF5252;
+            /* Vermelho para erros */
+
+            /* Efeitos e Overlays */
+            --overlay-dark: rgba(0, 0, 0, 0.75);
+            --overlay-light: rgba(255, 255, 255, 0.05);
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.15);
+            --shadow-strong: 0 8px 30px rgba(0, 0, 0, 0.25);
+
+            /* Bordas e Divisores */
+            --border-light: rgba(255, 255, 255, 0.1);
+            --border-gold: rgba(255, 215, 0, 0.2);
+
+            /* Blur Effects */
+            --blur-strong: blur(20px);
+            --blur-soft: blur(10px);
+
+            /* Animações */
+            --transition-fast: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* Dimensões do Layout */
+            --header-height: 60px;
+            --footer-height: 80px;
+            --sidebar-width: 280px;
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 20px;
+
+            /* Dimensões específicas para mobile */
+            --nav-height: 56px;
+            --preview-bar-height: 150px;
+            --preview-bar-collapsed-height: 10px;
+            --capture-btn-offset: 140px;
+            --controls-width: 300px;
+
+            /* Transições */
+            --transition-speed: 0.3s;
+            --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Base Styles */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* App Container */
+        .app-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            background: var(--color-background);
+            overflow: hidden;
+        }
+
+        /* Main Interface */
+        .main-interface {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: linear-gradient(135deg,
+                    var(--color-background),
+                    var(--color-surface));
+        }
+
+        /* Modern Navigation 2024 */
+        .top-nav {
+            height: var(--nav-height);
+            background: linear-gradient(to right,
+                    rgba(8, 11, 16, 0.95),
+                    rgba(22, 28, 36, 0.95));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: relative;
+            z-index: 100;
+        }
+
+        .nav-brand {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #FFD700, #FFA500, #FFD700);
+            background-size: 200% 200%;
+            animation: brandGlow 3s ease infinite;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 0.5px;
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.4));
+            position: relative;
+        }
+
+        .nav-brand::before {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+            border-radius: 5px;
+            animation: hologram 4s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes brandGlow {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes hologram {
+            0% {
+                transform: translateX(-100%) skewX(15deg);
+            }
+
+            100% {
+                transform: translateX(300%) skewX(15deg);
+            }
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--color-gold);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg,
+                    rgba(255, 215, 0, 0.1),
+                    rgba(183, 110, 121, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-btn:hover::before {
+            opacity: 1;
+        }
+
+        /* Modern Category Pills */
+        .category-pills {
+            position: absolute;
+            top: var(--nav-height);
+            left: 0;
+            width: 100%;
+            padding: 15px 0;
+            background: linear-gradient(to bottom,
+                    rgba(0, 0, 0, 0.4),
+                    transparent);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 90;
+        }
+
+        .pills-scroll {
+            display: flex;
+            overflow-x: auto;
+            padding: 0 20px;
+            gap: 12px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .pills-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .pill-btn {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 25px;
+            padding: 14px 28px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(15px);
+        }
+
+        .pill-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg,
+                    transparent,
+                    rgba(255, 215, 0, 0.4),
+                    transparent);
+            transform: translateX(-100%) skewX(25deg);
+            transition: transform 0.8s ease;
+        }
+
+        .pill-btn:hover::before {
+            transform: translateX(200%) skewX(25deg);
+        }
+
+        .pill-btn:hover {
+            transform: translateY(-4px) scale(1.08);
+            border-color: rgba(255, 215, 0, 0.8);
+            color: #FFD700;
+            box-shadow:
+                0 20px 40px rgba(255, 215, 0, 0.3),
+                0 0 60px rgba(255, 215, 0, 0.2),
+                inset 0 0 20px rgba(255, 215, 0, 0.1);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .pill-btn.active {
+            background: linear-gradient(135deg, #FFD700, #FFA500, #FFD700);
+            background-size: 200% 200%;
+            border: none;
+            color: #000;
+            font-weight: 700;
+            transform: translateY(-5px) scale(1.1);
+            box-shadow:
+                0 25px 50px rgba(255, 215, 0, 0.4),
+                0 0 80px rgba(255, 215, 0, 0.3),
+                inset 0 2px 4px rgba(255, 255, 255, 0.5);
+            animation: activeGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes activeGlow {
+            0% {
+                background-position: 0% 50%;
+                box-shadow:
+                    0 25px 50px rgba(255, 215, 0, 0.4),
+                    0 0 80px rgba(255, 215, 0, 0.3),
+                    inset 0 2px 4px rgba(255, 255, 255, 0.5);
+            }
+
+            100% {
+                background-position: 100% 50%;
+                box-shadow:
+                    0 30px 60px rgba(255, 215, 0, 0.5),
+                    0 0 100px rgba(255, 215, 0, 0.4),
+                    inset 0 2px 6px rgba(255, 255, 255, 0.6);
+            }
+        }
+
+        /* Tooltip navigation buttons */
+        .tour-tooltip-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .tour-tooltip-progress {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .tour-button {
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .tour-button:hover {
+            background-color: var(--color-secondary);
+        }
+
+        .tour-button.skip {
+            background-color: transparent;
+            color: #666;
+        }
+
+        .tour-button.skip:hover {
+            color: #333;
+        }
+
+        /* Welcome modal for initial introduction */
+        .tour-welcome-modal {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9005;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .tour-welcome-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tour-welcome-content {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 90%;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .tour-welcome-modal.active .tour-welcome-content {
+            transform: scale(1);
+        }
+
+        .tour-welcome-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--color-primary);
+        }
+
+        .tour-welcome-icon {
+            font-size: 3rem;
+            color: var(--color-primary);
+            margin-bottom: 20px;
+        }
+
+        .tour-welcome-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .tour-tooltip {
+                max-width: 250px;
+                padding: 12px 15px;
+            }
+
+            .tour-tooltip-title {
+                font-size: 1rem;
+            }
+
+            .tour-tooltip-content {
+                font-size: 0.9rem;
+            }
+
+            .tour-button {
+                padding: 7px 12px;
+                font-size: 0.85rem;
+            }
+
+            .tour-welcome-content {
+                padding: 20px;
+                width: 300px;
+            }
+        }
+
+        /* Premium Loading Screen 2024 */
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--color-background);
+            background-image:
+                radial-gradient(circle at top right, rgba(255, 215, 0, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at bottom left, rgba(183, 110, 121, 0.02) 0%, transparent 50%);
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .loading-content {
+            position: relative;
+            max-width: 400px;
+            padding: 2rem;
+        }
+
+        .loading-logo {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .loading-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 1rem 0;
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shimmer 3s linear infinite;
+            background-size: 200% auto;
+        }
+
+        .loading-status {
+            font-size: 1.1rem;
+            color: var(--color-text-soft);
+            margin-bottom: 2rem;
+        }
+
+        .loading-progress {
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: var(--gradient-gold);
+            width: 0%;
+            animation: progressFill 2s ease-in-out infinite;
+        }
+
+        .progress-text {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .loading-error {
+            color: var(--color-error);
+            background: rgba(255, 82, 82, 0.1);
+            padding: 1rem;
+            border-radius: var(--border-radius-md);
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .loading-error.visible {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .loading-brand {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: var(--border-radius-lg);
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.2),
+                inset 0 0 0 1px rgba(255, 215, 0, 0.1);
+        }
+
+        .brand-logo {
+            font-size: 1.5rem;
+            color: var(--color-gold);
+            animation: floatEffect 3s ease-in-out infinite;
+        }
+
+        .brand-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shimmer 3s linear infinite;
+            background-size: 200% auto;
+        }
+
+        @keyframes progressFill {
+            0% {
+                width: 0%;
+                background-position: 0% center;
+            }
+
+            50% {
+                width: 50%;
+                background-position: 100% center;
+            }
+
+            100% {
+                width: 100%;
+                background-position: 200% center;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Premium Floating Controls */
+        .floating-controls {
+            position: absolute;
+            z-index: 100;
+            transition: all 0.4s var(--transition-timing);
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+        }
+
+        .controls-wrapper {
+            background: rgba(22, 28, 36, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            width: 300px;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.2),
+                inset 0 0 0 1px rgba(255, 215, 0, 0.1);
+        }
+
+        .control-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        .control-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--color-text);
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .close-control-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--color-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        /* Premium Carousel */
+        .preview-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top,
+                    rgba(0, 0, 0, 0.9),
+                    rgba(0, 0, 0, 0.7));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 215, 0, 0.1);
+            transition: transform 0.4s var(--transition-timing);
+        }
+
+        .preview-handle {
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: grab;
+            padding: 1rem 0;
+        }
+
+        .handle-indicator {
+            width: 40px;
+            height: 4px;
+            background: var(--color-gold);
+            border-radius: 2px;
+            opacity: 0.3;
+            transition: all 0.3s ease;
+        }
+
+        .preview-handle:hover .handle-indicator {
+            opacity: 0.6;
+            width: 50px;
+        }
+
+        .preview-content {
+            padding: 1.5rem;
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .preview-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin: 0;
+        }
+
+        .preview-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .view-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            color: var(--color-text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 215, 0, 0.2);
+            color: var(--color-text);
+        }
+
+        .view-btn.active {
+            background: var(--gradient-gold);
+            border: none;
+            color: var(--color-background);
+        }
+
+        .carousel-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+            padding: 0.5rem;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .carousel-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .carousel-item {
+            aspect-ratio: 1;
+            background: radial-gradient(circle at center,
+                    rgba(20, 20, 20, 0.95) 0%,
+                    rgba(0, 0, 0, 0.9) 100%);
+            border: 3px solid rgba(255, 215, 0, 0.2);
+            border-radius: 22px;
+            position: relative;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .carousel-item::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            background: linear-gradient(45deg,
+                    rgba(255, 215, 0, 0.4),
+                    rgba(255, 165, 0, 0.3),
+                    rgba(255, 215, 0, 0.4));
+            border-radius: inherit;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            z-index: -1;
+        }
+
+        .carousel-item::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg,
+                    transparent 40%,
+                    rgba(255, 255, 255, 0.05) 50%,
+                    transparent 60%);
+            transform: rotate(45deg);
+            transition: transform 0.8s ease;
+            opacity: 0;
+        }
+
+        .carousel-item:hover {
+            transform: translateY(-15px) scale(1.12);
+            border-color: rgba(255, 215, 0, 0.7);
+            box-shadow:
+                0 30px 60px rgba(0, 0, 0, 0.8),
+                0 0 100px rgba(255, 215, 0, 0.4),
+                inset 0 0 30px rgba(255, 215, 0, 0.1);
+        }
+
+        .carousel-item:hover::before {
+            opacity: 1;
+        }
+
+        .carousel-item:hover::after {
+            opacity: 1;
+            transform: rotate(45deg) translate(50%, 50%);
+        }
+
+        .carousel-item.active {
+            border: 3px solid #FFD700;
+            background: radial-gradient(circle at center,
+                    rgba(255, 215, 0, 0.15) 0%,
+                    rgba(255, 165, 0, 0.08) 50%,
+                    rgba(0, 0, 0, 0.95) 100%);
+            transform: translateY(-10px) scale(1.08);
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.9),
+                0 0 120px rgba(255, 215, 0, 0.5),
+                inset 0 0 40px rgba(255, 215, 0, 0.2);
+            animation: activePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes activePulse {
+
+            0%,
+            100% {
+                box-shadow:
+                    0 25px 50px rgba(0, 0, 0, 0.9),
+                    0 0 120px rgba(255, 215, 0, 0.5),
+                    inset 0 0 40px rgba(255, 215, 0, 0.2);
+            }
+
+            50% {
+                box-shadow:
+                    0 30px 60px rgba(0, 0, 0, 1),
+                    0 0 150px rgba(255, 215, 0, 0.6),
+                    inset 0 0 50px rgba(255, 215, 0, 0.25);
+            }
+        }
+
+        .carousel-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 1rem;
+            transition: all 0.4s ease;
+            filter: brightness(1.1) contrast(1.05);
+        }
+
+        .carousel-item:hover .carousel-img {
+            transform: scale(1.15);
+            filter: brightness(1.2) contrast(1.1) saturate(1.1);
+        }
+
+        .carousel-item.active .carousel-img {
+            transform: scale(1.1);
+            filter: brightness(1.3) contrast(1.15) saturate(1.2);
+        }
+
+        /* PREVIEW BAR PREMIUM */
+        .preview-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top,
+                    rgba(0, 0, 0, 0.95),
+                    rgba(0, 0, 0, 0.85),
+                    rgba(0, 0, 0, 0.7));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 2px solid rgba(255, 215, 0, 0.2);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 90;
+        }
+
+        .preview-bar.collapsed {
+            transform: translateY(calc(100% - 30px));
+        }
+
+        /* HANDLE DO PREVIEW BAR MELHORADO */
+        .preview-handle {
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: grab;
+            background: linear-gradient(135deg,
+                    rgba(255, 215, 0, 0.1),
+                    rgba(183, 110, 121, 0.1));
+            border-radius: 15px 15px 0 0;
+            transition: all 0.3s ease;
+        }
+
+        .preview-handle:active {
+            cursor: grabbing;
+        }
+
+        .handle-indicator {
+            width: 50px;
+            height: 5px;
+            background: linear-gradient(90deg,
+                    var(--color-gold),
+                    var(--color-rose-gold));
+            border-radius: 3px;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        .preview-handle:hover .handle-indicator {
+            opacity: 1;
+            width: 60px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        /* NAVEGAÇÃO PREMIUM DAS CATEGORIAS */
+        .category-pills {
+            background: linear-gradient(to bottom,
+                    rgba(0, 0, 0, 0.6),
+                    rgba(0, 0, 0, 0.3),
+                    transparent);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+            padding: 20px 0;
+        }
+
+        .pills-scroll {
+            display: flex;
+            overflow-x: auto;
+            padding: 0 25px;
+            gap: 15px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .pills-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* PILLS PREMIUM COM EFEITOS LUXUOSOS */
+        .pill-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 215, 0, 0.15);
+            border-radius: 20px;
+            color: var(--color-text-soft);
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .pill-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg,
+                    rgba(255, 215, 0, 0.2),
+                    rgba(183, 110, 121, 0.2));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .pill-btn:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 215, 0, 0.3);
+            color: var(--color-text);
+            box-shadow:
+                0 8px 20px rgba(0, 0, 0, 0.2),
+                0 0 0 2px rgba(255, 215, 0, 0.2);
+        }
+
+        .pill-btn:hover::before {
+            opacity: 1;
+        }
+
+        .pill-btn.active {
+            background: linear-gradient(135deg,
+                    var(--color-gold),
+                    var(--color-rose-gold));
+            border: none;
+            color: var(--color-background);
+            transform: translateY(-3px);
+            box-shadow:
+                0 10px 25px rgba(255, 215, 0, 0.3),
+                0 0 0 3px rgba(255, 215, 0, 0.3),
+                inset 0 2px 4px rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .pill-btn.active::before {
+            opacity: 0;
+        }
+
+        /* ÍCONES PREMIUM NAS PILLS */
+        .pill-btn i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .pill-btn:hover i {
+            transform: scale(1.1);
+        }
+
+        .pill-btn.active i {
+            transform: scale(1.15);
+            color: var(--color-background);
+        }
+
+        /* BOTÕES DE AÇÃO PREMIUM */
+        .capture-btn {
+            width: 95px;
+            height: 95px;
+            background: radial-gradient(circle at 30% 30%,
+                    #FFD700 0%,
+                    #FFA500 50%,
+                    #FF8C00 100%);
+            border: 5px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow:
+                0 20px 40px rgba(255, 215, 0, 0.4),
+                0 0 80px rgba(255, 215, 0, 0.3),
+                inset 0 4px 8px rgba(255, 255, 255, 0.5),
+                inset 0 -4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .capture-btn::before {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            background: conic-gradient(from 0deg,
+                    transparent,
+                    rgba(255, 215, 0, 0.7),
+                    transparent,
+                    rgba(255, 165, 0, 0.5),
+                    transparent);
+            border-radius: 50%;
+            animation: captureRotate 3s linear infinite;
+            z-index: -1;
+        }
+
+        .capture-btn::after {
+            content: '';
+            position: absolute;
+            inset: 15px;
+            background: radial-gradient(circle,
+                    rgba(255, 255, 255, 0.9) 0%,
+                    rgba(255, 255, 255, 0.3) 70%,
+                    transparent 100%);
+            border-radius: 50%;
+            animation: capturePulse 2.5s ease-in-out infinite;
+        }
+
+        @keyframes captureRotate {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes capturePulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+
+            50% {
+                transform: scale(1.3);
+                opacity: 1;
+            }
+        }
+
+        .capture-btn:hover {
+            transform: scale(1.2) translateY(-10px);
+            box-shadow:
+                0 35px 70px rgba(255, 215, 0, 0.6),
+                0 0 150px rgba(255, 215, 0, 0.5),
+                inset 0 6px 12px rgba(255, 255, 255, 0.7),
+                inset 0 -6px 12px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .capture-btn:active {
+            transform: scale(1.1) translateY(-5px);
+            animation: captureFlash 0.4s ease-out;
+        }
+
+        @keyframes captureFlash {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 1);
+            }
+
+            50% {
+                box-shadow: 0 0 0 30px rgba(255, 255, 255, 0.6);
+            }
+
+            100% {
+                box-shadow: 0 0 0 60px rgba(255, 255, 255, 0);
+            }
+        }
+
+        /* FLOATING CONTROLS PREMIUM */
+        .floating-controls {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 20px;
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.4),
+                inset 0 0 0 1px rgba(255, 215, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .floating-controls.ghost-style {
+            background: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        /* ANIMAÇÕES PREMIUM GLOBAIS */
+        @keyframes shimmer {
+            0% {
+                background-position: -200% center;
+            }
+
+            100% {
+                background-position: 200% center;
+            }
+        }
+
+        @keyframes floatEffect {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        /* RESPONSIVIDADE PREMIUM */
+        @media (max-width: 768px) {
+            .carousel-container {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 1rem;
+                padding: 0.8rem;
+            }
+
+            .pill-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+
+            .capture-btn {
+                width: 85px;
+                height: 85px;
+            }
+        }
+
+        /* ULTRA-TRANSPARENT GHOST CONTROLS CSS */
+        .ghost-style {
+            background: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .ultra-transparent-controls {
+            background: rgba(0, 0, 0, 0.05) !important;
+            border-radius: 15px;
+            padding: 15px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .transparent-size-control,
+        .transparent-opacity-control,
+        .transparent-position-control {
+            margin-bottom: 15px;
+        }
+
+        .transparent-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .transparent-value {
+            color: var(--color-gold);
+            font-weight: 600;
+        }
+
+        .transparent-slider {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            outline: none;
+            margin-top: 8px;
+        }
+
+        .transparent-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--color-gold);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .transparent-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: var(--color-gold);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .transparent-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .transparent-grid button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .transparent-grid button:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.4);
+            color: var(--color-gold);
+        }
+
+        .transparent-action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: space-between;
+        }
+
+        .transparent-close-btn,
+        .transparent-remove-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .transparent-close-btn:hover {
+            background: rgba(100, 100, 100, 0.2);
+            border-color: rgba(150, 150, 150, 0.4);
+        }
+
+        .transparent-remove-btn:hover {
+            background: rgba(255, 82, 82, 0.2);
+            border-color: rgba(255, 82, 82, 0.4);
+            color: #ff5252;
+        }
+
+        .auto-hide {
+            opacity: 0.3 !important;
+            transition: opacity 0.3s ease;
+        }
+
+        .auto-hide:hover {
+            opacity: 1 !important;
+        }
+
+        /* Pulse animation for interactive elements */
+        .pulse-animation {
+            animation: pulse 0.3s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Remove extra closing tags */
+        .detection-indicator {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .adaptation-indicator {
+            color: rgba(255, 193, 7, 0.9);
+            font-size: 0.85rem;
+            font-weight: 500;
+            animation: adaptationPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes adaptationPulse {
+
+            0%,
+            100% {
+                opacity: 0.7;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .adaptation-indicator.hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Tela de Carregamento -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <div class="loading-spinner">
+                    <svg viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg">
+                        <path class="infinity-path"
+                            d="M10,25 C10,5 40,5 50,25 C60,45 90,45 90,25 C90,5 60,5 50,25 C40,45 10,45 10,25 Z" />
+                        <path class="infinity-highlight"
+                            d="M10,25 C10,5 40,5 50,25 C60,45 90,45 90,25 C90,5 60,5 50,25 C40,45 10,45 10,25 Z" />
+                    </svg>
+                </div>
+                <h1 class="loading-title">Infinite Try-On</h1>
+            </div>
+            <p class="loading-status">Preparando sua experiência...</p>
+            <div class="loading-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <p class="progress-text">Inicializando...</p>
+            </div>
+            <p class="loading-error hidden"></p>
+        </div>
+        <div class="loading-brand">
+            <div class="brand-logo">
+                <i class="fas fa-gem"></i>
+            </div>
+            <span class="brand-text">Powered by InnovaX</span>
+        </div>
+    </div>
+
+    <!-- Container Principal do App -->
+    <div class="app-container">
+        <!-- Barra de Navegação Superior -->
+        <nav class="top-nav">
+            <div class="nav-left">
+                <button class="menu-btn" id="menuButton">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="nav-title">Infinite Try-On</h1>
+            </div>
+            <div class="nav-center">
+                <!-- Categorias movidas para baixo da navegação principal -->
+            </div>
+            <div class="nav-right">
+                <button class="settings-btn" id="settingsButton">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="help-btn" id="helpButton">
+                    <i class="fas fa-question"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- NAVEGAÇÃO DE CATEGORIAS PREMIUM -->
+        <div class="category-pills">
+            <div class="pills-scroll">
+                <button class="pill-btn active" data-category="face">
+                    <i class="fas fa-user"></i>
+                    <span>Rosto</span>
+                </button>
+                <button class="pill-btn" data-category="ear">
+                    <i class="fas fa-gem"></i>
+                    <span>Brincos</span>
+                </button>
+                <button class="pill-btn" data-category="neck">
+                    <i class="fas fa-circle-notch"></i>
+                    <span>Colares</span>
+                </button>
+                <button class="pill-btn" data-category="hand">
+                    <i class="fas fa-ring"></i>
+                    <span>Mãos</span>
+                </button>
+                <button class="pill-btn" data-category="active">
+                    <i class="fas fa-star"></i>
+                    <span>Ativos</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Container da Câmera -->
+        <div class="camera-container">
+            <div class="camera-feed-wrapper">
+                <video id="cameraFeed" autoplay playsinline></video>
+                <canvas id="jewelryCanvas"></canvas>
+
+                <!-- Overlay de Guias -->
+                <div class="camera-guides">
+                    <div class="guide-frame"></div>
+                    <div class="guide-center"></div>
+                    <div class="guide-text">Centralize seu rosto</div>
+                </div>
+
+                <!-- Overlay de Status -->
+                <div class="camera-status">
+                    <div class="status-indicator">
+                        <i class="fas fa-camera"></i>
+                        <span>Câmera Ativa</span>
+                    </div>
+                    <div class="detection-indicator">
+                        <i class="fas fa-face-smile"></i>
+                        <span>Rosto Detectado</span>
+                    </div>
+                    <div class="adaptation-indicator hidden" id="adaptationIndicator">
+                        <i class="fas fa-cog"></i>
+                        <span>Sistema Adaptado</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mensagem de Erro da Câmera -->
+            <div class="camera-error hidden" id="cameraError">
+                <div class="error-content">
+                    <i class="fas fa-video-slash"></i>
+                    <h3>Acesso à Câmera Necessário</h3>
+                    <p>Para uma experiência completa, permita o acesso à sua câmera.</p>
+                    <button class="primary-btn" onclick="requestCameraAccess()">
+                        Ativar Câmera
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra de Preview Premium -->
+        <div class="preview-bar" id="previewBar">
+            <div class="preview-handle" id="previewHandle">
+                <div class="handle-indicator"></div>
+            </div>
+            <div class="preview-content">
+                <div class="preview-header">
+                    <h3>Joias Disponíveis</h3>
+                    <div class="preview-controls">
+                        <button class="view-btn grid-view active">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-btn list-view">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="carousel-container" id="jewelryCarousel">
+                    <!-- Items serão inseridos dinamicamente -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Controles Flutuantes Premium -->
+        <div class="floating-controls hidden" id="floatingControls">
+            <div class="controls-wrapper">
+                <div class="control-header">
+                    <h4 class="control-title" id="controlTitle">Ajustar Joia</h4>
+                    <button class="close-control-btn" id="closeControlBtn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="control-content" id="controlContent">
+                    <!-- Controles serão inseridos dinamicamente -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="action-buttons">
+            <button class="capture-btn" id="captureBtn">
+                <i class="fas fa-camera"></i>
+            </button>
+            <button class="share-btn" id="shareBtn">
+                <i class="fas fa-share-alt"></i>
+            </button>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div class="toast" id="toast"></div>
+        </main>
+
+        <!-- Menu Lateral -->
+        <aside class="side-menu" id="sideMenu">
+            <div class="menu-header">
+                <h2>Menu</h2>
+                <button class="close-menu-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="menu-content">
+                <div class="menu-section">
+                    <h3>Configurações</h3>
+                    <div class="setting-item">
+                        <span>Espelhar Câmera</span>
+                        <label class="switch">
+                            <input type="checkbox" id="mirrorToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <span>Modo de Performance</span>
+                        <div class="performance-buttons">
+                            <button class="perf-btn" data-mode="low">Baixo</button>
+                            <button class="perf-btn active" data-mode="medium">Médio</button>
+                            <button class="perf-btn" data-mode="high">Alto</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-section">
+                    <h3>Sobre</h3>
+                    <p>Infinite Try-On v2.0</p>
+                    <p>Desenvolvido por InnovaX</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Sistema de Review -->
+        <div id="reviewModal" class="modal-overlay hidden">
+            <!-- Conteúdo existente do modal de review -->
+        </div>
+    </div>
+
+    <!-- Tour System -->
+    <div id="tourOverlay" class="tour-overlay">
+        <!-- Conteúdo existente do sistema de tour -->
+    </div>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confettiCanvas" class="confetti-canvas hidden"></canvas>
+
+    <!-- Modal Blocker -->
+    <div id="modalBlocker" class="modal-blocker"></div>
+
+    <script>
+        // API endpoint URL - replace with your actual API Gateway URL from Step 3
+        const API_URL = 'https://kdkpbjjeze.execute-api.ap-south-1.amazonaws.com/prod1'; // Change this to your actual API URL
+
+        // Initial empty JEWELRY object
+        let JEWELRY = {};
+
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Function to fetch jewelry data from DynamoDB via API
+        // Modify the fetchJewelryData function to create SKU mappings
+        async function fetchJewelryData() {
+            try {
+                console.log('Fetching jewelry data from DynamoDB...');
+
+                const response = await fetch(`${API_URL}/jewelry-data`);
+
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (!data.JEWELRY) {
+                    throw new Error('Invalid API response: JEWELRY object not found');
+                }
+
+                // Replace the empty JEWELRY object with the data from API
+                JEWELRY = data.JEWELRY;
+
+                // Create mapping from SKU to ID
+                for (const [id, item] of Object.entries(JEWELRY)) {
+                    if (item.sku) {
+                        appState.skuToJewelryId[item.sku] = id;
+                    }
+
+                    // If no SKU exists but the ID looks like a SKU (e.g., "TIK-0001"),
+                    // use the ID itself as a mapping key
+                    if (id.match(/^[A-Z]{3}-\d{4}$/)) {
+                        appState.skuToJewelryId[id] = id;
+                    }
+                }
+
+                console.log(`Successfully loaded ${Object.keys(JEWELRY).length} jewelry items`);
+                console.log('SKU to ID mapping created:', appState.skuToJewelryId);
+                return true;
+            } catch (error) {
+                console.error('Error fetching jewelry data:', error);
+
+                const loadingError = document.querySelector('.loading-error');
+                if (loadingError) {
+                    loadingError.textContent = `Failed to load jewelry data: ${error.message}. Please refresh the page or try again later.`;
+                    loadingError.classList.remove('hidden');
+                }
+                return false;
+            }
+        }
+
+        // Mapeamento de landmarks faciais para provador virtual comercial de alta precisão
+        const LANDMARKS = {
+            tikka: {
+                center: 151,
+                top: 10,
+                reference: 9
+            },
+            earrings: {
+                // LANDMARKS OTIMIZADOS PARA MÁXIMA PRECISÃO NO LÓBULO DA ORELHA
+                // Pontos principais para posicionamento dos brincos
+                leftLobe: 58,     // PONTO CORRETO DO LÓBULO DA ORELHA ESQUERDA - MediaPipe padrão
+                rightLobe: 288,   // PONTO CORRETO DO LÓBULO DA ORELHA DIREITA - MediaPipe padrão
+
+                // Pontos de backup caso os principais não sejam detectados
+                leftLobeAlt: 234, // Ponto alternativo da orelha esquerda
+                rightLobeAlt: 454, // Ponto alternativo da orelha direita
+
+                // Pontos estruturais das orelhas
+                leftTop: 234,     // Parte superior da orelha esquerda
+                rightTop: 454,    // Parte superior da orelha direita
+                leftInner: 227,   // Borda interna da orelha esquerda
+                rightInner: 447,  // Borda interna da orelha direita
+                leftOuter: 137,   // Borda externa da orelha esquerda (ajustado para maior precisão)
+                rightOuter: 366,  // Borda externa da orelha direita (ajustado para maior precisão)
+
+                // Pontos auxiliares para cálculos de transformação e posição
+                leftLobeBack: 177,  // Ponto posterior do lóbulo esquerdo
+                rightLobeBack: 401, // Ponto posterior do lóbulo direito
+                leftCartilage: 233, // Cartilagem da orelha esquerda
+                rightCartilage: 453, // Cartilagem da orelha direita
+
+                // Pontos de referência faciais para triangulação e ajuste contextual
+                leftJawline: 132,   // Linha da mandíbula esquerda
+                rightJawline: 361,  // Linha da mandíbula direita
+                leftCheek: 111,     // Bochecha esquerda
+                rightCheek: 340     // Bochecha direita
+            }
+        };
+
+        // SISTEMA DE CONFIGURAÇÃO PARA VISUALIZAÇÃO COMERCIAL IMPACTANTE DE JOALHERIA
+        const EARRING_CONFIG = {
+            positioning: {
+                stud: {
+                    offsetY: 0,     // Alinhamento exato no lóbulo
+                    offsetX: 0,     // Centralizado no lóbulo
+                    scale: 2.0,     // Escala AUMENTADA para visualização comercial de alto impacto (era 0.8)
+                    rotation: 0      // Sem rotação - studs são fixos
+                },
+                drop: {
+                    offsetY: -2,    // Ponto de fixação no lóbulo
+                    offsetX: 0,     // Centralizado
+                    scale: 2.5,     // Tamanho AUMENTADO para visualização comercial impactante (era 1.0)
+                    rotation: 0.03  // Mínima rotação natural para simular peso e gravidade
+                },
+                hoop: {
+                    offsetY: 2,     // Alinhamento do gancho com o lóbulo
+                    offsetX: 0,     // Centralizado
+                    scale: 2.2,     // Tamanho AUMENTADO para visualização comercial de argolas (era 0.9)
+                    rotation: 0.01  // Rotação mínima - argolas tendem a ser estáveis
+                },
+                chandelier: {
+                    offsetY: -3,    // Ponto de fixação preciso no lóbulo
+                    offsetX: 0,     // Centralizado
+                    scale: 2.8,     // Tamanho SIGNIFICATIVAMENTE AUMENTADO para chandeliers impactantes (era 1.1)
+                    rotation: 0.03  // Rotação sutil para simular efeito de peso/gravidade
+                }
+            },
+            detection: {
+                minConfidence: 0.9,  // Alta confiança para detecção precisa de landmarks
+                maxRotation: 0.5,    // Tolerância moderada para rotação natural da cabeça
+                depthThreshold: 0.08, // Threshold refinado para melhor percepção de profundidade
+
+                // Fator global para escala comercialmente IMPACTANTE
+                globalScaleFactor: 2.0, // SIGNIFICATIVAMENTE AUMENTADO para visualização comercial de alto impacto (era 0.85)
+
+                // Parâmetros avançados para provador comercial de nível premium
+                stabilizationFactor: 0.85, // Estabilização aumentada para reduzir qualquer tremulação
+                adaptivePositioning: true,  // Posicionamento adaptativo sempre ativado
+                enhancedRenderingQuality: true, // Renderização de alta qualidade para joalheria premium
+
+                // Novos parâmetros de precisão comercial
+                anatomicalPrecision: "high",     // Máxima precisão anatômica
+                commercialVisibility: "balanced" // Equilíbrio entre realismo e visibilidade comercial
+            }
+        };
+
+        // App State
+        let appState = {
+            activeJewelry: new Map(),
+            currentCategory: 'face',  // Change default to face
+            selectedJewelryId: null,
+            mirrorCamera: true,       // New property for camera mirroring
+            performanceMode: 'medium', // New property for performance mode
+            faceLandmarks: null,
+            handLandmarks: null,
+            poseLandmarks: null,
+            isCameraReady: false,
+            isResourcesLoaded: false,
+            isInitialized: false,
+            initialJewelryId: null,
+            categorySwitched: false,
+            skuToJewelryId: {}, // For mapping SKUs to internal IDs
+            earringCalibration: {
+                isCalibrated: false,
+                leftEarProfile: null,
+                rightEarProfile: null,
+                baseScale: 1.0,
+                personalizedOffsets: { x: 0, y: 0 }
+            }
+        };
+
+        // DOM Elements
+        let elements = {
+            video: null,
+            canvas: null,
+            ctx: null,
+            loadingScreen: null,
+            bottomPanel: null,
+            controlsPanel: null,
+            captureBtn: null,
+            tabButtons: null,
+            itemGrid: null,
+            controlsContent: null,
+            productCard: null,
+            toast: null
+        };
+
+        // MediaPipe Models
+        let faceMesh, hands, pose;
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Modify your init function to handle the URL parameter
+        async function init() {
+            try {
+                console.log("Starting initialization...");
+                updateLoadingStatus("Initializing...");
+
+                // Get the jewelry ID from URL
+                const jewelryIdFromUrl = getUrlParameter('jewelryId');
+                if (jewelryIdFromUrl) {
+                    console.log(`Found jewelry ID in URL: ${jewelryIdFromUrl}`);
+                    appState.initialJewelryId = jewelryIdFromUrl;
+
+                    // Add alternative format (convert hyphens to underscores and vice versa)
+                    if (jewelryIdFromUrl.includes('-')) {
+                        appState.initialJewelryIdAlternative = jewelryIdFromUrl.replace(/-/g, '_');
+                        console.log(`Also trying alternative format: ${appState.initialJewelryIdAlternative}`);
+                    } else if (jewelryIdFromUrl.includes('_')) {
+                        appState.initialJewelryIdAlternative = jewelryIdFromUrl.replace(/_/g, '-');
+                        console.log(`Also trying alternative format: ${appState.initialJewelryIdAlternative}`);
+                    }
+                }
+
+                // Initialize elements and event listeners
+                initializeElements();
+                setupEventListeners();
+
+                // Fetch jewelry data
+                updateLoadingStatus("Loading jewelry data...");
+                const dataLoaded = await fetchJewelryData();
+                if (!dataLoaded) {
+                    throw new Error("Failed to load jewelry data from API");
+                }
+
+                // Initialize camera, AI models, and preload images
+                await initializeCamera();
+                await initializeAIModels();
+                await preloadJewelryImages();
+
+                // Initialize UI and gesture handlers
+                initializeUI();
+                setupGestureHandlers();
+
+                // Auto-select jewelry if ID was provided
+                if (appState.initialJewelryId) {
+                    // First check if we have a direct ID match
+                    let jewelryId = appState.initialJewelryId;
+
+                    // Check if the ID is in our mapping (for SKUs)
+                    if (!JEWELRY[jewelryId] && appState.skuToJewelryId[jewelryId]) {
+                        jewelryId = appState.skuToJewelryId[jewelryId];
+                    }
+
+                    // If no match found, try the alternative format
+                    if (!JEWELRY[jewelryId] && appState.initialJewelryIdAlternative) {
+                        if (JEWELRY[appState.initialJewelryIdAlternative]) {
+                            jewelryId = appState.initialJewelryIdAlternative;
+                        } else if (appState.skuToJewelryId[appState.initialJewelryIdAlternative]) {
+                            jewelryId = appState.skuToJewelryId[appState.initialJewelryIdAlternative];
+                        }
+                    }
+
+                    // If we found a matching jewelry item, load it
+                    if (JEWELRY[jewelryId]) {
+                        console.log(`Auto-selecting jewelry with ID: ${jewelryId}`);
+
+                        // Get the jewelry item
+                        const jewelryItem = JEWELRY[jewelryId];
+
+                        // Switch to the appropriate category
+                        if (jewelryItem.group) {
+                            switchCategory(jewelryItem.group);
+                        }
+
+                        // Add the jewelry
+                        addJewelry(jewelryId);
+
+                        // Show toast notification
+                        showToast(`${jewelryItem.name} automatically applied`);
+                    } else {
+                        console.warn(`Jewelry with ID/SKU ${appState.initialJewelryId} not found! Also tried ${appState.initialJewelryIdAlternative || 'no alternative'}`);
+                        showToast(`Jewelry item not found`, 'warning');
+                    }
+                }
+
+                // Start detection loop
+                appState.isInitialized = true;
+                requestAnimationFrame(detectAll);
+
+                // Hide loading screen
+                hideLoadingScreen();
+
+                console.log("🚀 SISTEMA REVOLUCIONÁRIO ATIVADO - NÍVEL HOLLYWOOD!");
+                console.log("💎 Renderização 3D Ultra-Premium");
+                console.log("✨ Física Realista com Iluminação Cinematográfica");
+                console.log("🎭 Efeitos Visuais de Nível Comercial");
+
+                // Mostrar toast revolucionário
+                showToast("💎 Sistema Ultra-Premium Ativado! Renderização 3D com Física Realista", 'success');
+            } catch (error) {
+                console.error("Initialization error:", error);
+                showError(error.message || "Error initializing app. Please refresh the page.");
+            }
+        }
+
+        function initializeElements() {
+            elements.video = document.getElementById('cameraFeed');
+            elements.canvas = document.getElementById('jewelryCanvas');
+            elements.ctx = elements.canvas.getContext('2d');
+            elements.loadingScreen = document.getElementById('loadingScreen');
+
+            // Replace bottom panel with preview bar
+            elements.previewBar = document.getElementById('previewBar');
+            elements.previewHandle = document.getElementById('previewHandle');
+            elements.jewelryCarousel = document.getElementById('jewelryCarousel');
+
+            // Replace controls panel with floating controls
+            elements.floatingControls = document.getElementById('floatingControls');
+            elements.controlTitle = document.getElementById('controlTitle');
+            elements.controlContent = document.getElementById('controlContent');
+            elements.closeControlBtn = document.getElementById('closeControlBtn');
+
+            // Replace tab buttons with pill buttons
+            elements.categoryPills = document.querySelectorAll('.pill-btn');
+
+            elements.captureBtn = document.getElementById('captureBtn');
+            elements.menuButton = document.getElementById('menuButton');
+
+            // Create toast if it doesn't exist
+            elements.toast = document.getElementById('toast') || document.createElement('div');
+            if (!elements.toast.id) {
+                elements.toast.className = 'toast';
+                elements.toast.id = 'toast';
+                document.body.appendChild(elements.toast);
+            }
+
+            if (!elements.video || !elements.canvas || !elements.ctx) {
+                throw new Error("Required elements not found");
+            }
+        }
+
+        function setupEventListeners() {
+            // Category pill buttons
+            elements.categoryPills.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const category = btn.dataset.category;
+                    switchCategory(category);
+                });
+            });
+
+            // Preview bar handle for collapsing
+            elements.previewHandle.addEventListener('click', togglePreviewBar);
+
+            // Touch gestures for preview bar
+            let startY = 0;
+            elements.previewHandle.addEventListener('touchstart', (e) => {
+                startY = e.touches[0].clientY;
+            });
+
+            elements.previewHandle.addEventListener('touchmove', (e) => {
+                const deltaY = e.touches[0].clientY - startY;
+                // If swiping up, expand preview bar
+                if (deltaY < -10) {
+                    elements.previewBar.classList.remove('collapsed');
+                }
+                // If swiping down, collapse preview bar
+                else if (deltaY > 10) {
+                    elements.previewBar.classList.add('collapsed');
+                }
+                e.preventDefault();
+            });
+
+            // Capture button
+            elements.captureBtn.addEventListener('click', captureScreenshot);
+
+            // Menu button
+            elements.menuButton.addEventListener('click', showAppSettings);
+
+            // Close controls button
+            elements.closeControlBtn.addEventListener('click', hideFloatingControls);
+
+            // Add canvas click to hide controls if clicked outside
+            elements.canvas.addEventListener('click', (e) => {
+                // Check if click was outside floating controls
+                const controlsRect = elements.floatingControls.getBoundingClientRect();
+                if (e.clientX < controlsRect.left || e.clientX > controlsRect.right ||
+                    e.clientY < controlsRect.top || e.clientY > controlsRect.bottom) {
+                    hideFloatingControls();
+                }
+            });
+
+            // Initialize pinch-to-zoom and drag gestures
+            setupGestureHandlers();
+        }
+
+        function togglePreviewBar() {
+            elements.previewBar.classList.toggle('collapsed');
+            // Adjust capture button position based on preview bar state
+            const bottomOffset = elements.previewBar.classList.contains('collapsed')
+                ? 'var(--preview-bar-collapsed-height)'
+                : 'var(--preview-bar-height)';
+            elements.captureBtn.style.bottom = `calc(${bottomOffset} + 20px)`;
+        }
+
+        async function initializeCamera() {
+            try {
+                updateLoadingStatus("Accessing camera...");
+
+                const constraints = {
+                    video: {
+                        facingMode: 'user',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                elements.video.srcObject = stream;
+
+                await new Promise((resolve) => {
+                    elements.video.onloadedmetadata = () => {
+                        elements.canvas.width = elements.video.videoWidth;
+                        elements.canvas.height = elements.video.videoHeight;
+                        console.log("Video dimensions:", elements.video.videoWidth, elements.video.videoHeight);
+                        appState.isCameraReady = true;
+                        resolve();
+                    };
+                });
+
+                await elements.video.play();
+                console.log("Camera initialized successfully");
+
+                document.getElementById('cameraError').classList.add('hidden');
+            } catch (error) {
+                console.error("Camera access error:", error);
+                document.getElementById('cameraError').classList.remove('hidden');
+                throw new Error("Camera access denied. Please enable camera permissions.");
+            }
+        }
+
+        // �� SISTEMA INTELIGENTE DE RECUPERAÇÃO E GERENCIAMENTO DE RECURSOS MEDIAPIPE
+        class MediaPipeResourceManager {
+            constructor() {
+                this.poseEnabled = true;
+                this.handsEnabled = true;
+                this.faceEnabled = true;
+                this.poseRetryCount = 0;
+                this.handsRetryCount = 0;
+                this.faceRetryCount = 0;
+                this.maxRetries = 3;
+                this.lastPoseError = null;
+                this.lastHandsError = null;
+                this.lastFaceError = null;
+                this.poseRecoveryTimeout = null;
+                this.handsRecoveryTimeout = null;
+                this.faceRecoveryTimeout = null;
+                this.detectionQueue = [];
+                this.isProcessing = false;
+                this.modelLoadingErrors = new Set();
+                this.memoryErrors = new Set();
+                this.frameValidationEnabled = true;
+                this.lastValidFrame = null;
+                this.frameStabilityCount = 0;
+                this.minStabilityFrames = 10;
+            }
+
+            // 🛡️ SISTEMA DE VALIDAÇÃO DE FRAME ULTRA-SEGURO
+            validateFrame(videoElement) {
+                try {
+                    // Verificar se o vídeo existe e está pronto
+                    if (!videoElement || !videoElement.videoWidth || !videoElement.videoHeight) {
+                        return false;
+                    }
+
+                    // Verificar dimensões válidas
+                    const width = videoElement.videoWidth;
+                    const height = videoElement.videoHeight;
+                    
+                    if (width < 240 || height < 180 || width > 4096 || height > 4096) {
+                        console.warn('🔧 Invalid frame dimensions:', width, 'x', height);
+                        return false;
+                    }
+
+                    // Verificar se as dimensões são estáveis
+                    const currentFrameSignature = `${width}x${height}`;
+                    if (this.lastValidFrame === currentFrameSignature) {
+                        this.frameStabilityCount++;
+                    } else {
+                        this.frameStabilityCount = 0;
+                        this.lastValidFrame = currentFrameSignature;
+                    }
+
+                    // Exigir estabilidade mínima antes de permitir detecções
+                    if (this.frameStabilityCount < this.minStabilityFrames) {
+                        return false;
+                    }
+
+                    // Verificar se o vídeo não está pausado ou com problemas
+                    if (videoElement.paused || videoElement.ended || videoElement.readyState < 2) {
+                        return false;
+                    }
+
+                    return true;
+                } catch (error) {
+                    console.warn('🔧 Frame validation error:', error);
+                    return false;
+                }
+            }
+
+            // 🧠 DETECÇÃO INTELIGENTE DE ERROS DE MEMÓRIA
+            isMemoryError(error) {
+                const errorMessage = error.toString().toLowerCase();
+                return errorMessage.includes('memory access out of bounds') ||
+                       errorMessage.includes('index out of bounds') ||
+                       errorMessage.includes('buffer overflow') ||
+                       errorMessage.includes('segmentation fault') ||
+                       errorMessage.includes('wasm trap');
+            }
+
+            // 🔧 HANDLER PARA ERROS DE FACE DETECTION
+            handleFaceError(error) {
+                this.lastFaceError = error;
+                this.faceRetryCount++;
+
+                console.log(`🔧 Face error ${this.faceRetryCount}/${this.maxRetries}:`, error.message);
+
+                // Detectar erros de memória
+                if (this.isMemoryError(error)) {
+                    this.memoryErrors.add('face_memory');
+                    console.log('🚫 Critical face memory error detected - applying memory safety protocols');
+                    this.frameValidationEnabled = true;
+                    this.frameStabilityCount = 0; // Reset stability counter
+                }
+
+                if (this.faceRetryCount >= this.maxRetries) {
+                    console.log('🚀 SWITCHING TO BACKUP MODE - CORE SYSTEM MAINTAINED');
+                    this.faceEnabled = false;
+
+                    // Mostrar indicador de adaptação
+                    const adaptationIndicator = document.getElementById('adaptationIndicator');
+                    if (adaptationIndicator) {
+                        adaptationIndicator.classList.remove('hidden');
+                    }
+
+                    // Notificar usuário que o sistema se adaptou
+                    showToast('🎯 Sistema adaptado - Modo de segurança ativado', 'warning');
+
+                    // Tentar reativar depois de 90 segundos para erros de memória
+                    if (this.faceRecoveryTimeout) clearTimeout(this.faceRecoveryTimeout);
+                    const recoveryDelay = this.memoryErrors.has('face_memory') ? 90000 : 45000;
+                    this.faceRecoveryTimeout = setTimeout(() => {
+                        this.attemptFaceRecovery();
+                    }, recoveryDelay);
+                }
+            }
+
+            // 🔄 RECUPERAÇÃO INTELIGENTE DE FACE DETECTION
+            async attemptFaceRecovery() {
+                console.log('🔄 Attempting face detection recovery...');
+                this.faceRetryCount = 0;
+                this.faceEnabled = true;
+                this.frameStabilityCount = 0; // Reset para forçar nova validação
+
+                try {
+                    // Reinitialize face with ultra-safe settings
+                    if (faceMesh) {
+                        faceMesh.setOptions({
+                            maxNumFaces: 1,
+                            refineLandmarks: false, // Disabled for memory safety
+                            minDetectionConfidence: 0.8,
+                            minTrackingConfidence: 0.8
+                        });
+                        await faceMesh.initialize();
+                    }
+                    
+                    // Esconder indicador de adaptação
+                    const adaptationIndicator = document.getElementById('adaptationIndicator');
+                    if (adaptationIndicator) {
+                        adaptationIndicator.classList.add('hidden');
+                    }
+                    
+                    showToast('✅ Sistema de detecção facial reativado', 'success');
+                } catch (error) {
+                    console.warn('🔧 Face recovery failed:', error);
+                    this.faceEnabled = false;
+                }
+            }

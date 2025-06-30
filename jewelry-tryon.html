@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provador Virtual de Joias 3D</title>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #jewelry-selector {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            z-index: 2;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .jewelry-categories {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .category-btn {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            position: relative;
+        }
+
+        .category-btn.active {
+            color: #000;
+            font-weight: bold;
+        }
+
+        .category-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -11px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #000;
+        }
+
+        .jewelry-items {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .jewelry-item {
+            flex: 0 0 auto;
+            width: 100px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .jewelry-item:hover {
+            transform: scale(1.05);
+        }
+
+        .jewelry-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 2px solid transparent;
+        }
+
+        .jewelry-item.selected img {
+            border-color: #000;
+        }
+
+        .jewelry-item p {
+            margin: 5px 0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        #controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background: #000;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .control-btn:hover {
+            background: #333;
+        }
+
+        #loading-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 3;
+            display: none;
+        }
+    </style>
+    <!-- Debug logs -->
+    <script>
+        console.log('🔍 Page starting to load...');
+
+        // Override console methods to make them more visible
+        const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn
+        };
+
+        console.log = function (...args) {
+            originalConsole.log('%c' + args.join(' '), 'color: #2196F3; font-weight: bold;');
+        };
+
+        console.error = function (...args) {
+            originalConsole.error('%c' + args.join(' '), 'color: #F44336; font-weight: bold; font-size: 14px;');
+        };
+
+        console.warn = function (...args) {
+            originalConsole.warn('%c' + args.join(' '), 'color: #FFC107; font-weight: bold;');
+        };
+
+        // Log when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 DOM Content Loaded');
+        });
+
+        // Log when window is fully loaded
+        window.addEventListener('load', () => {
+            console.log('🌟 Window Fully Loaded');
+        });
+    </script>
+</head>
+
+<body>
+    <div id="three-container"></div>
+
+    <div id="loading-indicator">
+        <div style="text-align: center;">
+            <div style="margin-bottom: 10px;">Carregando sistema 3D...</div>
+            <div id="loading-progress" style="font-size: 14px; color: #666;"></div>
+        </div>
+    </div>
+
+    <div id="controls">
+        <button class="control-btn" id="viewModeToggle">
+            <span class="material-icons-outlined">view_in_ar</span>
+            <span class="button-text">Modo 3D</span>
+        </button>
+    </div>
+
+    <div id="jewelry-selector">
+        <div class="jewelry-categories">
+            <button class="category-btn active" data-category="earrings">Brincos</button>
+            <button class="category-btn" data-category="necklaces">Colares</button>
+            <button class="category-btn" data-category="rings">Anéis</button>
+            <button class="category-btn" data-category="bracelets">Pulseiras</button>
+        </div>
+        <div class="jewelry-items" id="jewelry-items">
+            <!-- Items will be populated dynamically -->
+        </div>
+    </div>
+
+    <!-- Three.js and dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+
+    <!-- Load scripts sequentially -->
+    <script>
+        console.log('⚙️ Starting script loader...');
+
+        // Function to check if a script is already loaded
+        function isScriptLoaded(src) {
+            return document.querySelector(`script[src="${src}"]`) !== null;
+        }
+
+        // Function to initialize Ammo.js
+        async function initializeAmmo() {
+            console.log('🔄 Initializing Ammo.js...');
+            try {
+                if (typeof Ammo === 'function') {
+                    console.log('📦 Ammo.js is a function, initializing...');
+                    await new Promise((resolve, reject) => {
+                        Ammo().then(result => {
+                            window.AmmoLib = result;
+                            console.log('✅ Ammo.js initialized successfully');
+                            resolve();
+                        }).catch(reject);
+                    });
+                } else if (typeof Ammo === 'object') {
+                    console.log('📦 Ammo.js is already an object');
+                    window.AmmoLib = Ammo;
+                } else {
+                    throw new Error('Ammo.js is not properly loaded');
+                }
+            } catch (error) {
+                console.error('❌ Failed to initialize Ammo.js:', error);
+                throw error;
+            }
+        }
+
+        // Function to load script and return a promise
+        function loadScript(src, progressCallback) {
+            console.log(`📥 Attempting to load: ${src}`);
+
+            if (isScriptLoaded(src)) {
+                console.log(`✅ Script already loaded: ${src}`);
+                if (progressCallback) progressCallback(src, true);
+                return Promise.resolve();
+            }
+
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+
+                script.onload = () => {
+                    console.log(`✅ Loaded successfully: ${src}`);
+                    if (progressCallback) progressCallback(src, true);
+                    resolve();
+                };
+
+                script.onerror = (error) => {
+                    console.error(`❌ Failed to load: ${src}`, error);
+                    if (progressCallback) progressCallback(src, false);
+                    reject(new Error(`Failed to load script: ${src}`));
+                };
+
+                document.body.appendChild(script);
+                console.log(`📎 Script tag added for: ${src}`);
+            });
+        }
+
+        // Function to update loading progress
+        function updateProgress(script, success) {
+            console.log(`📊 Progress update - ${script}: ${success ? 'Success' : 'Failed'}`);
+            const progressElement = document.getElementById('loading-progress');
+            if (progressElement) {
+                progressElement.textContent = `${success ? '✅' : '❌'} ${script} ${success ? 'carregado com sucesso' : 'falhou ao carregar'}`;
+            }
+        }
+
+        // Load all scripts in sequence
+        async function loadAllScripts() {
+            console.log('🚀 Starting to load all scripts...');
+            const loadingIndicator = document.getElementById('loading-indicator');
+
+            try {
+                // First load and initialize Ammo.js
+                console.log('🔄 Loading Ammo.js...');
+                await loadScript('ammo.js', (src, success) => {
+                    updateProgress('Ammo.js', success);
+                });
+
+                // Initialize Ammo.js
+                await initializeAmmo();
+                console.log('✨ Ammo.js is ready to use');
+
+                console.log('📚 Loading custom scripts...');
+                // Then load our custom scripts
+                const scripts = ['3d_system.js', 'hybrid_system.js', 'init_3d.js'];
+                for (const script of scripts) {
+                    await loadScript(script, (src, success) => {
+                        updateProgress(script, success);
+                    });
+                }
+
+                console.log('✅ All scripts loaded successfully!');
+                // Hide loading indicator after successful load
+                if (loadingIndicator) {
+                    loadingIndicator.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('❌ Error in script loading process:', error);
+                if (loadingIndicator) {
+                    loadingIndicator.innerHTML = `
+                        <div style="color: red; text-align: center;">
+                            Erro ao carregar o sistema.<br>
+                            ${error.message}<br>
+                            Por favor, recarregue a página ou verifique o console para mais detalhes.
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Start loading scripts when the page is ready
+        if (document.readyState === 'loading') {
+            console.log('📋 Document still loading, waiting for DOMContentLoaded...');
+            document.addEventListener('DOMContentLoaded', loadAllScripts);
+        } else {
+            console.log('📋 Document already loaded, starting script load...');
+            loadAllScripts();
+        }
+    </script>
+
+    <script>
+        // Jewelry data structure
+        const jewelryData = {
+            earrings: [
+                {
+                    id: 'earring_001',
+                    name: 'Brinco Clássico',
+                    thumb: 'thumbnails/earring1-thumb.png',
+                    model: 'models/earring_001.gltf',
+                    modelOptions: {
+                        scale: { x: 0.1, y: 0.1, z: 0.1 },
+                        physics: {
+                            mass: 0.1,
+                            shapeType: 'sphere',
+                            constraints: [{
+                                type: 'hinge',
+                                pivotA: { x: 0, y: 0.1, z: 0 },
+                                axisA: { x: 0, y: 0, z: 1 }
+                            }]
+                        }
+                    }
+                },
+                {
+                    id: 'earring_002',
+                    name: 'Brinco Gota',
+                    thumb: 'thumbnails/earring2-thumb.png',
+                    model: 'models/earring_002.gltf',
+                    modelOptions: {
+                        scale: { x: 0.1, y: 0.1, z: 0.1 },
+                        physics: {
+                            mass: 0.1,
+                            shapeType: 'sphere',
+                            constraints: [{
+                                type: 'hinge',
+                                pivotA: { x: 0, y: 0.1, z: 0 },
+                                axisA: { x: 0, y: 0, z: 1 }
+                            }]
+                        }
+                    }
+                },
+                { id: 'earring_003', name: 'Brinco Argola', thumb: 'thumbnails/earring3-thumb.png', model: 'models/earring_003.gltf' },
+                { id: 'earring_004', name: 'Brinco Cristal', thumb: 'thumbnails/earring4-thumb.png', model: 'models/earring_004.gltf' }
+            ],
+            necklaces: [
+                {
+                    id: 'necklace_001',
+                    name: 'Colar Delicado',
+                    thumb: 'thumbnails/necklace1-thumb.png',
+                    model: 'models/necklace_001.gltf',
+                    modelOptions: {
+                        scale: { x: 0.15, y: 0.15, z: 0.15 },
+                        physics: {
+                            mass: 0.2,
+                            shapeType: 'cylinder',
+                            constraints: [{
+                                type: 'point',
+                                pivotA: { x: 0, y: 0.1, z: 0 }
+                            }]
+                        }
+                    }
+                },
+                { id: 'necklace_002', name: 'Colar Pedras', thumb: 'thumbnails/necklace2-thumb.png', model: 'models/necklace_002.gltf' },
+                { id: 'necklace_003', name: 'Gargantilha', thumb: 'thumbnails/necklace3-thumb.png', model: 'models/necklace_003.gltf' }
+            ],
+            rings: [
+                {
+                    id: 'ring_001',
+                    name: 'Anel Solitário',
+                    thumb: 'thumbnails/ring1-thumb.png',
+                    model: 'models/ring_001.gltf',
+                    modelOptions: {
+                        scale: { x: 0.05, y: 0.05, z: 0.05 },
+                        physics: {
+                            mass: 0,
+                            shapeType: 'cylinder'
+                        }
+                    }
+                }
+            ],
+            bracelets: [
+                { id: 'bracelet_001', name: 'Pulseira Tennis', thumb: 'thumbnails/bangle1-thumb.png', model: 'models/bracelet_001.gltf' },
+                { id: 'bracelet_002', name: 'Bracelete', thumb: 'thumbnails/bangle2-thumb.png', model: 'models/bracelet_002.gltf' }
+            ]
+        };
+
+        // Current selection state
+        let currentCategory = 'earrings';
+        let selectedJewelry = null;
+
+        // Initialize the UI
+        document.addEventListener('DOMContentLoaded', () => {
+            // Setup category buttons
+            document.querySelectorAll('.category-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    currentCategory = button.dataset.category;
+                    displayJewelryItems(currentCategory);
+                });
+            });
+
+            // Initial display
+            displayJewelryItems(currentCategory);
+        });
+
+        function displayJewelryItems(category) {
+            const container = document.getElementById('jewelry-items');
+            container.innerHTML = '';
+
+            jewelryData[category].forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'jewelry-item';
+                itemElement.innerHTML = `
+                    <img src="${item.thumb}" alt="${item.name}">
+                    <p>${item.name}</p>
+                `;
+
+                itemElement.addEventListener('click', () => {
+                    // Remove previous selection
+                    document.querySelectorAll('.jewelry-item').forEach(el => el.classList.remove('selected'));
+                    // Add selection to clicked item
+                    itemElement.classList.add('selected');
+                    // Try on the jewelry
+                    tryOnJewelry(item);
+                });
+
+                container.appendChild(itemElement);
+            });
+        }
+
+        async function tryOnJewelry(item) {
+            try {
+                // Show loading indicator
+                document.getElementById('loading-indicator').style.display = 'block';
+
+                // Remove previous jewelry if any
+                if (selectedJewelry) {
+                    window.hybridSystem.advanced3D.removeModel(selectedJewelry.id);
+                }
+
+                // Get default position and rotation based on category
+                const position = getDefaultPosition(currentCategory);
+                const rotation = getDefaultRotation(currentCategory);
+
+                // Try on the new jewelry with animation and glow effect
+                await window.hybridSystem.advanced3D.tryOnJewelry(
+                    item.model, // Use the model path directly
+                    {
+                        id: item.id,
+                        position: position,
+                        rotation: rotation,
+                        scale: item.modelOptions.scale,
+                        physics: item.modelOptions.physics,
+                        material: getMaterialPreset(item),
+                        glow: true,
+                        duration: 1000
+                    }
+                );
+
+                selectedJewelry = item;
+            } catch (error) {
+                console.error('Error trying on jewelry:', error);
+                showToast('Erro ao provar joia', 'error');
+            } finally {
+                // Hide loading indicator
+                document.getElementById('loading-indicator').style.display = 'none';
+            }
+        }
+
+        function getDefaultPosition(category) {
+            switch (category) {
+                case 'earrings':
+                    return { x: 0.15, y: 0.6, z: 0 };
+                case 'necklaces':
+                    return { x: 0, y: 0.3, z: 0.1 };
+                case 'rings':
+                    return { x: 0.2, y: -0.2, z: 0.1 };
+                case 'bracelets':
+                    return { x: 0.3, y: 0, z: 0.1 };
+                default:
+                    return { x: 0, y: 0, z: 0 };
+            }
+        }
+
+        function getDefaultRotation(category) {
+            switch (category) {
+                case 'earrings':
+                    return { x: 0, y: Math.PI / 2, z: 0 };
+                case 'necklaces':
+                    return { x: 0, y: 0, z: 0 };
+                case 'rings':
+                    return { x: Math.PI / 4, y: 0, z: 0 };
+                case 'bracelets':
+                    return { x: 0, y: Math.PI / 4, z: 0 };
+                default:
+                    return { x: 0, y: 0, z: 0 };
+            }
+        }
+
+        function getMaterialPreset(item) {
+            // Customize material based on item type
+            if (item.id.includes('gold')) {
+                return window.hybridSystem.materialPresets.gold;
+            } else if (item.id.includes('silver')) {
+                return window.hybridSystem.materialPresets.silver;
+            } else if (item.id.includes('diamond')) {
+                return window.hybridSystem.materialPresets.diamond;
+            }
+            // Default to gold
+            return window.hybridSystem.materialPresets.gold;
+        }
+
+        // Helper function to show toast messages
+        function showToast(message, type = 'info') {
+            // Implementation depends on your toast system
+            console.log(`Toast: ${message} (${type})`);
+        }
+    </script>
+</body>
+
+</html>

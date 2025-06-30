@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>InnovaX - Provador Virtual de Joias</title>
+    
+    <!-- Dependências do MediaPipe -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3.1620248257/drawing_utils.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1620248257/camera_utils.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js" defer></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    
+    <!-- Folhas de estilo -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="innovax-theme.css">
+    
+    <style>
+        /* Estilos Base */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--color-background);
+            margin: 0;
+            padding: 0;
+            color: var(--color-text);
+            height: 100vh;
+            width: 100vw;
+            overscroll-behavior: none;
+            overflow: hidden;
+            position: fixed;
+        }
+        
+        /* Container Principal */
+        .app-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* Tela de Carregamento */
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--color-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 1000;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        
+        .loading-spinner {
+            width: 80px;
+            height: 40px;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        .infinity-highlight {
+            fill: none;
+            stroke: var(--color-primary);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 50 150;
+            stroke-dashoffset: 0;
+            animation: moveHighlight 2s linear infinite;
+        }
+        
+        /* Barra de Navegação Superior */
+        .top-nav {
+            height: var(--nav-height);
+            background-color: var(--color-dark);
+            border-bottom: 1px solid var(--color-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem;
+            z-index: 10;
+        }
+        
+        .nav-brand {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--color-primary);
+        }
+
+        /* Botões de categoria em pílulas */
+        .category-pills {
+            position: absolute;
+            top: var(--nav-height);
+            left: 0;
+            width: 100%;
+            padding: 10px 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+            z-index: 10;
+        }
+        
+        .pill-btn {
+            background: rgba(57, 255, 20, 0.2);
+            border: 1px solid rgba(57, 255, 20, 0.3);
+            color: white;
+        }
+        
+        .pill-btn.active {
+            background: var(--color-primary);
+            color: black;
+            box-shadow: 0 2px 8px rgba(57, 255, 20, 0.5);
+        }
+        
+        /* Preview bar (seletor de joias deslizável) */
+        .preview-bar {
+            background: rgba(0, 0, 0, 0.6);
+            border-top: 1px solid var(--color-primary);
+        }
+        
+        .carousel-item.active {
+            border: 2px solid var(--color-primary);
+            background: rgba(57, 255, 20, 0.2);
+        }
+        
+        /* Botão de Captura */
+        .capture-btn {
+            background: var(--color-primary);
+            color: black;
+        }
+        
+        .capture-btn:active {
+            background-color: var(--color-secondary);
+        }
+        
+        /* Toast de Notificação */
+        .toast {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--color-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de Carregamento -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner">
+            <svg viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg">
+                <path class="infinity-path" 
+                    d="M10,25 C10,5 40,5 50,25 C60,45 90,45 90,25 C90,5 60,5 50,25 C40,45 10,45 10,25 Z" 
+                    fill="none" stroke="black" stroke-width="2"/>
+                <path class="infinity-highlight" 
+                    d="M10,25 C10,5 40,5 50,25 C60,45 90,45 90,25 C90,5 60,5 50,25 C40,45 10,45 10,25 Z" 
+                    fill="none" stroke="#39FF14" stroke-width="2"/>
+            </svg>
+        </div>
+        <p class="text-gray-400">Inicializando o Provador Virtual...</p>
+        <p class="loading-error hidden"></p>
+        
+        <div class="loading-brand">
+            <i class="fas fa-gem" style="color: #39FF14;"></i>
+            <span class="brand-text" style="color: #39FF14;">Desenvolvido por InnovaX</span>
+        </div>
+    </div>
+
+    <!-- Container Principal do App -->
+    <div class="app-container">
+        <!-- Barra de Navegação Superior -->
+        <nav class="top-nav">
+            <div class="nav-brand">
+                <span>Provador Virtual InnovaX</span>
+            </div>
+            <div class="nav-controls">
+                <button id="menuButton" class="text-white text-xl p-2">
+                    <i class="fas fa-sliders-h"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Categorias em Pílulas -->
+        <div class="category-pills">
+            <div class="pills-scroll">
+                <button class="pill-btn active" data-category="face">
+                    <i class="fas fa-mask"></i>
+                    <span>Rosto</span>
+                </button>
+                <button class="pill-btn" data-category="ear">
+                    <i class="fas fa-gem"></i>
+                    <span>Orelha</span>
+                </button>
+                <button class="pill-btn" data-category="neck">
+                    <i class="fas fa-gem"></i>
+                    <span>Pescoço</span>
+                </button>
+                <button class="pill-btn" data-category="hand">
+                    <i class="fas fa-ring"></i>
+                    <span>Mão</span>
+                </button>
+                <button class="pill-btn" data-category="active">
+                    <i class="fas fa-th-list"></i>
+                    <span>Ativos</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Container da Câmera -->
+        <div class="camera-container">
+            <div class="camera-feed-wrapper">
+                <video id="cameraFeed" autoplay playsinline></video>
+                <canvas id="jewelryCanvas"></canvas>
+            </div>
+            
+            <!-- Mensagem de Erro da Câmera -->
+            <div class="camera-error hidden" id="cameraError">
+                <i class="fas fa-video-slash text-3xl text-red-500 mb-4"></i>
+                <h3 class="text-xl font-bold text-gray-300 mb-2">Acesso à Câmera Necessário</h3>
+                <p class="text-gray-400 mb-4">Por favor, permita o acesso à câmera para usar a experiência de provador virtual.</p>
+                <button onclick="requestCameraAccess()" class="primary-button">
+                    Ativar Câmera
+                </button>
+            </div>
+        </div>
+
+        <!-- Barra de Prévia (seletor deslizável de joias) -->
+        <div class="preview-bar" id="previewBar">
+            <div class="preview-handle" id="previewHandle">
+                <div class="handle-indicator"></div>
+            </div>
+            <div class="carousel-container" id="jewelryCarousel">
+                <!-- Os itens de joalheria serão inseridos aqui dinamicamente -->
+            </div>
+        </div>
+
+        <!-- Controles Flutuantes -->
+        <div class="floating-controls hidden" id="floatingControls">
+            <div class="controls-wrapper">
+                <div class="control-header">
+                    <h4 class="control-title" id="controlTitle">Ajustar Joia</h4>
+                    <button class="close-control-btn" id="closeControlBtn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="controlContent">
+                    <!-- Os controles serão populados dinamicamente -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Botão de Captura -->
+        <button class="capture-btn" id="captureBtn">
+            <i class="fas fa-camera"></i>
+        </button>
+
+        <!-- Notificação Toast -->
+        <div class="toast" id="toast"></div>
+
+        <!-- Modal de Avaliação -->
+        <div id="reviewModal" class="fixed inset-0 bg-black bg-opacity-50 z-[3000] flex items-center justify-center hidden">
+            <div class="bg-gray-900 border border-green-500 rounded-2xl shadow-xl p-6 max-w-md w-full mx-4 text-white">
+                <!-- Etapa 1: Avaliação -->
+                <div id="reviewStep1" class="review-step">
+                    <div class="text-center mb-4">
+                        <h3 class="text-2xl font-bold mb-2">O que achou da experiência?</h3>
+                        <p class="text-gray-300">Sua opinião é importante para nós</p>
+                    </div>
+                    
+                    <div class="star-rating flex justify-center space-x-3 text-4xl my-6">
+                        <button class="star transition-transform" data-rating="1">☆</button>
+                        <button class="star transition-transform" data-rating="2">☆</button>
+                        <button class="star transition-transform" data-rating="3">☆</button>
+                        <button class="star transition-transform" data-rating="4">☆</button>
+                        <button class="star transition-transform" data-rating="5">☆</button>
+                    </div>
+                    
+                    <div id="ratingFeedback" class="text-center mb-6 opacity-0 transition-opacity duration-300">
+                        <!-- Conteúdo atualizado dinamicamente com base na avaliação -->
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <div class="text-gray-400 text-sm">Etapa 1 de 3</div>
+                        <button id="nextToStep2" class="px-6 py-2 bg-green-500 text-black font-semibold rounded-lg opacity-50 cursor-not-allowed transition-opacity">
+                            Próximo <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Etapa 2: Recursos -->
+                <div id="reviewStep2" class="review-step hidden">
+                    <div class="text-center mb-4">
+                        <h3 class="text-2xl font-bold mb-2">O que você mais gostou?</h3>
+                        <p class="text-gray-300">Selecione todos os recursos que você achou úteis</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mt-4 mb-6">
+                        <button class="feature-btn p-3 border border-gray-600 rounded-lg text-sm hover:bg-opacity-10 hover:bg-green-500 transition-colors text-left">
+                            <i class="fas fa-mask mr-2 text-green-500"></i>Detecção de Rosto
+                        </button>
+                        <button class="feature-btn p-3 border border-gray-600 rounded-lg text-sm hover:bg-opacity-10 hover:bg-green-500 transition-colors text-left">
+                            <i class="fas fa-hand-paper mr-2 text-green-500"></i>Detecção de Mãos
+                        </button>
+                        <button class="feature-btn p-3 border border-gray-600 rounded-lg text-sm hover:bg-opacity-10 hover:bg-green-500 transition-colors text-left">
+                            <i class="fas fa-search-plus mr-2 text-green-500"></i>Ajuste de Tamanho
+                        </button>
+                        <button class="feature-btn p-3 border border-gray-600 rounded-lg text-sm hover:bg-opacity-10 hover:bg-green-500 transition-colors text-left">
+                            <i class="fas fa-arrows-alt mr-2 text-green-500"></i>Posicionamento
+                        </button>
+                        <button class="feature-btn p-3 border border-gray-600 rounded-lg text-sm hover:bg-opacity-10 hover:bg-green-500 transition-colors text-left">
+                            <i class="fas fa-camera mr-2 text-green-500"></i>Captura de Foto
+                        </button>
+                        <button class="feature-btn p-3 border border-gray-600 rounded-lg text-sm hover:bg-opacity-10 hover:bg-green-500 transition-colors text-left">
+                            <i class="fas fa-gem mr-2 text-green-500"></i>Variedade de Joias
+                        </button>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <button id="backToStep1" class="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-800">
+                            <i class="fas fa-arrow-left mr-1"></i> Voltar
+                        </button>
+                        <button id="nextToStep3" class="px-6 py-2 bg-green-500 text-black font-semibold rounded-lg">
+                            Próximo <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Etapa 3: Comentários -->
+                <div id="reviewStep3" class="review-step hidden">
+                    <div class="text-center mb-4">
+                        <h3 class="text-2xl font-bold mb-2">Algum comentário adicional?</h3>
+                        <p class="text-gray-300">Compartilhe suas opiniões conosco</p>
+                    </div>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <label class="block text-gray-300 text-sm mb-1">Seu comentário (opcional)</label>
+                            <textarea id="reviewText" rows="3" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white" placeholder="Conte-nos o que você achou..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-gray-300 text-sm mb-1">Seu nome (opcional)</label>
+                            <input type="text" id="reviewName" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white" placeholder="Como podemos chamá-lo?">
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <button id="backToStep2" class="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-800">
+                            <i class="fas fa-arrow-left mr-1"></i> Voltar
+                        </button>
+                        <button id="submitReview" class="px-6 py-2 bg-green-500 text-black font-semibold rounded-lg">
+                            Enviar <i class="fas fa-paper-plane ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Etapa de Compartilhamento -->
+                <div id="socialSharingStep" class="review-step hidden">
+                    <div class="text-center mb-4">
+                        <div class="text-5xl mb-4 text-green-500">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">Obrigado pela sua avaliação!</h3>
+                        <p class="text-gray-300 mb-4">Que tal compartilhar sua experiência?</p>
+                        
+                        <div class="preview-image-container mb-6 flex justify-center">
+                            <img id="shareImage" class="max-h-40 rounded-lg border border-gray-700" src="" alt="Sua imagem do provador virtual">
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-center space-x-4 mb-6">
+                        <a href="#" id="shareWhatsapp" class="w-12 h-12 flex items-center justify-center rounded-full bg-green-600 text-white text-xl hover:bg-opacity-80 transition-colors">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="#" id="shareInstagram" class="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-yellow-500 text-white text-xl hover:bg-opacity-80 transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" id="shareFacebook" class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-600 text-white text-xl hover:bg-opacity-80 transition-colors">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" id="shareTwitter" class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-400 text-white text-xl hover:bg-opacity-80 transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </div>
+                    
+                    <button id="finishReview" class="w-full px-6 py-3 bg-gray-800 text-white font-semibold rounded-lg hover:bg-gray-700">
+                        Concluir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // URL da API - aponta para o servidor local
+        const API_URL = 'http://localhost:3000';
+        
+        // Objeto JEWELRY inicial vazio
+        let JEWELRY = {};
+
+        // Estado do App
+        let appState = {
+            activeJewelry: new Map(),
+            currentCategory: 'face',  // Categoria padrão: rosto
+            selectedJewelryId: null,
+            mirrorCamera: true,       // Propriedade para espelhamento da câmera
+            performanceMode: 'medium', // Modo de desempenho
+            faceLandmarks: null,
+            handLandmarks: null,
+            poseLandmarks: null,
+            isCameraReady: false,
+            isResourcesLoaded: false,
+            isInitialized: false,
+            initialJewelryId: null,
+            categorySwitched: false,
+            skuToJewelryId: {} // Para mapeamento de SKUs para IDs internos
+        };
+        
+        // Elementos do DOM
+        let elements = {
+            video: null,
+            canvas: null,
+            ctx: null,
+            loadingScreen: null,
+            previewBar: null,
+            previewHandle: null,
+            jewelryCarousel: null,
+            floatingControls: null,
+            controlTitle: null,
+            controlContent: null,
+            closeControlBtn: null,
+            categoryPills: null,
+            captureBtn: null,
+            menuButton: null,
+            toast: null
+        };
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', init);
+        
+        async function init() {
+            try {
+                // Inicializar elementos do DOM
+                initializeElements();
+                
+                // Configurar event listeners
+                setupEventListeners();
+                
+                // Inicializar câmera
+                await initializeCamera();
+                
+                // Carregar dados das joias
+                await fetchJewelryData();
+                
+                // Pré-carregar imagens das joias
+                await preloadJewelryImages();
+                
+                // Inicializar modelos de IA
+                await initializeAIModels();
+                
+                // Inicializar interface do usuário
+                initializeUI();
+                
+                // Esconder tela de carregamento
+                hideLoadingScreen();
+                
+                // Marcar como inicializado
+                appState.isInitialized = true;
+                
+                console.log("Inicialização completa!");
+            } catch (error) {
+                console.error("Erro na inicialização:", error);
+                showError("Não foi possível inicializar o provador virtual. " + error.message);
+            }
+        }
+
+        // Buscar dados das joias da API
+        async function fetchJewelryData() {
+            try {
+                updateLoadingStatus("Carregando catálogo de joias...");
+                
+                const response = await fetch(`${API_URL}/jewelry-data`);
+                
+                if (!response.ok) {
+                    throw new Error('Falha ao carregar dados das joias');
+                }
+                
+                const data = await response.json();
+                JEWELRY = data.JEWELRY || {};
+                
+                console.log("Dados das joias carregados com sucesso!", Object.keys(JEWELRY).length, "itens encontrados");
+                return true;
+            } catch (error) {
+                console.error("Erro ao carregar dados das joias:", error);
+                showError("Não foi possível carregar o catálogo de joias.");
+                throw error;
+            }
+        }
+
+        // Resto do código JavaScript...
+        // (Mantenha o seu código existente, mas traduza mensagens e textos para português)
+    </script>
+    
+    <!-- Overlay do tour guiado -->
+    <div id="tourOverlay" class="tour-overlay">
+        <div id="tourHighlight" class="tour-highlight"></div>
+        <div id="tourTooltip" class="tour-tooltip">
+            <div id="tourTooltipTitle" class="tour-tooltip-title"></div>
+            <div id="tourTooltipContent" class="tour-tooltip-content"></div>
+            <div class="tour-tooltip-nav">
+                <div id="tourProgress" class="tour-tooltip-progress">Etapa 1 de 7</div>
+                <div>
+                    <button id="tourSkip" class="tour-button skip">Pular Tour</button>
+                    <button id="tourNext" class="tour-button">Próximo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de boas-vindas -->
+    <div id="tourWelcomeModal" class="tour-welcome-modal">
+        <div class="tour-welcome-content">
+            <div class="tour-welcome-icon" style="color: #39FF14;">
+                <i class="fas fa-gem"></i>
+            </div>
+            <div class="tour-welcome-title" style="color: #39FF14;">Bem-vindo ao Provador Virtual!</div>
+            <p>Experimente joias como nunca antes com nosso provador virtual. Deseja um tour rápido dos recursos?</p>
+            <div class="tour-welcome-buttons">
+                <button id="tourStart" class="tour-button" style="background-color: #39FF14; color: black;">Iniciar Tour</button>
+                <button id="tourDismiss" class="tour-button skip">Pular</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Botão flutuante para reiniciar o tour -->
+    <button id="restartTour" class="tour-restart-button" style="position: fixed; bottom: 250px; right: 20px; z-index: 100; background: #39FF14; color: black; border: none; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); cursor: pointer; display: none;">
+        <i class="fas fa-question"></i>
+    </button>
+
+    <div id="modalBlocker" class="fixed inset-0 pointer-events-none" style="z-index: 2999; display: none;"></div>
+</body>
+</html>

@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Advanced Data Science & Analytics Solutions - Transform your business with AI-driven insights">
+    <title>Data Science Services | Infinite AI</title>
+    
+    <!-- Stylesheets -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --color-primary: #7B2CBF;
+            --color-secondary: #9D4EDD;
+            --color-accent: #C77DFF;
+            --color-dark: #240046;
+            --color-light: #E0AAFF;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-primary) 100%);
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(123, 44, 191, 0.2);
+        }
+
+        .stats-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .process-step {
+            position: relative;
+        }
+
+        .process-step::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -50px;
+            width: 100px;
+            height: 2px;
+            background: var(--color-primary);
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .process-step::after {
+                display: block;
+            }
+        }
+
+        .process-step:last-child::after {
+            display: none;
+        }
+
+        .insight-card {
+            border-left: 4px solid var(--color-primary);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 gradient-bg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="text-2xl font-bold text-white">Infinite AI</a>
+                <a href="index.html" class="text-white hover:text-gray-200 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 gradient-bg text-white">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-5xl font-bold mb-6">Data Science & Analytics Solutions</h1>
+                <p class="text-xl text-gray-200 mb-8">
+                    Transform your business decisions with AI-powered insights and advanced analytics
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+                    <div class="stats-card rounded-xl p-6">
+                        <div class="text-4xl font-bold mb-2">98%</div>
+                        <p class="text-gray-300">Accuracy in Predictive Models</p>
+                    </div>
+                    <div class="stats-card rounded-xl p-6">
+                        <div class="text-4xl font-bold mb-2">45%</div>
+                        <p class="text-gray-300">Average Cost Reduction</p>
+                    </div>
+                    <div class="stats-card rounded-xl p-6">
+                        <div class="text-4xl font-bold mb-2">3x</div>
+                        <p class="text-gray-300">Faster Decision Making</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Science Overview -->
+    <section class="py-20">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-4xl font-bold text-gray-800 mb-8 text-center">Understanding Data Science</h2>
+                <div class="bg-white rounded-2xl shadow-lg p-8 mb-12">
+                    <p class="text-gray-600 text-lg leading-relaxed mb-6">
+                        Data Science is the art and science of transforming raw data into actionable insights. By combining advanced analytics, machine learning, and domain expertise, we help businesses make data-driven decisions that drive growth and innovation.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-database text-purple-600 text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Data Collection</h3>
+                            <p class="text-gray-600">Gathering and organizing data from multiple sources</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-brain text-purple-600 text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Analysis</h3>
+                            <p class="text-gray-600">Advanced analytics and machine learning algorithms</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-lightbulb text-purple-600 text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Insights</h3>
+                            <p class="text-gray-600">Actionable insights and strategic recommendations</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Capabilities -->
+    <section class="py-20 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Our Data Science Capabilities</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Predictive Analytics -->
+                <div class="feature-card p-8">
+                    <div class="text-purple-600 text-4xl mb-4">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Predictive Analytics</h3>
+                    <p class="text-gray-600 mb-4">
+                        Forecast future trends and outcomes using advanced statistical modeling and machine learning algorithms.
+                    </p>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            Sales forecasting
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            Demand prediction
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            Risk assessment
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Machine Learning -->
+                <div class="feature-card p-8">
+                    <div class="text-purple-600 text-4xl mb-4">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Machine Learning</h3>
+                    <p class="text-gray-600 mb-4">
+                        Implement sophisticated ML models to automate processes and uncover hidden patterns in your data.
+                    </p>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            Classification models
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            Clustering analysis
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            Anomaly detection
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Business Intelligence -->
+                <div class="feature-card p-8">
+                    <div class="text-purple-600 text-4xl mb-4">
+                        <i class="fas fa-analytics"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Business Intelligence</h3>
+                    <p class="text-gray-600 mb-4">
+                        Transform raw data into meaningful insights with interactive dashboards and automated reporting.
+                    </p>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            Interactive dashboards
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            Automated reporting
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            KPI tracking
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Analysis Process -->
+    <section class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Our Data Analysis Process</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div class="process-step text-center">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-search text-purple-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Data Discovery</h3>
+                        <p class="text-gray-600">Understanding your data sources and business objectives</p>
+                    </div>
+                </div>
+                
+                <div class="process-step text-center">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-broom text-purple-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Data Preparation</h3>
+                        <p class="text-gray-600">Cleaning and transforming data for analysis</p>
+                    </div>
+                </div>
+                
+                <div class="process-step text-center">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-microscope text-purple-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Analysis</h3>
+                        <p class="text-gray-600">Applying advanced analytics and ML models</p>
+                    </div>
+                </div>
+                
+                <div class="process-step text-center">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-chart-bar text-purple-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Visualization</h3>
+                        <p class="text-gray-600">Creating interactive dashboards and reports</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="py-20 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Core Analytics Solutions</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Descriptive Analytics -->
+                <div class="feature-card p-8">
+                    <div class="flex items-start">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-chart-pie text-purple-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Descriptive Analytics</h3>
+                            <p class="text-gray-600 mb-4">
+                                Understand what's happening in your business through data visualization and reporting.
+                            </p>
+                            <ul class="space-y-2 text-gray-600">
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    Interactive dashboards
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    Customizable reports
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    Real-time monitoring
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Predictive Analytics -->
+                <div class="feature-card p-8">
+                    <div class="flex items-start">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-chart-line text-purple-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Predictive Analytics</h3>
+                            <p class="text-gray-600 mb-4">
+                                Forecast future trends and outcomes using machine learning algorithms.
+                            </p>
+                            <ul class="space-y-2 text-gray-600">
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    Trend forecasting
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    Risk analysis
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    Pattern recognition
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Visualization -->
+                <div class="feature-card p-8">
+                    <div class="flex items-start">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-eye text-purple-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Data Visualization</h3>
+                            <p class="text-gray-600 mb-4">
+                                Transform complex data into clear, actionable visual insights.
+                            </p>
+                            <ul class="space-y-2 text-gray-600">
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    Custom visualizations
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    Interactive charts
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    Data storytelling
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Machine Learning -->
+                <div class="feature-card p-8">
+                    <div class="flex items-start">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-brain text-purple-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Machine Learning Solutions</h3>
+                            <p class="text-gray-600 mb-4">
+                                Implement AI algorithms to automate and optimize business processes.
+                            </p>
+                            <ul class="space-y-2 text-gray-600">
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    Classification models
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    Clustering analysis
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    Recommendation systems
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Industry Applications -->
+    <section class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4 text-center">Industry Applications</h2>
+            <p class="text-gray-600 text-center mb-12 max-w-3xl mx-auto">
+                Our data science solutions can be tailored to various industries, helping businesses leverage their data for better decision-making.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Retail -->
+                <div class="feature-card p-8">
+                    <div class="text-purple-600 text-3xl mb-4">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Retail Analytics</h3>
+                    <p class="text-gray-600 mb-4">
+                        Optimize inventory, understand customer behavior, and improve sales performance.
+                    </p>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            Inventory optimization
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            Customer segmentation
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            Sales forecasting
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Manufacturing -->
+                <div class="feature-card p-8">
+                    <div class="text-purple-600 text-3xl mb-4">
+                        <i class="fas fa-industry"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Manufacturing Analytics</h3>
+                    <p class="text-gray-600 mb-4">
+                        Enhance production efficiency and reduce operational costs through data-driven insights.
+                    </p>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            Predictive maintenance
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            Quality control
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            Supply chain optimization
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Healthcare -->
+                <div class="feature-card p-8">
+                    <div class="text-purple-600 text-3xl mb-4">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Healthcare Analytics</h3>
+                    <p class="text-gray-600 mb-4">
+                        Improve patient care and operational efficiency through data analysis.
+                    </p>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            Patient care analytics
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            Resource optimization
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            Treatment effectiveness
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology Stack -->
+    <section class="py-20 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Our Technology Stack</h2>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <!-- Python -->
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-white rounded-xl shadow-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="fab fa-python text-purple-600 text-4xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800">Python</h3>
+                    <p class="text-gray-600">Data Processing & ML</p>
+                </div>
+
+                <!-- TensorFlow -->
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-white rounded-xl shadow-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-brain text-purple-600 text-4xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800">TensorFlow</h3>
+                    <p class="text-gray-600">Deep Learning</p>
+                </div>
+
+                <!-- Power BI -->
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-white rounded-xl shadow-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-chart-bar text-purple-600 text-4xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800">Power BI</h3>
+                    <p class="text-gray-600">Data Visualization</p>
+                </div>
+
+                <!-- SQL -->
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-white rounded-xl shadow-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-database text-purple-600 text-4xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800">SQL</h3>
+                    <p class="text-gray-600">Data Management</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Implementation Process -->
+    <section class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Our Implementation Approach</h2>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="space-y-8">
+                    <!-- Step 1 -->
+                    <div class="bg-white rounded-2xl p-8 shadow-lg">
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                <span class="text-purple-600 font-bold">1</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-3">Discovery & Planning</h3>
+                                <p class="text-gray-600 mb-4">
+                                    We begin with understanding your business objectives, data sources, and current challenges through detailed consultation sessions.
+                                </p>
+                                <ul class="space-y-2 text-gray-600">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        Business requirements analysis
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        Data source identification
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        Project roadmap development
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="bg-white rounded-2xl p-8 shadow-lg">
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                <span class="text-purple-600 font-bold">2</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-3">Data Assessment & Preparation</h3>
+                                <p class="text-gray-600 mb-4">
+                                    Evaluate data quality, implement data collection processes, and prepare data for analysis.
+                                </p>
+                                <ul class="space-y-2 text-gray-600">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        Data quality assessment
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        Data cleaning and preprocessing
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        Data integration setup
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="bg-white rounded-2xl p-8 shadow-lg">
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                <span class="text-purple-600 font-bold">3</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-3">Solution Development</h3>
+                                <p class="text-gray-600 mb-4">
+                                    Build and implement analytics solutions, dashboards, and machine learning models.
+                                </p>
+                                <ul class="space-y-2 text-gray-600">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        Analytics model development
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        Dashboard creation
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        Iterative testing and refinement
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="bg-white rounded-2xl p-8 shadow-lg">
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                <span class="text-purple-600 font-bold">4</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-3">Training & Handover</h3>
+                                <p class="text-gray-600 mb-4">
+                                    Ensure smooth adoption through comprehensive training and documentation.
+                                </p>
+                                <ul class="space-y-2 text-gray-600">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        User training sessions
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        Documentation delivery
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        Ongoing support setup
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="py-20 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Our Pricing Plans</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Basic Plan -->
+                <div class="feature-card p-8">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-800">Starter</h3>
+                        <div class="mt-4">
+                            <p class="text-lg text-gray-600">Get a Quote</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Basic data analytics dashboard</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Monthly performance reports</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Standard data visualizations</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Basic predictive analytics</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Email support</span>
+                        </li>
+                    </ul>
+                    <button class="button-primary w-full py-3 rounded-lg text-white">
+                        Contact Sales
+                    </button>
+                </div>
+
+                <!-- Professional Plan -->
+                <div class="feature-card p-8 relative">
+                    <div class="absolute top-0 right-0 bg-purple-600 text-white px-3 py-1 text-sm font-medium rounded-bl-lg">
+                        Popular
+                    </div>
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-800">Professional</h3>
+                        <div class="mt-4">
+                            <p class="text-lg text-gray-600">Get a Quote</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Advanced analytics dashboard</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Real-time reporting</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Custom visualizations</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Advanced predictive models</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Priority support</span>
+                        </li>
+                    </ul>
+                    <button class="button-primary w-full py-3 rounded-lg text-white">
+                        Contact Sales
+                    </button>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="feature-card p-8">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-800">Enterprise</h3>
+                        <div class="mt-4">
+                            <p class="text-lg text-gray-600">Get a Quote</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Custom AI solutions</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Full system integration</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Advanced ML models</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Dedicated support team</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Custom training & setup</span>
+                        </li>
+                    </ul>
+                    <button class="button-primary w-full py-3 rounded-lg text-white">
+                        Contact Sales
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Frequently Asked Questions</h2>
+            
+            <div class="max-w-3xl mx-auto">
+                <div class="space-y-6">
+                    <details class="group">
+                        <summary class="flex justify-between items-center cursor-pointer p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                            <span class="font-semibold text-gray-800">What kind of data do you work with?</span>
+                            <span class="transform group-open:rotate-180 transition-transform">
+                                <i class="fas fa-chevron-down"></i>
+                            </span>
+                        </summary>
+                        <div class="p-4 bg-white">
+                            <p class="text-gray-600">
+                                We work with various types of data including structured (databases, spreadsheets) and unstructured (text, images) data. Our team can help you identify and utilize the most relevant data sources for your business objectives.
+                            </p>
+                        </div>
+                    </details>
+
+                    <details class="group">
+                        <summary class="flex justify-between items-center cursor-pointer p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                            <span class="font-semibold text-gray-800">How long does implementation typically take?</span>
+                            <span class="transform group-open:rotate-180 transition-transform">
+                                <i class="fas fa-chevron-down"></i>
+                            </span>
+                        </summary>
+                        <div class="p-4 bg-white">
+                            <p class="text-gray-600">
+                                Implementation time varies based on project scope and complexity. Basic dashboard setups can be completed in a few weeks, while complex ML solutions might take 2-3 months. We'll provide a detailed timeline during our initial consultation.
+                            </p>
+                        </div>
+                    </details>
+
+                    <details class="group">
+                        <summary class="flex justify-between items-center cursor-pointer p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                            <span class="font-semibold text-gray-800">Do you provide training for our team?</span>
+                            <span class="transform group-open:rotate-180 transition-transform">
+                                <i class="fas fa-chevron-down"></i>
+                            </span>
+                        </summary>
+                        <div class="p-4 bg-white">
+                            <p class="text-gray-600">
+                                Yes, we provide comprehensive training for your team as part of our implementation process. This includes hands-on sessions, documentation, and ongoing support to ensure your team can effectively use and maintain the solutions.
+                            </p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="py-20 gradient-bg">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2">
+                    <!-- Contact Form -->
+                    <div class="p-10">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Start Your Data Journey</h2>
+                        <p class="text-gray-600 mb-8">
+                            Schedule a consultation to discuss how we can help transform your business with data science.
+                        </p>
+                        <form class="space-y-6">
+                            <!-- Name Field -->
+                            <div>
+                                <label for="name" class="block text-gray-700 text-sm font-semibold mb-2">
+                                    Name <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" 
+                                       id="name" 
+                                       class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-500" 
+                                       required>
+                            </div>
+
+                            <!-- Email Field -->
+                            <div>
+                                <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">
+                                    Email <span class="text-red-500">*</span>
+                                </label>
+                                <input type="email" 
+                                       id="email" 
+                                       class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-500" 
+                                       required>
+                            </div>
+
+                            <!-- Company Field -->
+                            <div>
+                                <label for="company" class="block text-gray-700 text-sm font-semibold mb-2">
+                                    Company
+                                </label>
+                                <input type="text" 
+                                       id="company" 
+                                       class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-500">
+                            </div>
+
+                            <!-- Service Interest -->
+                            <div>
+                                <label for="service" class="block text-gray-700 text-sm font-semibold mb-2">
+                                    Interested In <span class="text-red-500">*</span>
+                                </label>
+                                <select id="service" 
+                                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-500" 
+                                        required>
+                                    <option value="">Select a service</option>
+                                    <option value="analytics">Analytics & Dashboards</option>
+                                    <option value="ml">Machine Learning Solutions</option>
+                                    <option value="bi">Business Intelligence</option>
+                                    <option value="custom">Custom Solution</option>
+                                </select>
+                            </div>
+
+                            <!-- Message Field -->
+                            <div>
+                                <label for="message" class="block text-gray-700 text-sm font-semibold mb-2">
+                                    Message <span class="text-red-500">*</span>
+                                </label>
+                                <textarea id="message" 
+                                          rows="4"
+                                          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-500" 
+                                          required></textarea>
+                            </div>
+
+                            <button type="submit" 
+                                    class="button-primary w-full py-3 rounded-lg text-white">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="gradient-bg p-10 text-white">
+                        <h3 class="text-2xl font-bold mb-8">Contact Information</h3>
+                        <div class="space-y-6">
+                            <!-- Address -->
+                            <div class="flex items-start">
+                                <i class="fas fa-map-marker-alt text-2xl mr-4 mt-1"></i>
+                                <div>
+                                    <h4 class="font-semibold mb-1">Address</h4>
+                                    <address class="not-italic">
+                                        97A Perambur Redhills Road,<br>
+                                        Kalpalayam, Kolathur<br>
+                                        Chennai, Tamil Nadu, 600099
+                                    </address>
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="flex items-start">
+                                <i class="fas fa-envelope text-2xl mr-4 mt-1"></i>
+                                <div>
+                                    <h4 class="font-semibold mb-1">Email</h4>
+                                    <p>
+                                        <a href="mailto:infiniteaitechsol@gmail.com" class="hover:text-purple-200 transition-colors">
+                                            infiniteaitechsol@gmail.com
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="flex items-start">
+                                <i class="fas fa-phone text-2xl mr-4 mt-1"></i>
+                                <div>
+                                    <h4 class="font-semibold mb-1">Phone</h4>
+                                    <p>
+                                        <a href="tel:+919994481257" class="hover:text-purple-200 transition-colors">
+                                            +91 9994481257
+                                        </a>
+                                    </p>
+                                    <p class="text-sm mt-1">Mon-Fri 9am to 6pm</p>
+                                </div>
+                            </div>
+
+                            <!-- Social Media -->
+                            <div class="pt-6 mt-6 border-t border-purple-400">
+                                <h4 class="font-semibold mb-4">Connect With Us</h4>
+                                <div class="flex space-x-4">
+                                    <a href="#" class="hover:text-purple-200 transition-colors">
+                                        <i class="fab fa-linkedin text-2xl"></i>
+                                    </a>
+                                    <a href="#" class="hover:text-purple-200 transition-colors">
+                                        <i class="fab fa-twitter text-2xl"></i>
+                                    </a>
+                                    <a href="#" class="hover:text-purple-200 transition-colors">
+                                        <i class="fab fa-instagram text-2xl"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark py-8">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm">
+                    &copy; 2024 Infinite AI. All rights reserved.
+                </p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

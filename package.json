@@ -1,0 +1,16 @@
+{
+  "name": "provador-virtual",
+  "version": "1.0.0",
+  "description": "Virtual Try-On System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}

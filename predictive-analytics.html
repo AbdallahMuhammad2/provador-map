@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Predictive Analytics & Business Intelligence: Transform Your Business with Data-Driven Insights">
+    <title>Predictive Analytics Solutions | Infinite AI</title>
+    
+    <!-- Stylesheets -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --color-primary: #7B2CBF;
+            --color-secondary: #9D4EDD;
+            --color-accent: #C77DFF;
+            --color-dark: #240046;
+            --color-light: #E0AAFF;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-primary) 100%);
+        }
+
+        .insight-card {
+            background: white;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .insight-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(123, 44, 191, 0.2);
+        }
+
+        .stats-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 gradient-bg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="text-2xl font-bold text-white">Infinite AI</a>
+                <a href="index.html" class="text-white hover:text-gray-200 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 gradient-bg text-white">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-5xl font-bold mb-6">Transform Your Business with Predictive Analytics</h1>
+                <p class="text-xl text-gray-200 mb-8">
+                    Turn Data into Strategic Decisions with Advanced Analytics and Business Intelligence
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+                    <div class="stats-card rounded-xl p-6">
+                        <div class="text-4xl font-bold mb-2">89%</div>
+                        <p class="text-gray-300">Improved Decision Accuracy</p>
+                    </div>
+                    <div class="stats-card rounded-xl p-6">
+                        <div class="text-4xl font-bold mb-2">60%</div>
+                        <p class="text-gray-300">Cost Reduction Potential</p>
+                    </div>
+                    <div class="stats-card rounded-xl p-6">
+                        <div class="text-4xl font-bold mb-2">2.6x</div>
+                        <p class="text-gray-300">ROI Improvement</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Predictive Analytics -->
+    <section class="py-20">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-4xl font-bold text-gray-800 mb-8 text-center">Why Predictive Analytics?</h2>
+                
+                <div class="bg-white rounded-2xl shadow-lg p-8 mb-12">
+                    <p class="text-gray-600 text-lg leading-relaxed mb-6">
+                        In today's data-driven world, businesses that leverage predictive analytics gain a significant competitive advantage. By analyzing historical data and identifying patterns, organizations can make informed decisions about future outcomes and optimize their operations.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                        <div class="p-6 bg-purple-50 rounded-xl">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Business Impact</h3>
+                            <ul class="space-y-3 text-gray-600">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-purple-600 mt-1 mr-2"></i>
+                                    <span>Anticipate market trends and customer behavior</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-purple-600 mt-1 mr-2"></i>
+                                    <span>Optimize resource allocation and inventory</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-purple-600 mt-1 mr-2"></i>
+                                    <span>Minimize risks and identify opportunities</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="p-6 bg-purple-50 rounded-xl">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Competitive Advantage</h3>
+                            <ul class="space-y-3 text-gray-600">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-purple-600 mt-1 mr-2"></i>
+                                    <span>Data-driven decision making</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-purple-600 mt-1 mr-2"></i>
+                                    <span>Proactive problem resolution</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-purple-600 mt-1 mr-2"></i>
+                                    <span>Enhanced customer experience</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Types of Analytics -->
+    <section class="py-20 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Analytics Spectrum</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Descriptive Analytics -->
+                <div class="insight-card p-8">
+                    <div class="text-purple-600 text-4xl mb-4">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Descriptive Analytics</h3>
+                    <p class="text-gray-600 mb-4">
+                        Understand what happened in your business through data visualization and reporting.
+                    </p>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Historical data analysis</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Performance metrics</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Trend identification</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Custom dashboards</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Predictive Analytics -->
+                <div class="insight-card p-8">
+                    <div class="text-purple-600 text-4xl mb-4">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Predictive Analytics</h3>
+                    <p class="text-gray-600 mb-4">
+                        Forecast future trends and outcomes using advanced statistical modeling.
+                    </p>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Future forecasting</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Risk assessment</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Pattern recognition</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Behavior modeling</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Prescriptive Analytics -->
+                <div class="insight-card p-8">
+                    <div class="text-purple-600 text-4xl mb-4">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Prescriptive Analytics</h3>
+                    <p class="text-gray-600 mb-4">
+                        Get actionable recommendations for optimal business decisions.
+                    </p>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Decision optimization</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Resource allocation</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Strategy recommendations</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Action planning</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Real-World Applications -->
+    <section class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Real-World Success Stories</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                <!-- E-commerce Example -->
+                <div class="insight-card p-8">
+                    <div class="mb-6">
+                        <div class="text-purple-600 text-3xl mb-4">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-3">E-commerce Revolution</h3>
+                        <p class="text-gray-600 mb-4">
+                            How Amazon transformed retail with predictive analytics:
+                        </p>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center text-gray-600">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span>Anticipatory shipping reduces delivery times by 40%</span>
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span>Inventory optimization saves millions in storage costs</span>
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span>Personalized recommendations drive 35% of sales</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manufacturing Example -->
+                <div class="insight-card p-8">
+                    <div class="mb-6">
+                        <div class="text-purple-600 text-3xl mb-4">
+                            <i class="fas fa-industry"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-3">Manufacturing Excellence</h3>
+                        <p class="text-gray-600 mb-4">
+                            Siemens' implementation of predictive maintenance:
+                        </p>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center text-gray-600">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span>99.9% accuracy in failure prediction</span>
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span>50% reduction in maintenance costs</span>
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span>30% increase in equipment lifespan</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Business Intelligence Dashboards -->
+    <section class="py-20 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Business Intelligence Solutions</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Real-time Analytics -->
+                <div class="insight-card p-8">
+                    <div class="text-purple-600 text-3xl mb-4">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Real-time Analytics</h3>
+                    <p class="text-gray-600 mb-4">
+                        Live monitoring and instant insights for immediate decision-making.
+                    </p>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Live performance tracking</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Automated alerts</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Dynamic visualization</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Interactive Dashboards -->
+                <div class="insight-card p-8">
+                    <div class="text-purple-600 text-3xl mb-4">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Interactive Dashboards</h3>
+                    <p class="text-gray-600 mb-4">
+                        Customizable visualizations for deep data exploration.
+                    </p>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Drill-down capabilities</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Custom metrics</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Data filtering</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Automated Reporting -->
+                <div class="insight-card p-8">
+                    <div class="text-purple-600 text-3xl mb-4">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Automated Reporting</h3>
+                    <p class="text-gray-600 mb-4">
+                        Scheduled reports and insights delivery for stakeholders.
+                    </p>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Scheduled delivery</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Multiple formats</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Custom templates</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Industry Applications -->
+    <section class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Industry Applications</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Retail -->
+                <div class="insight-card p-6">
+                    <div class="text-purple-600 text-3xl mb-4">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-3">Retail</h3>
+                    <ul class="space-y-2 text-gray-600 text-sm">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Demand forecasting</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Inventory optimization</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Customer segmentation</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Healthcare -->
+                <div class="insight-card p-6">
+                    <div class="text-purple-600 text-3xl mb-4">
+                        <i class="fas fa-hospital"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-3">Healthcare</h3>
+                    <ul class="space-y-2 text-gray-600 text-sm">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Patient risk prediction</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Resource allocation</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Treatment optimization</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Finance -->
+                <div class="insight-card p-6">
+                    <div class="text-purple-600 text-3xl mb-4">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-3">Finance</h3>
+                    <ul class="space-y-2 text-gray-600 text-sm">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Risk assessment</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Fraud detection</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Market analysis</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Manufacturing -->
+                <div class="insight-card p-6">
+                    <div class="text-purple-600 text-3xl mb-4">
+                        <i class="fas fa-industry"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-3">Manufacturing</h3>
+                    <ul class="space-y-2 text-gray-600 text-sm">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Predictive maintenance</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Quality control</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Supply chain optimization</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Implementation Process -->
+    <section class="py-20 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Implementation Journey</h2>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="space-y-6">
+                    <!-- Step 1 -->
+                    <div class="insight-card p-8">
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                <span class="text-purple-600 font-bold">1</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-3">Data Assessment & Strategy</h3>
+                                <p class="text-gray-600 mb-4">
+                                    We begin by evaluating your data sources and business objectives to create a tailored analytics strategy.
+                                </p>
+                                <ul class="space-y-2 text-gray-600">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        <span>Data source identification</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        <span>Quality assessment</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        <span>Goal alignment</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="insight-card p-8">
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                <span class="text-purple-600 font-bold">2</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-3">Model Development</h3>
+                                <p class="text-gray-600 mb-4">
+                                    Building and training predictive models tailored to your specific needs.
+                                </p>
+                                <ul class="space-y-2 text-gray-600">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        <span>Algorithm selection</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        <span>Model training</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        <span>Validation & optimization</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="insight-card p-8">
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                <span class="text-purple-600 font-bold">3</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-3">Dashboard Creation</h3>
+                                <p class="text-gray-600 mb-4">
+                                    Designing intuitive dashboards for actionable insights.
+                                </p>
+                                <ul class="space-y-2 text-gray-600">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        <span>Custom visualization</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        <span>Interactive features</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        <span>Automated reporting</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology Stack -->
+    <section class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Our Technology Stack</h2>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+                <!-- Python -->
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-white rounded-xl shadow-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="fab fa-python text-purple-600 text-4xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800">Python</h3>
+                    <p class="text-gray-600">Machine Learning</p>
+                </div>
+
+                <!-- TensorFlow -->
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-white rounded-xl shadow-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-brain text-purple-600 text-4xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800">TensorFlow</h3>
+                    <p class="text-gray-600">Deep Learning</p>
+                </div>
+
+                <!-- Power BI -->
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-white rounded-xl shadow-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-chart-bar text-purple-600 text-4xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800">Power BI</h3>
+                    <p class="text-gray-600">Visualization</p>
+                </div>
+
+                <!-- SQL -->
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-white rounded-xl shadow-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-database text-purple-600 text-4xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800">SQL</h3>
+                    <p class="text-gray-600">Data Management</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROI & Impact -->
+    <section class="py-20 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Business Impact</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="insight-card p-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Expected Benefits</h3>
+                    <ul class="space-y-4 text-gray-600">
+                        <li class="flex items-start">
+                            <i class="fas fa-chart-line text-purple-600 mt-1 mr-3"></i>
+                            <span>Up to 35% improvement in forecast accuracy</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-coins text-purple-600 mt-1 mr-3"></i>
+                            <span>25-40% reduction in operational costs</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-clock text-purple-600 mt-1 mr-3"></i>
+                            <span>60% faster decision-making process</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="insight-card p-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Long-Term Value</h3>
+                    <ul class="space-y-4 text-gray-600">
+                        <li class="flex items-start">
+                            <i class="fas fa-bullseye text-purple-600 mt-1 mr-3"></i>
+                            <span>Data-driven culture development</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-rocket text-purple-600 mt-1 mr-3"></i>
+                            <span>Competitive advantage in market</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-sync text-purple-600 mt-1 mr-3"></i>
+                            <span>Continuous improvement capability</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-20 gradient-bg">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+                <div class="p-8 text-center">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Transform Your Business Today</h2>
+                    <p class="text-gray-600 mb-8">
+                        Schedule a consultation to discover how predictive analytics can drive your business growth
+                    </p>
+                    <div class="space-x-4">
+                        <a href="mailto:infiniteaitechsol@gmail.com" 
+                           class="button-primary px-8 py-3 rounded-lg text-white inline-block">
+                            Schedule Demo
+                        </a>
+                        <a href="index.html#contact" 
+                           class="px-8 py-3 rounded-lg border-2 border-purple-600 text-purple-600 inline-block hover:bg-purple-600 hover:text-white transition-colors">
+                            Contact Us
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark py-8">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm">
+                    &copy; 2024 Infinite AI. All rights reserved.
+                </p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
