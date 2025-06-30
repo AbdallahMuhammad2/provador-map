@@ -197,21 +197,23 @@
             }
         }
 
-        /* Top Bar - Premium Executive Design para Vivara */
+        /* Top Bar - Elegante e Minimalista para Executivos */
         .top-bar-react {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             z-index: 20;
-            padding: 24px 32px;
-            background: linear-gradient(135deg, var(--color-black-95) 0%, var(--color-black-80) 50%, transparent 100%);
+            padding: 12px 24px;
+            background: linear-gradient(135deg, rgba(13, 46, 85, 0.95) 0%, rgba(13, 46, 85, 0.85) 100%);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--color-white-10);
+            height: 56px;
             opacity: 1;
             transform: translateY(0);
             transition: opacity var(--transition-normal), transform var(--transition-normal);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
         }
 
         .top-bar-react.hidden {
@@ -223,6 +225,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            height: 100%;
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -270,6 +273,75 @@
             font-weight: 300;
             letter-spacing: 0.15em;
             text-transform: uppercase;
+        }
+
+        /* Estilos para o Top Bar Executivo */
+        .executive-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .diamond-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border: 1px solid var(--color-white-20);
+        }
+
+        .brand-info .brand-title {
+            color: var(--color-white);
+            font-size: 1.1rem;
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            line-height: 1.2;
+        }
+
+        .brand-info .brand-subtitle {
+            color: var(--eleva-orange);
+            font-size: 0.7rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            margin-top: 2px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+        }
+
+        .ai-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            border: 1px solid var(--color-white-20);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--color-red);
+            transition: background-color var(--transition-normal);
+        }
+
+        .status-dot.active {
+            background-color: var(--color-green);
+            box-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+        }
+
+        .status-text {
+            color: var(--color-white-90);
+            font-size: 0.75rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
         }
 
         .executive-info-section {
@@ -393,10 +465,10 @@
         /* Category Pills - Premium Style */
         .category-pills {
             position: absolute;
-            top: 120px; /* Adjusted for new top bar */
+            top: 66px; /* Ajustado para o top bar executivo */
             left: 0;
             width: 100%;
-            padding: 10px 0;
+            padding: 8px 0;
             background: linear-gradient(to bottom, var(--color-black-30), transparent);
             z-index: 10;
         }
@@ -1513,44 +1585,28 @@
         </div>
             <h1 class="logo-title">Eleva Labs</h1>
             <div class="logo-divider"></div>
-            <p class="logo-subtitle">Virtual Try-On Experience</p>
+            <p class="logo-subtitle">Provador Virtual</p>
         </div>
     </div>
 
     <!-- Main App Container -->
     <div class="app-container-react">
-        <!-- Top Navigation Bar -->
+        <!-- Top Navigation Bar - Elegante e Profissional -->
         <nav class="top-bar-react">
             <div class="top-bar-content">
-                <div class="brand-section">
-                    <div class="diamond-shape-small"></div>
-                    <div class="brand-text">
+                <div class="executive-brand">
+                    <div class="diamond-icon">
+                        <i class="fas fa-gem" style="color: var(--eleva-orange); font-size: 1.2rem;"></i>
+                    </div>
+                    <div class="brand-info">
                         <div class="brand-title">Eleva Labs</div>
-                        <div class="brand-subtitle">Provador Virtual</div>
-            </div>
+                        <div class="brand-subtitle">provador virtual</div>
+                    </div>
                 </div>
-                <div class="executive-info-section">
-                    <div class="performance-metrics">
-                        <div class="metric-item">
-                            <div class="metric-value">99.7%</div>
-                            <div class="metric-label">Precisão IA</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-value">< 50ms</div>
-                            <div class="metric-label">Latência</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-value">4K</div>
-                            <div class="metric-label">Qualidade</div>
-                        </div>
-                    </div>
-                    <div class="ai-status-section">
-                        <div class="ai-status-dot active"></div>
-                        <div class="ai-status-text">Sistema IA Ativo</div>
-                    </div>
-                    <div class="vivara-badge">
-                        <i class="fas fa-gem"></i>
-                        <span class="vivara-badge-text">Demonstração Clientes</span>
+                <div class="status-indicator">
+                    <div class="ai-status">
+                        <div class="status-dot active"></div>
+                        <span class="status-text">IA Ativa</span>
                     </div>
                 </div>
             </div>
