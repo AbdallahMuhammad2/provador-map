@@ -1932,7 +1932,14 @@
             isInitialized: false,
             initialJewelryId: null,
             categorySwitched: false,
-            skuToJewelryId: {} // For mapping SKUs to internal IDs
+            skuToJewelryId: {}, // For mapping SKUs to internal IDs
+            // Stabilization system for earrings
+            earringStabilizer: {
+                leftHistory: [], // Array to store left earring positions
+                rightHistory: [], // Array to store right earring positions
+                maxHistory: 15,  // Number of frames to average (increased for more stability)
+                threshold: 8     // Minimum pixel change required to update position (increased)
+            }
         };
         
         // DOM Elements
@@ -2732,6 +2739,18 @@
                 </div>
                 
                 <div class="control-group">
+                    <div class="control-label">
+                        <span>Earring Stability</span>
+                        <span class="control-value" id="stabilityValue">${appState.earringStabilizer.maxHistory}</span>
+                    </div>
+                    <input type="range" id="stabilitySlider" min="8" max="25" step="1" 
+                           value="${appState.earringStabilizer.maxHistory}" 
+                           oninput="updateStability(this.value)"
+                           style="width: 100%; margin: 10px 0;">
+                    <p class="text-sm text-gray-500 mt-1">Higher values = more stable but less responsive</p>
+                </div>
+                
+                <div class="control-group">
                     <button class="primary-button w-full" onclick="hideFloatingControls()">
                         Close Settings
                     </button>
@@ -2893,6 +2912,12 @@
                 jewelryCopy.handIndex = 0; // Default to first detected hand
             }
             
+            // Clear stabilization history for new earrings to prevent interference
+            if (originalJewelry.type === 'earrings') {
+                appState.earringStabilizer.leftHistory = [];
+                appState.earringStabilizer.rightHistory = [];
+            }
+            
             // Add to active jewelry
             appState.activeJewelry.set(id, jewelryCopy);
             
@@ -2919,6 +2944,12 @@
         function removeJewelry(id) {
             const jewelry = JEWELRY[id];
             if (!jewelry) return;
+            
+            // Clear stabilization history for earrings
+            if (jewelry.type === 'earrings') {
+                appState.earringStabilizer.leftHistory = [];
+                appState.earringStabilizer.rightHistory = [];
+            }
             
             // Remove from active jewelry
             appState.activeJewelry.delete(id);
@@ -3097,6 +3128,85 @@
             elements.ctx.restore();
         }
         
+        // Advanced stabilization helper functions
+        function smoothPosition(newPosition, history, maxHistory, threshold) {
+            // If history is empty, just add the new position
+            if (history.length === 0) {
+                history.push(newPosition);
+                return newPosition;
+            }
+            
+            // Get the last smoothed position
+            const lastPosition = history[history.length - 1];
+            
+            // Calculate distance moved
+            const distance = Math.sqrt(
+                Math.pow(newPosition.x - lastPosition.x, 2) + 
+                Math.pow(newPosition.y - lastPosition.y, 2)
+            );
+            
+            // If movement is very small, use the last position (prevents micro-trembling)
+            if (distance < threshold) {
+                return lastPosition;
+            }
+            
+            // Apply strong damping for large movements (likely detection errors)
+            let dampedPosition = newPosition;
+            if (distance > threshold * 3) {
+                // Strong damping for large jumps
+                const dampingFactor = 0.3;
+                dampedPosition = {
+                    x: lastPosition.x + (newPosition.x - lastPosition.x) * dampingFactor,
+                    y: lastPosition.y + (newPosition.y - lastPosition.y) * dampingFactor
+                };
+            } else if (distance > threshold * 1.5) {
+                // Medium damping for medium movements
+                const dampingFactor = 0.6;
+                dampedPosition = {
+                    x: lastPosition.x + (newPosition.x - lastPosition.x) * dampingFactor,
+                    y: lastPosition.y + (newPosition.y - lastPosition.y) * dampingFactor
+                };
+            }
+            
+            // Add damped position to history
+            history.push(dampedPosition);
+            
+            // Keep only the last maxHistory positions
+            if (history.length > maxHistory) {
+                history.shift();
+            }
+            
+            // Calculate exponential weighted average (much more stable)
+            let smoothedX = 0;
+            let smoothedY = 0;
+            let totalWeight = 0;
+            
+            for (let i = 0; i < history.length; i++) {
+                // Exponential weighting - recent positions get exponentially more weight
+                const age = history.length - i - 1; // 0 for most recent, increases for older
+                const weight = Math.exp(-age * 0.3); // Exponential decay
+                
+                totalWeight += weight;
+                smoothedX += history[i].x * weight;
+                smoothedY += history[i].y * weight;
+            }
+            
+            const result = {
+                x: smoothedX / totalWeight,
+                y: smoothedY / totalWeight
+            };
+            
+            // Additional smoothing pass - blend with previous result
+            if (history.length > 1) {
+                const previousResult = history[history.length - 2];
+                const blendFactor = 0.8; // High blend for extra stability
+                result.x = result.x * (1 - blendFactor) + previousResult.x * blendFactor;
+                result.y = result.y * (1 - blendFactor) + previousResult.y * blendFactor;
+            }
+            
+            return result;
+        }
+
         function drawEarrings(jewelry, id) {
             if (!jewelry.leftImage || !jewelry.rightImage) return;
             
@@ -3109,27 +3219,94 @@
             
             if (!nose || !leftEar || !rightEar) return;
             
+            // Enhanced face rotation calculation with smoothing
             const faceRotation = (rightEar.z - leftEar.z);
             let gap = jewelry.gap || 0;
             
-            // Adjust gap based on face rotation
-            if (Math.abs(faceRotation) <= 0.1) {
+            // Adjust gap based on face rotation with more stable thresholds
+            if (Math.abs(faceRotation) <= 0.06) {
                 gap += 3;
             } else {
                 gap += 24;
             }
             
-            const leftLobe = landmarks[177];
-            const rightLobe = landmarks[401];
+            // Use landmarks mais precisos do lóbulo da orelha
+            // MediaPipe Face Mesh landmarks para lóbulo da orelha
+            const leftLobe = landmarks[234];  // Parte superior da orelha esquerda
+            const rightLobe = landmarks[454]; // Parte superior da orelha direita
+            const leftLobeBottom = landmarks[172] || landmarks[177]; // Ponto do lóbulo esquerdo
+            const rightLobeBottom = landmarks[397] || landmarks[401]; // Ponto do lóbulo direito
             
-            if (!leftLobe || !rightLobe) return;
+            if (!leftLobe || !rightLobe || !leftLobeBottom || !rightLobeBottom) return;
+            
+            // Calcular posição ideal do lóbulo usando interpolação entre topo e base da orelha
+            const leftLobeRatio = 0.85; // 85% do caminho do topo para o lóbulo
+            const rightLobeRatio = 0.85;
+            
+            const finalLeftLobe = {
+                x: leftLobe.x + (leftLobeBottom.x - leftLobe.x) * leftLobeRatio,
+                y: leftLobe.y + (leftLobeBottom.y - leftLobe.y) * leftLobeRatio,
+                z: leftLobe.z + (leftLobeBottom.z - leftLobe.z) * leftLobeRatio
+            };
+            
+            const finalRightLobe = {
+                x: rightLobe.x + (rightLobeBottom.x - rightLobe.x) * rightLobeRatio,
+                y: rightLobe.y + (rightLobeBottom.y - rightLobe.y) * rightLobeRatio,
+                z: rightLobe.z + (rightLobeBottom.z - rightLobe.z) * rightLobeRatio
+            };
             
             const faceWidth = Math.abs(rightEar.x - leftEar.x) * elements.canvas.width;
             const gapAdjustment = (gap / 100) * faceWidth;
             
-            const earHeight = Math.abs(landmarks[234].y - leftLobe.y) * elements.canvas.height;
-            const baseScale = (earHeight * 0.8) / jewelry.leftImage.height;
-            const scale = baseScale * jewelry.scale; // Combine base scale with user adjustable scale
+            const earHeight = Math.abs(landmarks[234].y - leftLobeBottom.y) * elements.canvas.height;
+            const baseScale = (earHeight * 0.4) / jewelry.leftImage.height; // Reduzido de 0.8 para 0.4
+            const scale = baseScale * jewelry.scale;
+            
+            // Offset vertical mínimo já que calculamos posição precisa do lóbulo
+            const lobeVerticalOffset = earHeight * 0.05; // Apenas 5% para ajuste fino
+            
+            // Enhanced position calculation using multiple landmarks for stability
+            let rawLeftX = finalLeftLobe.x * elements.canvas.width - gapAdjustment + jewelry.offset.x;
+            let rawLeftY = finalLeftLobe.y * elements.canvas.height + lobeVerticalOffset + jewelry.offset.y;
+            let rawRightX = finalRightLobe.x * elements.canvas.width + gapAdjustment + jewelry.offset.x + 5;
+            let rawRightY = finalRightLobe.y * elements.canvas.height + lobeVerticalOffset + jewelry.offset.y;
+            
+            // Blend com landmarks secundários para estabilidade extra
+            const leftEarSecondary = landmarks[227]; // Additional ear reference
+            const rightEarSecondary = landmarks[447]; // Additional ear reference
+            
+            if (leftEarSecondary) {
+                const blendFactor = 0.2; // Reduced blend for more accurate positioning
+                const secondaryX = leftEarSecondary.x * elements.canvas.width - gapAdjustment + jewelry.offset.x;
+                const secondaryY = leftEarSecondary.y * elements.canvas.height + lobeVerticalOffset + jewelry.offset.y;
+                rawLeftX = rawLeftX * (1 - blendFactor) + secondaryX * blendFactor;
+                rawLeftY = rawLeftY * (1 - blendFactor) + secondaryY * blendFactor;
+            }
+            
+            if (rightEarSecondary) {
+                const blendFactor = 0.2; // Reduced blend for more accurate positioning
+                const secondaryX = rightEarSecondary.x * elements.canvas.width + gapAdjustment + jewelry.offset.x + 5;
+                const secondaryY = rightEarSecondary.y * elements.canvas.height + lobeVerticalOffset + jewelry.offset.y;
+                rawRightX = rawRightX * (1 - blendFactor) + secondaryX * blendFactor;
+                rawRightY = rawRightY * (1 - blendFactor) + secondaryY * blendFactor;
+            }
+            
+            // Apply stabilization to positions
+            const stabilizer = appState.earringStabilizer;
+            
+            const smoothedLeft = smoothPosition(
+                { x: rawLeftX, y: rawLeftY }, 
+                stabilizer.leftHistory, 
+                stabilizer.maxHistory, 
+                stabilizer.threshold
+            );
+            
+            const smoothedRight = smoothPosition(
+                { x: rawRightX, y: rawRightY }, 
+                stabilizer.rightHistory, 
+                stabilizer.maxHistory, 
+                stabilizer.threshold
+            );
             
             // Set opacity if defined
             if (jewelry.opacity !== undefined) {
@@ -3143,32 +3320,26 @@
             elements.ctx.shadowOffsetY = 2;
             
             // Draw left earring if face is not turned too far right
-            if (faceRotation > -0.1) {
-                const leftX = leftLobe.x * elements.canvas.width - gapAdjustment + jewelry.offset.x;
-                const leftY = leftLobe.y * elements.canvas.height + jewelry.offset.y;
-                
+            if (faceRotation > -0.06) { // More sensitive threshold for better visibility
                 const leftWidth = jewelry.leftImage.width * scale;
                 const leftHeight = jewelry.leftImage.height * scale;
                 elements.ctx.drawImage(
                     jewelry.leftImage,
-                    leftX - leftWidth/2,
-                    leftY - leftHeight/2,
+                    smoothedLeft.x - leftWidth/2,
+                    smoothedLeft.y - leftHeight/2,
                     leftWidth,
                     leftHeight
                 );
             }
             
             // Draw right earring if face is not turned too far left
-            if (faceRotation < 0.1) {
-                const rightX = rightLobe.x * elements.canvas.width + gapAdjustment + jewelry.offset.x + 5;
-                const rightY = rightLobe.y * elements.canvas.height + jewelry.offset.y;
-                
+            if (faceRotation < 0.06) { // More sensitive threshold for better visibility
                 const rightWidth = jewelry.rightImage.width * scale;
                 const rightHeight = jewelry.rightImage.height * scale;
                 elements.ctx.drawImage(
                     jewelry.rightImage,
-                    rightX - rightWidth/2,
-                    rightY - rightHeight/2,
+                    smoothedRight.x - rightWidth/2,
+                    smoothedRight.y - rightHeight/2,
                     rightWidth,
                     rightHeight
                 );
@@ -4156,6 +4327,29 @@
                     showToast('High performance mode active');
                     break;
             }
+        }
+        
+        function updateStability(value) {
+            const stabilityValue = parseInt(value);
+            appState.earringStabilizer.maxHistory = stabilityValue;
+            
+            // Update display
+            const stabilityDisplay = document.getElementById('stabilityValue');
+            if (stabilityDisplay) {
+                stabilityDisplay.textContent = stabilityValue;
+            }
+            
+            // Clear current history to apply new settings immediately
+            appState.earringStabilizer.leftHistory = [];
+            appState.earringStabilizer.rightHistory = [];
+            
+            // Show feedback
+            let stabilityLevel = 'Low';
+            if (stabilityValue >= 18) stabilityLevel = 'Maximum';
+            else if (stabilityValue >= 15) stabilityLevel = 'High';
+            else if (stabilityValue >= 12) stabilityLevel = 'Medium';
+            
+            showToast(`Earring stability: ${stabilityLevel}`);
         }
         
         // Window resize handler
