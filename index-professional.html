@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>InnovaX - Provador Virtual Profissional</title>
+    
+    <!-- Dependências do MediaPipe -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3.1620248257/drawing_utils.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1620248257/camera_utils.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js" defer></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    
+    <!-- Folhas de estilo -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="innovax-theme.css">
+    
+    <style>
+        /* Estilos Base Otimizados */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--color-background);
+            margin: 0;
+            padding: 0;
+            color: var(--color-text);
+            height: 100vh;
+            width: 100vw;
+            overscroll-behavior: none;
+            overflow: hidden;
+            position: fixed;
+        }
+        
+        /* Container Principal */
+        .app-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* Tela de Carregamento Profissional */
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 1000;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+        }
+        
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        
+        .loading-spinner {
+            width: 100px;
+            height: 50px;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        .infinity-highlight {
+            fill: none;
+            stroke: var(--color-primary);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 50 150;
+            stroke-dashoffset: 0;
+            animation: moveHighlight 2s linear infinite;
+        }
+        
+        @keyframes moveHighlight {
+            0% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: -200; }
+        }
+        
+        /* Barra de Navegação Superior */
+        .top-nav {
+            height: 60px;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            border-bottom: 2px solid var(--color-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            z-index: 10;
+            box-shadow: 0 2px 10px rgba(57, 255, 20, 0.3);
+        }
+        
+        .nav-brand {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: var(--color-primary);
+            text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+        }
+
+        /* Botões de categoria em pílulas otimizados */
+        .category-pills {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            padding: 15px 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.7));
+            z-index: 10;
+            backdrop-filter: blur(10px);
+        }
+        
+        .pills-scroll {
+            display: flex;
+            gap: 15px;
+            padding: 0 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .pills-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .pill-btn {
+            background: rgba(57, 255, 20, 0.1);
+            border: 2px solid rgba(57, 255, 20, 0.3);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        .pill-btn:hover {
+            background: rgba(57, 255, 20, 0.2);
+            border-color: rgba(57, 255, 20, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .pill-btn.active {
+            background: var(--color-primary);
+            color: black;
+            border-color: var(--color-primary);
+            box-shadow: 0 4px 15px rgba(57, 255, 20, 0.4);
+        }
+        
+        /* Container da Câmera Otimizado */
+        .camera-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #000;
+        }
+        
+        .camera-feed-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #cameraFeed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+        
+        #jewelryCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        /* Preview bar otimizada */
+        .preview-bar {
+            height: 140px;
+            background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.8));
+            border-top: 2px solid var(--color-primary);
+            backdrop-filter: blur(15px);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .carousel-container {
+            display: flex;
+            gap: 15px;
+            padding: 20px;
+            overflow-x: auto;
+            height: 100%;
+            align-items: center;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .carousel-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .carousel-item {
+            flex: 0 0 auto;
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            border: 2px solid rgba(57, 255, 20, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .carousel-item:hover {
+            border-color: rgba(57, 255, 20, 0.6);
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(57, 255, 20, 0.3);
+        }
+        
+        .carousel-item.active {
+            border-color: var(--color-primary);
+            background: rgba(57, 255, 20, 0.2);
+            box-shadow: 0 5px 20px rgba(57, 255, 20, 0.5);
+            transform: scale(1.15);
+        }
+        
+        .carousel-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+        
+        /* Botão de Captura Profissional */
+        .capture-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: black;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 20;
+            box-shadow: 0 5px 20px rgba(57, 255, 20, 0.4);
+        }
+        
+        .capture-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(57, 255, 20, 0.6);
+        }
+        
+        .capture-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Toast de Notificação Profissional */
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--color-primary);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            font-weight: 600;
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(57, 255, 20, 0.3);
+        }
+        
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Indicador de Status */
+        .status-indicator {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--color-primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            z-index: 15;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-dot.active {
+            background: var(--color-primary);
+        }
+        
+        .status-dot.inactive {
+            background: #ff4444;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .top-nav {
+                padding: 0 1rem;
+            }
+            
+            .nav-brand {
+                font-size: 1.2rem;
+            }
+            
+            .capture-btn {
+                width: 60px;
+                height: 60px;
+                bottom: 20px;
+                right: 20px;
+                font-size: 20px;
+            }
+            
+            .carousel-item {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .carousel-item img {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de Carregamento -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner">
+            <svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                <path class="infinity-path" 
+                    d="M15,30 C15,10 45,10 60,30 C75,50 105,50 105,30 C105,10 75,10 60,30 C45,50 15,50 15,30 Z" 
+                    fill="none" stroke="#333" stroke-width="2"/>
+                <path class="infinity-highlight" 
+                    d="M15,30 C15,10 45,10 60,30 C75,50 105,50 105,30 C105,10 75,10 60,30 C45,50 15,50 15,30 Z" 
+                    fill="none" stroke="#39FF14" stroke-width="3"/>
+            </svg>
+        </div>
+        <h2 style="color: #39FF14; margin-bottom: 10px;">Inicializando Provador Virtual</h2>
+        <p class="text-gray-400" id="loadingStatus">Carregando sistema de IA...</p>
+        
+        <div class="loading-brand" style="margin-top: 30px;">
+            <i class="fas fa-gem" style="color: #39FF14; font-size: 24px;"></i>
+            <span class="brand-text" style="color: #39FF14; margin-left: 10px; font-weight: 600;">Desenvolvido por InnovaX</span>
+        </div>
+    </div>
+
+    <!-- Container Principal do App -->
+    <div class="app-container">
+        <!-- Barra de Navegação Superior -->
+        <nav class="top-nav">
+            <div class="nav-brand">
+                <i class="fas fa-gem mr-2"></i>
+                <span>Provador Virtual InnovaX</span>
+            </div>
+            <div class="nav-controls">
+                <button id="menuButton" class="text-white text-xl p-2 hover:text-green-400 transition-colors">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Indicador de Status -->
+        <div class="status-indicator" id="statusIndicator">
+            <span class="status-dot active" id="statusDot"></span>
+            <span id="statusText">Sistema Ativo</span>
+        </div>
+
+        <!-- Categorias em Pílulas -->
+        <div class="category-pills">
+            <div class="pills-scroll">
+                <button class="pill-btn active" data-category="ear">
+                    <i class="fas fa-gem"></i>
+                    <span>Brincos</span>
+                </button>
+                <button class="pill-btn" data-category="neck">
+                    <i class="fas fa-necklace"></i>
+                    <span>Colares</span>
+                </button>
+                <button class="pill-btn" data-category="hand">
+                    <i class="fas fa-ring"></i>
+                    <span>Pulseiras</span>
+                </button>
+                <button class="pill-btn" data-category="face">
+                    <i class="fas fa-crown"></i>
+                    <span>Tikka</span>
+                </button>
+                <button class="pill-btn" data-category="active">
+                    <i class="fas fa-list"></i>
+                    <span>Ativos</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Container da Câmera -->
+        <div class="camera-container">
+            <div class="camera-feed-wrapper">
+                <video id="cameraFeed" autoplay playsinline muted></video>
+                <canvas id="jewelryCanvas"></canvas>
+            </div>
+        </div>
+
+        <!-- Barra de Prévia -->
+        <div class="preview-bar" id="previewBar">
+            <div class="carousel-container" id="jewelryCarousel">
+                <!-- Os itens de joalheria serão inseridos aqui dinamicamente -->
+            </div>
+        </div>
+
+        <!-- Botão de Captura -->
+        <button class="capture-btn" id="captureBtn" title="Capturar Foto">
+            <i class="fas fa-camera"></i>
+        </button>
+
+        <!-- Notificação Toast -->
+        <div class="toast" id="toast"></div>
+    </div>
+    
+    <script>
+        // Configurações Profissionais
+        const PROFESSIONAL_CONFIG = {
+            // Posições precisas para cada tipo de joia
+            JEWELRY_POSITIONS: {
+                ear: {
+                    left: { x: 0.15, y: 0.35, scale: 1.0 },
+                    right: { x: 0.85, y: 0.35, scale: 1.0 }
+                },
+                neck: {
+                    center: { x: 0.5, y: 0.65, scale: 1.2 }
+                },
+                hand: {
+                    left: { x: 0.25, y: 0.75, scale: 0.8 },
+                    right: { x: 0.75, y: 0.75, scale: 0.8 }
+                },
+                face: {
+                    center: { x: 0.5, y: 0.25, scale: 0.9 }
+                }
+            },
+            
+            // Landmarks precisos do MediaPipe
+            FACE_LANDMARKS: {
+                leftEar: [234, 93, 132, 58],
+                rightEar: [454, 323, 361, 288],
+                forehead: [151, 9, 10, 151],
+                chin: [175, 199, 175],
+                nose: [1, 2, 5, 4],
+                neckBase: [175, 199, 175]
+            },
+            
+            // Configurações de renderização
+            RENDER_CONFIG: {
+                smoothing: 0.7,
+                minConfidence: 0.5,
+                maxJewelrySize: 150,
+                minJewelrySize: 30
+            }
+        };
+
+        // URL da API
+        const API_URL = 'http://localhost:3000';
+        
+        // Catálogo de joias otimizado
+        let JEWELRY = {
+            // Brincos
+            earring_001: {
+                name: "Brincos Dourados Clássicos",
+                type: "earrings",
+                group: "ear",
+                left: "earing1left.png",
+                right: "earing1right.png",
+                thumbnail: "thumbnails/earring1-thumb.png",
+                defaultScale: 1.0,
+                gap: 5
+            },
+            earring_002: {
+                name: "Brincos Pingente Elegantes",
+                type: "earrings", 
+                group: "ear",
+                left: "earing2left.png",
+                right: "earing2right.png",
+                thumbnail: "thumbnails/earring2-thumb.png",
+                defaultScale: 1.0,
+                gap: 5
+            },
+            earring_003: {
+                name: "Brincos Argola Premium",
+                type: "earrings",
+                group: "ear", 
+                left: "earing3left.png",
+                right: "earing3right.png",
+                thumbnail: "thumbnails/earring3-thumb.png",
+                defaultScale: 1.0,
+                gap: 5
+            },
+            earring_004: {
+                name: "Brincos Cristal Luxo",
+                type: "earrings",
+                group: "ear",
+                left: "earing4left.png", 
+                right: "earing4right.png",
+                thumbnail: "thumbnails/earring4-thumb.png",
+                defaultScale: 1.0,
+                gap: 5
+            },
+            
+            // Colares
+            necklace_001: {
+                name: "Colar Delicado Dourado",
+                type: "necklace",
+                group: "neck",
+                image: "necklace1.png",
+                thumbnail: "thumbnails/necklace1-thumb.png",
+                defaultScale: 1.2
+            },
+            necklace_002: {
+                name: "Colar Pérolas Elegante",
+                type: "necklace",
+                group: "neck",
+                image: "necklace2.png",
+                thumbnail: "thumbnails/necklace2-thumb.png",
+                defaultScale: 1.2
+            },
+            necklace_003: {
+                name: "Colar Corrente Premium",
+                type: "necklace",
+                group: "neck",
+                image: "necklace3.png",
+                thumbnail: "thumbnails/necklace3-thumb.png",
+                defaultScale: 1.2
+            },
+            necklace_004: {
+                name: "Colar Pingente Luxo",
+                type: "necklace",
+                group: "neck",
+                image: "necklace4.png",
+                thumbnail: "thumbnails/necklace4-thumb.png",
+                defaultScale: 1.2
+            },
+            
+            // Pulseiras
+            bangle_001: {
+                name: "Pulseira Dourada Clássica",
+                type: "hand",
+                subcategory: "bangle",
+                group: "hand",
+                image: "bangle1.png",
+                thumbnail: "thumbnails/bangle1-thumb.png",
+                defaultScale: 1.0
+            },
+            bangle_002: {
+                name: "Pulseira Elegante Premium",
+                type: "hand",
+                subcategory: "bangle",
+                group: "hand",
+                image: "bangle2.png",
+                thumbnail: "thumbnails/bangle2-thumb.png",
+                defaultScale: 1.0
+            },
+            bangle_003: {
+                name: "Pulseira Cristal Luxo",
+                type: "hand",
+                subcategory: "bangle",
+                group: "hand",
+                image: "bangle3.png",
+                thumbnail: "thumbnails/bangle3-thumb.png",
+                defaultScale: 1.0
+            },
+            
+            // Tikka
+            tikka_001: {
+                name: "Tikka Dourada Tradicional",
+                type: "single",
+                group: "face",
+                image: "tikka1.png",
+                thumbnail: "thumbnails/tikka1-thumb.png",
+                landmark: 151,
+                defaultScale: 0.8
+            },
+            tikka_002: {
+                name: "Tikka Cristal Elegante",
+                type: "single",
+                group: "face",
+                image: "tikka2.png",
+                thumbnail: "thumbnails/tikka2-thumb.png",
+                landmark: 151,
+                defaultScale: 0.8
+            },
+            tikka_003: {
+                name: "Tikka Premium Luxo",
+                type: "single",
+                group: "face",
+                image: "tikka3.png",
+                thumbnail: "thumbnails/tikka3-thumb.png",
+                landmark: 151,
+                defaultScale: 0.8
+            }
+        };
+
+        // Estado do App Profissional
+        let appState = {
+            activeJewelry: new Map(),
+            currentCategory: 'ear',
+            selectedJewelryId: null,
+            mirrorCamera: true,
+            performanceMode: 'high',
+            faceLandmarks: null,
+            handLandmarks: null,
+            poseLandmarks: null,
+            isCameraReady: false,
+            isResourcesLoaded: false,
+            isInitialized: false,
+            detectionConfidence: 0,
+            renderingActive: false
+        };
+        
+        // Elementos do DOM
+        let elements = {
+            video: null,
+            canvas: null,
+            ctx: null,
+            loadingScreen: null,
+            loadingStatus: null,
+            previewBar: null,
+            jewelryCarousel: null,
+            categoryPills: null,
+            captureBtn: null,
+            menuButton: null,
+            toast: null,
+            statusIndicator: null,
+            statusDot: null,
+            statusText: null
+        };
+        
+        // Modelos de IA
+        let aiModels = {
+            faceMesh: null,
+            hands: null,
+            pose: null
+        };
+        
+        // Sistema de renderização profissional
+        class ProfessionalRenderer {
+            constructor(canvas, ctx) {
+                this.canvas = canvas;
+                this.ctx = ctx;
+                this.imageCache = new Map();
+                this.lastRenderTime = 0;
+                this.renderQueue = [];
+            }
+            
+            async preloadImage(src) {
+                if (this.imageCache.has(src)) {
+                    return this.imageCache.get(src);
+                }
+                
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    img.onload = () => {
+                        this.imageCache.set(src, img);
+                        resolve(img);
+                    };
+                    img.onerror = reject;
+                    img.src = src;
+                });
+            }
+            
+            calculatePrecisePosition(landmarks, jewelryType, side = null) {
+                if (!landmarks || landmarks.length === 0) {
+                    // Posições de fallback precisas
+                    const fallbackPositions = PROFESSIONAL_CONFIG.JEWELRY_POSITIONS[jewelryType];
+                    if (side && fallbackPositions[side]) {
+                        return {
+                            x: fallbackPositions[side].x * this.canvas.width,
+                            y: fallbackPositions[side].y * this.canvas.height,
+                            scale: fallbackPositions[side].scale
+                        };
+                    } else if (fallbackPositions.center) {
+                        return {
+                            x: fallbackPositions.center.x * this.canvas.width,
+                            y: fallbackPositions.center.y * this.canvas.height,
+                            scale: fallbackPositions.center.scale
+                        };
+                    }
+                }
+                
+                // Cálculo baseado em landmarks
+                switch (jewelryType) {
+                    case 'ear':
+                        return this.calculateEarPosition(landmarks, side);
+                    case 'neck':
+                        return this.calculateNeckPosition(landmarks);
+                    case 'hand':
+                        return this.calculateHandPosition(landmarks, side);
+                    case 'face':
+                        return this.calculateFacePosition(landmarks);
+                    default:
+                        return { x: this.canvas.width / 2, y: this.canvas.height / 2, scale: 1.0 };
+                }
+            }
+            
+            calculateEarPosition(landmarks, side) {
+                const earLandmarks = side === 'left' ? 
+                    PROFESSIONAL_CONFIG.FACE_LANDMARKS.leftEar : 
+                    PROFESSIONAL_CONFIG.FACE_LANDMARKS.rightEar;
+                
+                if (landmarks && landmarks.length > Math.max(...earLandmarks)) {
+                    const earPoints = earLandmarks.map(idx => landmarks[idx]);
+                    const avgX = earPoints.reduce((sum, p) => sum + p.x, 0) / earPoints.length;
+                    const avgY = earPoints.reduce((sum, p) => sum + p.y, 0) / earPoints.length;
+                    
+                    return {
+                        x: avgX * this.canvas.width,
+                        y: avgY * this.canvas.height,
+                        scale: 1.0
+                    };
+                }
+                
+                // Fallback para posições fixas
+                const fallback = PROFESSIONAL_CONFIG.JEWELRY_POSITIONS.ear[side];
+                return {
+                    x: fallback.x * this.canvas.width,
+                    y: fallback.y * this.canvas.height,
+                    scale: fallback.scale
+                };
+            }
+            
+            calculateNeckPosition(landmarks) {
+                if (landmarks && landmarks.length > 175) {
+                    const neckPoint = landmarks[175]; // Ponto base do pescoço
+                    return {
+                        x: neckPoint.x * this.canvas.width,
+                        y: (neckPoint.y * this.canvas.height) + 80, // Offset para posição do colar
+                        scale: 1.2
+                    };
+                }
+                
+                const fallback = PROFESSIONAL_CONFIG.JEWELRY_POSITIONS.neck.center;
+                return {
+                    x: fallback.x * this.canvas.width,
+                    y: fallback.y * this.canvas.height,
+                    scale: fallback.scale
+                };
+            }
+            
+            calculateHandPosition(landmarks, side) {
+                // Para pulseiras, usar posições fixas otimizadas
+                const fallback = PROFESSIONAL_CONFIG.JEWELRY_POSITIONS.hand[side || 'left'];
+                return {
+                    x: fallback.x * this.canvas.width,
+                    y: fallback.y * this.canvas.height,
+                    scale: fallback.scale
+                };
+            }
+            
+            calculateFacePosition(landmarks) {
+                if (landmarks && landmarks.length > 151) {
+                    const foreheadPoint = landmarks[151]; // Centro da testa
+                    return {
+                        x: foreheadPoint.x * this.canvas.width,
+                        y: foreheadPoint.y * this.canvas.height,
+                        scale: 0.9
+                    };
+                }
+                
+                const fallback = PROFESSIONAL_CONFIG.JEWELRY_POSITIONS.face.center;
+                return {
+                    x: fallback.x * this.canvas.width,
+                    y: fallback.y * this.canvas.height,
+                    scale: fallback.scale
+                };
+            }
+            
+            async renderJewelry(jewelryId, jewelry, landmarks) {
+                try {
+                    if (jewelry.type === 'earrings') {
+                        await this.renderEarrings(jewelryId, jewelry, landmarks);
+                    } else if (jewelry.type === 'necklace') {
+                        await this.renderNecklace(jewelryId, jewelry, landmarks);
+                    } else if (jewelry.type === 'hand') {
+                        await this.renderBangle(jewelryId, jewelry, landmarks);
+                    } else if (jewelry.type === 'single') {
+                        await this.renderSingle(jewelryId, jewelry, landmarks);
+                    }
+                } catch (error) {
+                    console.error('Erro ao renderizar joia:', error);
+                }
+            }
+            
+            async renderEarrings(jewelryId, jewelry, landmarks) {
+                // Renderizar brinco esquerdo
+                if (jewelry.left) {
+                    const leftImg = await this.preloadImage(jewelry.left);
+                    const leftPos = this.calculatePrecisePosition(landmarks, 'ear', 'left');
+                    this.drawJewelryImage(leftImg, leftPos.x, leftPos.y, leftPos.scale * jewelry.defaultScale);
+                }
+                
+                // Renderizar brinco direito
+                if (jewelry.right) {
+                    const rightImg = await this.preloadImage(jewelry.right);
+                    const rightPos = this.calculatePrecisePosition(landmarks, 'ear', 'right');
+                    this.drawJewelryImage(rightImg, rightPos.x, rightPos.y, rightPos.scale * jewelry.defaultScale);
+                }
+            }
+            
+            async renderNecklace(jewelryId, jewelry, landmarks) {
+                if (jewelry.image) {
+                    const img = await this.preloadImage(jewelry.image);
+                    const pos = this.calculatePrecisePosition(landmarks, 'neck');
+                    this.drawJewelryImage(img, pos.x, pos.y, pos.scale * jewelry.defaultScale);
+                }
+            }
+            
+            async renderBangle(jewelryId, jewelry, landmarks) {
+                if (jewelry.image) {
+                    const img = await this.preloadImage(jewelry.image);
+                    const pos = this.calculatePrecisePosition(landmarks, 'hand', 'left');
+                    this.drawJewelryImage(img, pos.x, pos.y, pos.scale * jewelry.defaultScale);
+                }
+            }
+            
+            async renderSingle(jewelryId, jewelry, landmarks) {
+                if (jewelry.image) {
+                    const img = await this.preloadImage(jewelry.image);
+                    const pos = this.calculatePrecisePosition(landmarks, 'face');
+                    this.drawJewelryImage(img, pos.x, pos.y, pos.scale * jewelry.defaultScale);
+                }
+            }
+            
+            drawJewelryImage(img, x, y, scale) {
+                this.ctx.save();
+                
+                // Aplicar espelhamento se necessário
+                if (appState.mirrorCamera) {
+                    this.ctx.scale(-1, 1);
+                    x = -x;
+                }
+                
+                // Calcular tamanho da imagem
+                const size = Math.max(
+                    PROFESSIONAL_CONFIG.RENDER_CONFIG.minJewelrySize,
+                    Math.min(
+                        PROFESSIONAL_CONFIG.RENDER_CONFIG.maxJewelrySize,
+                        img.width * scale
+                    )
+                );
+                
+                // Desenhar com suavização
+                this.ctx.imageSmoothingEnabled = true;
+                this.ctx.imageSmoothingQuality = 'high';
+                
+                // Centralizar a imagem
+                const drawX = x - (size / 2);
+                const drawY = y - (size / 2);
+                
+                this.ctx.drawImage(img, drawX, drawY, size, size);
+                this.ctx.restore();
+            }
+            
+            clear() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+        }
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', init);
+        
+        async function init() {
+            try {
+                updateLoadingStatus("Inicializando sistema...");
+                
+                // Inicializar elementos do DOM
+                initializeElements();
+                
+                updateLoadingStatus("Configurando interface...");
+                
+                // Configurar event listeners
+                setupEventListeners();
+                
+                updateLoadingStatus("Inicializando câmera...");
+                
+                // Inicializar câmera
+                await initializeCamera();
+                
+                updateLoadingStatus("Carregando catálogo de joias...");
+                
+                // Carregar dados das joias
+                await fetchJewelryData();
+                
+                updateLoadingStatus("Pré-carregando imagens...");
+                
+                // Pré-carregar imagens das joias
+                await preloadJewelryImages();
+                
+                updateLoadingStatus("Inicializando IA...");
+                
+                // Inicializar modelos de IA
+                await initializeAIModels();
+                
+                updateLoadingStatus("Finalizando configuração...");
+                
+                // Inicializar interface do usuário
+                initializeUI();
+                
+                // Inicializar sistema de renderização
+                initializeRenderer();
+                
+                updateLoadingStatus("Sistema pronto!");
+                
+                // Esconder tela de carregamento
+                setTimeout(() => {
+                    hideLoadingScreen();
+                    updateStatus('active', 'Sistema Ativo');
+                    showToast('✨ Provador Virtual Pronto!', 'success');
+                }, 1000);
+                
+                // Marcar como inicializado
+                appState.isInitialized = true;
+                
+                console.log("🚀 Inicialização completa - Sistema Profissional Ativo!");
+            } catch (error) {
+                console.error("❌ Erro na inicialização:", error);
+                updateLoadingStatus("Erro: " + error.message);
+                updateStatus('inactive', 'Erro no Sistema');
+                showError("Não foi possível inicializar o provador virtual. " + error.message);
+            }
+        }
+
+        function initializeElements() {
+            elements.video = document.getElementById('cameraFeed');
+            elements.canvas = document.getElementById('jewelryCanvas');
+            elements.ctx = elements.canvas?.getContext('2d');
+            elements.loadingScreen = document.getElementById('loadingScreen');
+            elements.loadingStatus = document.getElementById('loadingStatus');
+            elements.previewBar = document.getElementById('previewBar');
+            elements.jewelryCarousel = document.getElementById('jewelryCarousel');
+            elements.categoryPills = document.querySelectorAll('.pill-btn');
+            elements.captureBtn = document.getElementById('captureBtn');
+            elements.menuButton = document.getElementById('menuButton');
+            elements.toast = document.getElementById('toast');
+            elements.statusIndicator = document.getElementById('statusIndicator');
+            elements.statusDot = document.getElementById('statusDot');
+            elements.statusText = document.getElementById('statusText');
+            
+            if (!elements.video || !elements.canvas || !elements.ctx) {
+                throw new Error('Elementos essenciais não encontrados');
+            }
+        }
+
+        function setupEventListeners() {
+            // Event listeners para categorias
+            elements.categoryPills.forEach(pill => {
+                pill.addEventListener('click', () => {
+                    switchCategory(pill.dataset.category);
+                });
+            });
+            
+            // Event listener para captura
+            elements.captureBtn.addEventListener('click', capturePhoto);
+            
+            // Event listener para redimensionamento
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Redimensionar canvas inicialmente
+            resizeCanvas();
+        }
+
+        async function initializeCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        facingMode: 'user'
+                    }
+                });
+                
+                elements.video.srcObject = stream;
+                
+                return new Promise((resolve) => {
+                    elements.video.onloadedmetadata = () => {
+                        elements.video.play();
+                        appState.isCameraReady = true;
+                        resolve();
+                    };
+                });
+            } catch (error) {
+                console.error('Erro ao inicializar câmera:', error);
+                throw new Error('Não foi possível acessar a câmera');
+            }
+        }
+
+        async function fetchJewelryData() {
+            try {
+                // Usar dados locais se API não estiver disponível
+                console.log("✅ Dados das joias carregados:", Object.keys(JEWELRY).length, "itens");
+                return true;
+            } catch (error) {
+                console.warn("⚠️ Usando dados locais:", error);
+                return true;
+            }
+        }
+
+        async function preloadJewelryImages() {
+            const imagePromises = [];
+            
+            Object.values(JEWELRY).forEach(jewelry => {
+                if (jewelry.left) imagePromises.push(preloadImage(jewelry.left));
+                if (jewelry.right) imagePromises.push(preloadImage(jewelry.right));
+                if (jewelry.image) imagePromises.push(preloadImage(jewelry.image));
+                if (jewelry.thumbnail) imagePromises.push(preloadImage(jewelry.thumbnail));
+            });
+            
+            try {
+                await Promise.all(imagePromises);
+                console.log("✅ Imagens pré-carregadas com sucesso");
+            } catch (error) {
+                console.warn("⚠️ Algumas imagens não puderam ser carregadas:", error);
+            }
+        }
+
+        function preloadImage(src) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => resolve(img);
+                img.onerror = () => resolve(null); // Não falhar por uma imagem
+                img.src = src;
+            });
+        }
+
+        async function initializeAIModels() {
+            try {
+                // Verificar se MediaPipe está disponível
+                if (typeof FaceMesh === 'undefined') {
+                    console.warn("⚠️ MediaPipe não disponível, usando posições fixas");
+                    return;
+                }
+                
+                // Inicializar Face Mesh
+                aiModels.faceMesh = new FaceMesh({
+                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+                });
+                
+                aiModels.faceMesh.setOptions({
+                    maxNumFaces: 1,
+                    refineLandmarks: true,
+                    minDetectionConfidence: 0.5,
+                    minTrackingConfidence: 0.5
+                });
+                
+                aiModels.faceMesh.onResults(onFaceMeshResults);
+                
+                console.log("✅ Modelos de IA inicializados");
+            } catch (error) {
+                console.warn("⚠️ Erro ao inicializar IA, usando posições fixas:", error);
+            }
+        }
+
+        function onFaceMeshResults(results) {
+            if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
+                appState.faceLandmarks = results.multiFaceLandmarks[0];
+                appState.detectionConfidence = 0.8; // Simular confiança alta
+                updateStatus('active', 'Rosto Detectado');
+            } else {
+                appState.faceLandmarks = null;
+                appState.detectionConfidence = 0;
+                updateStatus('active', 'Buscando Rosto...');
+            }
+            
+            // Renderizar joias
+            renderActiveJewelry();
+        }
+
+        function initializeUI() {
+            // Carregar joias da categoria inicial
+            switchCategory(appState.currentCategory);
+        }
+
+        function initializeRenderer() {
+            if (!elements.canvas || !elements.ctx) return;
+            
+            // Criar instância do renderizador profissional
+            window.professionalRenderer = new ProfessionalRenderer(elements.canvas, elements.ctx);
+            
+            // Iniciar loop de renderização
+            startRenderLoop();
+        }
+
+        function startRenderLoop() {
+            if (!appState.isCameraReady) {
+                setTimeout(startRenderLoop, 100);
+                return;
+            }
+            
+            // Processar frame da câmera se IA estiver disponível
+            if (aiModels.faceMesh && elements.video.readyState === 4) {
+                aiModels.faceMesh.send({ image: elements.video });
+            } else {
+                // Renderizar com posições fixas
+                renderActiveJewelry();
+            }
+            
+            requestAnimationFrame(startRenderLoop);
+        }
+
+        function renderActiveJewelry() {
+            if (!window.professionalRenderer || !appState.renderingActive) return;
+            
+            // Limpar canvas
+            window.professionalRenderer.clear();
+            
+            // Renderizar cada joia ativa
+            appState.activeJewelry.forEach(async (jewelry, jewelryId) => {
+                await window.professionalRenderer.renderJewelry(
+                    jewelryId, 
+                    jewelry, 
+                    appState.faceLandmarks
+                );
+            });
+        }
+
+        function switchCategory(category) {
+            appState.currentCategory = category;
+            
+            // Atualizar botões de categoria
+            elements.categoryPills.forEach(pill => {
+                pill.classList.toggle('active', pill.dataset.category === category);
+            });
+            
+            // Carregar joias da categoria
+            loadJewelryForCategory(category);
+        }
+
+        function loadJewelryForCategory(category) {
+            const carousel = elements.jewelryCarousel;
+            carousel.innerHTML = '';
+            
+            if (category === 'active') {
+                // Mostrar joias ativas
+                appState.activeJewelry.forEach((jewelry, jewelryId) => {
+                    const item = createCarouselItem(jewelryId, jewelry, true);
+                    carousel.appendChild(item);
+                });
+                return;
+            }
+            
+            // Filtrar joias por categoria
+            const categoryJewelry = Object.entries(JEWELRY).filter(([id, jewelry]) => 
+                jewelry.group === category
+            );
+            
+            categoryJewelry.forEach(([jewelryId, jewelry]) => {
+                const item = createCarouselItem(jewelryId, jewelry, false);
+                carousel.appendChild(item);
+            });
+        }
+
+        function createCarouselItem(jewelryId, jewelry, isActive) {
+            const item = document.createElement('div');
+            item.className = `carousel-item ${isActive ? 'active' : ''}`;
+            item.dataset.jewelryId = jewelryId;
+            
+            const img = document.createElement('img');
+            img.src = jewelry.thumbnail || jewelry.image || jewelry.left || 'placeholder.png';
+            img.alt = jewelry.name;
+            img.title = jewelry.name;
+            
+            item.appendChild(img);
+            
+            item.addEventListener('click', () => {
+                if (isActive) {
+                    removeJewelry(jewelryId);
+                } else {
+                    tryOnJewelry(jewelryId);
+                }
+            });
+            
+            return item;
+        }
+
+        function tryOnJewelry(jewelryId) {
+            const jewelry = JEWELRY[jewelryId];
+            if (!jewelry) return;
+            
+            // Remover joia da mesma categoria se existir
+            appState.activeJewelry.forEach((activeJewelry, activeId) => {
+                if (activeJewelry.group === jewelry.group) {
+                    appState.activeJewelry.delete(activeId);
+                }
+            });
+            
+            // Adicionar nova joia
+            appState.activeJewelry.set(jewelryId, jewelry);
+            appState.renderingActive = true;
+            
+            // Atualizar interface
+            updateCarouselSelection(jewelryId);
+            
+            // Mostrar feedback
+            showToast(`✨ ${jewelry.name} aplicado!`, 'success');
+            
+            console.log(`👗 Joia aplicada: ${jewelry.name}`);
+        }
+
+        function removeJewelry(jewelryId) {
+            const jewelry = appState.activeJewelry.get(jewelryId);
+            if (!jewelry) return;
+            
+            appState.activeJewelry.delete(jewelryId);
+            
+            // Atualizar interface
+            updateCarouselSelection(null);
+            
+            // Mostrar feedback
+            showToast(`🗑️ ${jewelry.name} removido!`, 'info');
+            
+            console.log(`🗑️ Joia removida: ${jewelry.name}`);
+        }
+
+        function updateCarouselSelection(selectedId) {
+            const items = elements.jewelryCarousel.querySelectorAll('.carousel-item');
+            items.forEach(item => {
+                const isSelected = item.dataset.jewelryId === selectedId;
+                item.classList.toggle('active', isSelected);
+            });
+        }
+
+        function capturePhoto() {
+            try {
+                // Criar canvas temporário para captura
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                
+                tempCanvas.width = elements.video.videoWidth;
+                tempCanvas.height = elements.video.videoHeight;
+                
+                // Desenhar vídeo
+                tempCtx.drawImage(elements.video, 0, 0);
+                
+                // Desenhar joias
+                tempCtx.drawImage(elements.canvas, 0, 0);
+                
+                // Converter para blob e baixar
+                tempCanvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `provador-virtual-${Date.now()}.png`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    
+                    showToast('📸 Foto capturada com sucesso!', 'success');
+                }, 'image/png');
+                
+            } catch (error) {
+                console.error('Erro ao capturar foto:', error);
+                showToast('❌ Erro ao capturar foto', 'error');
+            }
+        }
+
+        function resizeCanvas() {
+            if (!elements.canvas || !elements.video) return;
+            
+            const container = elements.canvas.parentElement;
+            elements.canvas.width = container.clientWidth;
+            elements.canvas.height = container.clientHeight;
+        }
+
+        function updateLoadingStatus(status) {
+            if (elements.loadingStatus) {
+                elements.loadingStatus.textContent = status;
+            }
+            console.log(`🔄 ${status}`);
+        }
+
+        function hideLoadingScreen() {
+            if (elements.loadingScreen) {
+                elements.loadingScreen.classList.add('hidden');
+            }
+        }
+
+        function updateStatus(type, text) {
+            if (elements.statusDot && elements.statusText) {
+                elements.statusDot.className = `status-dot ${type}`;
+                elements.statusText.textContent = text;
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            if (!elements.toast) return;
+            
+            elements.toast.textContent = message;
+            elements.toast.className = `toast show ${type}`;
+            
+            setTimeout(() => {
+                elements.toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function showError(message) {
+            updateLoadingStatus(message);
+            showToast(message, 'error');
+        }
+
+        // Inicializar automaticamente quando a página carregar
+        console.log("🚀 Provador Virtual Profissional - Carregando...");
+    </script>
+</body>
+</html>
