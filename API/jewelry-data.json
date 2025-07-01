@@ -102,9 +102,9 @@
       "earringType": "stud",
       "offset": {
         "x": 0,
-        "y": -1
+        "y": 0
       },
-      "defaultScale": 1.0,
+      "defaultScale": 1.8,
       "left": "images/earring/simpleEarring4left.jpeg",
       "right": "images/earring/simpleEarring4right.jpeg",
       "thumbnail": "thumbnails/simpleEarring4-thumb.png",
@@ -112,7 +112,7 @@
         177,
         401
       ],
-      "gap": -8
+      "gap": 0
     }
   }
 }
