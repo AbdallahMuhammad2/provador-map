@@ -1,68 +1,118 @@
 {
   "JEWELRY": {
-    "earring_001": {
-      "name": "Brincos de Diamante",
+    
+    "EAR_0002": {
+      "name": "Traditional Parrot Jhumkas",
       "type": "earrings",
       "group": "ear",
-      "left": "/images/earrings/earring_001_left.png",
-      "right": "/images/earrings/earring_001_right.png",
-      "thumbnail": "/images/earrings/earring_001_thumb.png",
-      "defaultScale": 1.0,
-      "gap": 5
+      "category": "Ear Jewelry",
+      "offset": {
+        "x": -3,
+        "y": 1
+      },
+      "defaultScale": 1.5,
+      "left": "images/earring/earing4left.png",
+      "right": "images/earring/earing4right.png",
+      "thumbnail": "thumbnails/earring4-thumb.png",
+      "landmarks": [
+        177,
+        401
+      ],
+      "gap": 0,
+      "earringType": "drop"
     },
-    "earring_002": {
-      "name": "Brincos de Ouro Pingente",
-      "type": "earrings",
-      "group": "ear",
-      "left": "/images/earrings/earring_002_left.png",
-      "right": "/images/earrings/earring_002_right.png",
-      "thumbnail": "/images/earrings/earring_002_thumb.png",
-      "defaultScale": 1.0,
-      "gap": 5
-    },
-    "necklace_001": {
-      "name": "Colar de Pérolas",
+    "NEC_0004": {
+      "name": "Ruby Neckpiece - Daily Wear",
       "type": "necklace",
       "group": "neck",
-      "image": "/images/necklaces/necklace_001.png",
-      "thumbnail": "/images/necklaces/necklace_001_thumb.png",
-      "defaultScale": 1.2
+      "category": "Neck Jewelry",
+      "offset": {
+        "x": 0,
+        "y": 3.5
+      },
+      "defaultScale": 0.55,
+      "image": "images/necklace/necklace4.png",
+      "thumbnail": "thumbnails/necklace4-thumb.png"
     },
-    "necklace_002": {
-      "name": "Colar de Diamantes",
+
+    "NEC_0005": {
+      "name": "Rosegold Butterfly Neckpiece",
       "type": "necklace",
       "group": "neck",
-      "image": "/images/necklaces/necklace_002.png",
-      "thumbnail": "/images/necklaces/necklace_002_thumb.png",
-      "defaultScale": 1.2
+      "category": "Neck Jewelry",
+      "offset": {
+        "x": 0,
+        "y": 4.5
+      },
+      "defaultScale": 0.55,
+      "image": "images/necklace/necklace5.png",
+      "thumbnail": "thumbnails/necklace5-thumb.png"
     },
-    "ring_001": {
-      "name": "Anel de Ouro",
-      "type": "hand",
-      "subcategory": "ring",
-      "group": "hand",
-      "image": "/images/rings/ring_001.png",
-      "thumbnail": "/images/rings/ring_001_thumb.png",
-      "fingerIndex": 8,
-      "defaultScale": 1.0
-    },
-    "bangle_001": {
-      "name": "Bracelete de Ouro",
-      "type": "hand",
-      "subcategory": "bangle",
-      "group": "hand",
-      "image": "/images/bangles/bangle_001.png",
-      "thumbnail": "/images/bangles/bangle_001_thumb.png",
-      "defaultScale": 1.0
-    },
-    "tikka_001": {
-      "name": "Tikka de Rubi",
+    
+    "TIK_0003": {
+      "name": "Classic Bridal Tikka",
       "type": "single",
       "group": "face",
-      "image": "/images/tikka/tikka_001.png",
-      "thumbnail": "/images/tikka/tikka_001_thumb.png",
-      "landmark": 151,
-      "defaultScale": 0.8
+      "category": "Face Jewelry",
+      "offset": {
+        "x": 0,
+        "y": -4
+      },
+      "defaultScale": 1.3,
+      "image": "images/tikka/tikka4.png",
+      "thumbnail": "thumbnails/tikka4-thumb.png",
+      "landmark": 151
+    },
+    
+    "TIK_0001": {
+      "name": "Lakshmi Traditional Tikka",
+      "type": "single",
+      "group": "face",
+      "category": "Face Jewelry",
+      "offset": {
+        "x": 0,
+        "y": -5
+      },
+      "defaultScale": 1.3,
+      "image": "images/tikka/tikka1.png",
+      "thumbnail": "thumbnails/tikka1-thumb.png",
+      "landmark": 151
+    },
+  
+    
+    "TIK_0002": {
+      "name": "Meenakari Temple Style Tikka",
+      "type": "single",
+      "group": "face",
+      "category": "Face Jewelry",
+      "offset": {
+        "x": 0,
+        "y": -3
+      },
+      "defaultScale": 1.3,
+      "image": "images/tikka/tikka3.png",
+      "thumbnail": "thumbnails/tikka3-thumb.png",
+      "landmark": 151
+    },
+    "EAR_0005": {
+      "name": "Simple Light Point Earrings",
+      "type": "earrings",
+      "group": "ear",
+      "category": "Ear Jewelry",
+      "earringType": "stud",
+      "offset": {
+        "x": 0,
+        "y": 0
+      },
+      "defaultScale": 1.8,
+      "left": "images/earring/simpleEarring4left.jpeg",
+      "right": "images/earring/simpleEarring4right.jpeg",
+      "thumbnail": "thumbnails/simpleEarring4-thumb.png",
+      "landmarks": [
+        177,
+        401
+      ],
+      "gap": 0
     }
   }
 }

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Eleva Labs - Provador Virtual de Joias | Apresentação Vivara</title>
-    
+
     <!-- Load MediaPipe dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.js" defer></script>
@@ -12,14 +12,14 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1620248257/camera_utils.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js" defer></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    
+
     <!-- Stylesheets -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
-    
+
     <!-- Our custom CSS -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400&display=swap');
@@ -63,14 +63,14 @@
             --preview-bar-collapsed-height: 10px;
             --capture-btn-offset: 140px;
             --controls-width: 300px;
-            
+
             /* Transições */
             --transition-fast: 0.2s ease;
             --transition-normal: 0.3s ease;
             --transition-slow: 0.5s ease;
             --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         /* Base Styles */
         * {
             margin: 0;
@@ -92,13 +92,13 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        
+
         /* Disable long-press menu on mobile */
         * {
             -webkit-touch-callout: none;
             -webkit-tap-highlight-color: transparent;
         }
-        
+
         /* Main Container - React Style */
         .app-container-react {
             position: relative;
@@ -123,13 +123,13 @@
             visibility: visible;
             transition: opacity 1s ease, visibility 1s ease;
         }
-        
+
         .logo-animation-overlay.fade-out {
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
         }
-        
+
         .logo-content {
             text-align: center;
         }
@@ -140,7 +140,7 @@
             margin: 0 auto 16px;
             position: relative;
         }
-        
+
         .diamond-shape-logo {
             width: 100%;
             height: 100%;
@@ -249,7 +249,7 @@
             background: linear-gradient(135deg, #ffffff 0%, #f1f3f4 100%);
             clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
         }
-        
+
         .brand-text {
             display: flex;
             flex-direction: column;
@@ -400,7 +400,7 @@
             background: linear-gradient(to bottom, var(--color-black-30), transparent);
             z-index: 10;
         }
-        
+
         .pills-scroll {
             display: flex;
             overflow-x: auto;
@@ -408,11 +408,11 @@
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
-        
+
         .pills-scroll::-webkit-scrollbar {
             display: none;
         }
-        
+
         .pill-btn {
             display: flex;
             align-items: center;
@@ -430,18 +430,18 @@
             transition: all 0.2s ease;
             font-weight: 300;
         }
-        
+
         .pill-btn.active {
             background: var(--color-white-20);
             border-color: var(--color-white-30);
             color: var(--color-white);
             box-shadow: 0 2px 8px var(--color-black-30);
         }
-        
+
         .pill-btn i {
             font-size: 1rem;
         }
-        
+
         /* Camera Container */
         .camera-container {
             flex: 1;
@@ -452,7 +452,7 @@
             justify-content: center;
             align-items: center;
         }
-        
+
         .camera-feed-wrapper {
             position: relative;
             width: 100%;
@@ -462,7 +462,7 @@
             align-items: center;
             overflow: hidden;
         }
-        
+
         #cameraFeed {
             position: absolute;
             top: 0;
@@ -472,7 +472,7 @@
             object-fit: contain;
             transform: scaleX(-1); /* Mirror the camera */
         }
-        
+
         #jewelryCanvas {
             position: absolute;
             top: 0;
@@ -496,7 +496,7 @@
                 var(--color-black-30) 80%,
                 var(--color-black-50) 100%);
         }
-        
+
         /* Camera Error */
         .camera-error {
             position: absolute;
@@ -515,11 +515,11 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             z-index: 5;
         }
-        
+
         .camera-error.hidden {
             display: none;
         }
-        
+
         /* Preview bar (swipeable jewelry selector) */
         .preview-bar {
             position: absolute;
@@ -534,11 +534,11 @@
             transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
             z-index: 20;
         }
-        
+
         .preview-bar.collapsed {
             transform: translateY(calc(var(--preview-bar-height) - var(--preview-bar-collapsed-height)));
         }
-        
+
         .preview-handle {
             height: var(--preview-bar-collapsed-height);
             display: flex;
@@ -547,14 +547,14 @@
             cursor: grab;
             touch-action: none;
         }
-        
+
         .handle-indicator {
             width: 40px;
             height: 4px;
             background: var(--color-white-30);
             border-radius: 4px;
         }
-        
+
         .carousel-container {
             display: flex;
             overflow-x: auto;
@@ -564,11 +564,11 @@
             -ms-overflow-style: none;
             height: calc(var(--preview-bar-height) - var(--preview-bar-collapsed-height));
         }
-        
+
         .carousel-container::-webkit-scrollbar {
             display: none;
         }
-        
+
         .carousel-item {
             flex: 0 0 80px;
             height: 80px;
@@ -581,19 +581,19 @@
             position: relative;
             transition: all 0.2s ease;
         }
-        
+
         .carousel-item.active {
             border: 2px solid var(--color-white);
             background: var(--color-white-20);
         }
-        
+
         .carousel-img {
             width: 100%;
             height: 100%;
             object-fit: contain;
             padding: 5px;
         }
-        
+
         /* Floating controls - UPDATED FOR TRANSPARENCY */
         .floating-controls {
             background: transparent;
@@ -602,13 +602,13 @@
             transition: opacity 0.3s ease, transform 0.3s ease;
             pointer-events: auto;
         }
-        
+
         .floating-controls.hidden {
             opacity: 0;
             pointer-events: none;
             transform: translateY(10px);
         }
-        
+
         .controls-wrapper {
             background: transparent;
             backdrop-filter: none;
@@ -620,7 +620,7 @@
             width: 100%;
             border: none;
         }
-        
+
         .control-header {
             display: flex;
             justify-content: space-between;
@@ -629,7 +629,7 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             padding-bottom: 10px;
         }
-        
+
         .control-title {
             font-size: 1rem;
             font-weight: 600;
@@ -637,7 +637,7 @@
             margin: 0;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
-        
+
         .close-control-btn {
             background: rgba(0, 0, 0, 0.1);
             border: none;
@@ -651,11 +651,11 @@
             height: 24px;
             opacity: 0.9;
         }
-        
+
         .control-group {
             margin-bottom: 20px;
         }
-        
+
         .control-label {
             display: flex;
             justify-content: space-between;
@@ -664,7 +664,7 @@
             margin-bottom: 8px;
             color: white;
         }
-        
+
         .control-value {
             font-size: 0.8rem;
             font-weight: 600;
@@ -673,7 +673,7 @@
             padding: 2px 6px;
             border-radius: 4px;
         }
-        
+
         /* Enhanced sliders - UPDATED FOR TRANSPARENCY */
         input[type="range"] {
             -webkit-appearance: none;
@@ -685,7 +685,7 @@
             outline: none;
             margin: 10px 0;
         }
-        
+
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 18px;
@@ -697,12 +697,12 @@
             transition: transform 0.1s ease, box-shadow 0.1s ease;
             box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
         }
-        
+
         input[type="range"]:active::-webkit-slider-thumb {
             transform: scale(1.2);
             box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
         }
-        
+
         input[type="range"]::-moz-range-thumb {
             width: 18px;
             height: 18px;
@@ -713,19 +713,19 @@
             transition: transform 0.1s ease, box-shadow 0.1s ease;
             box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
         }
-        
+
         input[type="range"]:active::-moz-range-thumb {
             transform: scale(1.2);
             box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
         }
-        
+
         /* Control buttons */
         .control-buttons {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
         }
-        
+
         .control-btn {
             background: var(--color-white-10);
             border: 1px solid var(--color-white-10);
@@ -738,12 +738,12 @@
             font-size: 1rem;
             transition: all 0.2s ease;
         }
-        
+
         .control-btn:active {
             background: var(--color-white-20);
             transform: scale(0.95);
         }
-        
+
         /* Capture Button */
         .capture-btn {
             position: absolute;
@@ -763,12 +763,12 @@
             z-index: 15;
             transition: transform 0.2s ease, background-color 0.2s ease;
         }
-        
+
         .capture-btn:active {
             transform: scale(0.95);
             background-color: var(--color-white-80);
         }
-        
+
         /* Toast Notification */
         .toast {
             position: fixed;
@@ -785,12 +785,12 @@
             transition: opacity 0.3s ease, transform 0.3s ease;
             pointer-events: none;
         }
-        
+
         .toast.visible {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
-        
+
         /* Remove button */
         .remove-btn {
             background: rgba(220, 38, 38, 0.1);
@@ -807,12 +807,12 @@
             justify-content: center;
             gap: 5px;
         }
-        
+
         .remove-btn:active {
             background: rgba(220, 38, 38, 0.2);
             transform: scale(0.98);
         }
-        
+
         /* Empty category message */
         .empty-category {
             width: 100%;
@@ -821,40 +821,40 @@
             padding: 20px 0;
             font-size: 0.9rem;
         }
-        
+
         /* Auto-hide animation */
         @keyframes fadeOut {
-            from { 
-                opacity: 1; 
-                visibility: visible; 
+            from {
+                opacity: 1;
+                visibility: visible;
             }
-            to { 
-                opacity: 0; 
-                visibility: hidden; 
+            to {
+                opacity: 0;
+                visibility: hidden;
             }
         }
-        
+
         .auto-hide {
             animation: fadeOut 3s forwards;
             animation-delay: 5s;
         }
-        
+
         .auto-hide:hover,
         .auto-hide:active {
             animation: none;
             opacity: 1;
             visibility: visible;
         }
-        
+
         /* Utility Classes */
         .hidden {
             display: none !important;
         }
-        
+
         .w-full {
             width: 100%;
         }
-        
+
         .primary-button {
             background: var(--color-white);
             color: var(--color-black);
@@ -865,12 +865,12 @@
             cursor: pointer;
             transition: all var(--transition-fast);
         }
-        
+
         .primary-button:active {
             transform: scale(0.98);
             background: var(--color-white-80);
         }
-        
+
         /* Ultra-transparent controls - ADDED FOR JEWELRY CONTROLS */
         .ultra-transparent-controls {
             background: transparent;
@@ -882,14 +882,14 @@
             box-shadow: none;
             border: none;
         }
-        
+
         /* Control container spacing */
         .transparent-size-control,
         .transparent-opacity-control,
         .transparent-position-control {
             margin-bottom: 15px;
         }
-        
+
         /* Transparent control labels */
         .transparent-label {
             color: white;
@@ -898,7 +898,7 @@
             font-weight: 500;
             text-shadow: 0 0 3px rgba(0,0,0,0.7);
         }
-        
+
         .transparent-value {
             color: white;
             background: rgba(0, 0, 0, 0.3);
@@ -908,7 +908,7 @@
             font-weight: 600;
             text-shadow: 0 0 2px rgba(0,0,0,0.8);
         }
-        
+
         /* Transparent sliders */
         .transparent-slider {
             width: 100%;
@@ -922,11 +922,11 @@
             transition: opacity 0.2s;
             margin: 8px 0;
         }
-        
+
         .transparent-slider:hover {
             opacity: 1;
         }
-        
+
         .transparent-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
@@ -937,7 +937,7 @@
             border-radius: 50%;
             border: 1px solid rgba(0, 0, 0, 0.1);
         }
-        
+
         .transparent-slider::-moz-range-thumb {
             width: 18px;
             height: 18px;
@@ -946,14 +946,14 @@
             border-radius: 50%;
             border: 1px solid rgba(0, 0, 0, 0.1);
         }
-        
+
         /* Grid buttons for positioning */
         .transparent-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 5px;
         }
-        
+
         .transparent-grid button {
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -963,19 +963,19 @@
             transition: background 0.2s, transform 0.1s;
             font-size: 1.1rem;
         }
-        
+
         .transparent-grid button:active {
             background: rgba(255, 255, 255, 0.3);
             transform: scale(0.95);
         }
-        
+
         /* Action buttons */
         .transparent-action-buttons {
             display: flex;
             justify-content: space-between;
             margin-top: 15px;
         }
-        
+
         .transparent-close-btn,
         .transparent-remove-btn {
             background: rgba(255, 255, 255, 0.2);
@@ -988,29 +988,29 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .transparent-remove-btn {
             background: rgba(220, 38, 38, 0.15);
         }
-        
+
         .transparent-close-btn:active,
         .transparent-remove-btn:active {
             transform: scale(0.95);
         }
-        
+
         .transparent-close-btn:active {
             background: rgba(255, 255, 255, 0.3);
         }
-        
+
         .transparent-remove-btn:active {
             background: rgba(220, 38, 38, 0.3);
         }
-        
+
         .transparent-close-btn i,
         .transparent-remove-btn i {
             font-size: 1rem;
         }
-    
+
         /* Ghost style class for complete transparency */
         .ghost-style {
             background: transparent !important;
@@ -1020,7 +1020,7 @@
             border: none !important;
             pointer-events: auto;
         }
-    
+
         /* Ensure all containers with ghost-style class are transparent */
         .controls-wrapper.ghost-style,
         .ultra-transparent-controls.ghost-style,
@@ -1030,7 +1030,7 @@
             background: rgba(255, 255, 255, 0) !important;
             opacity: 1; /* Keep opacity at 1 for the container so children are visible */
         }
-    
+
         /* Override any pseudo-elements */
         .controls-wrapper::before,
         .controls-wrapper::after,
@@ -1043,7 +1043,7 @@
             opacity: 0 !important;
             display: none !important;
         }
-    
+
         /* Override mobile-translucent-controls class */
         .mobile-translucent-controls {
             background: transparent !important;
@@ -1051,43 +1051,43 @@
             -webkit-backdrop-filter: none !important;
             box-shadow: none !important;
         }
-        
+
         /* Responsive adjustments */
         @media (min-width: 768px) {
             :root {
                 --preview-bar-height: 120px;
             }
-            
+
             .carousel-item {
                 flex: 0 0 100px;
                 height: 100px;
             }
-            
+
             .capture-btn {
                 width: 70px;
                 height: 70px;
                 font-size: 1.8rem;
                 right: 30px;
             }
-            
+
             .controls-wrapper.ghost-style {
                 box-shadow: none !important;
             }
         }
-        
+
         @media (min-width: 1024px) {
             .controls-wrapper {
                 max-width: 350px;
             }
         }
-        
+
         /* Handle orientation changes */
         @media (orientation: landscape) and (max-height: 500px) {
             :root {
                 --preview-bar-height: 80px;
                 --nav-height: 40px;
             }
-            
+
             .category-pills {
                 right: 0;
                 width: auto;
@@ -1096,30 +1096,30 @@
                 background: linear-gradient(to left, rgba(0,0,0,0.3), transparent);
                 padding: 0 10px;
             }
-            
+
             .pills-scroll {
                 flex-direction: column;
                 padding: 10px 0;
                 height: 100%;
             }
-            
+
             .pill-btn {
                 margin-right: 0;
                 margin-bottom: 8px;
             }
-            
+
             .capture-btn {
                 bottom: 20px;
             }
         }
-        
+
         /* Keyframes for subtle animations */
         @keyframes pulseEffect {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-        
+
         .carousel-item.active:after {
             content: '';
             position: absolute;
@@ -1128,7 +1128,7 @@
             box-shadow: 0 0 0 2px var(--color-primary);
             animation: pulseEffect 2s infinite;
         }
-        
+
         /* Camera feed wrapper optimization */
         @media (orientation: portrait) {
             .camera-feed-wrapper {
@@ -1137,7 +1137,7 @@
                 aspect-ratio: 3/4; /* Common front camera aspect ratio */
             }
         }
-        
+
         @media (orientation: landscape) {
             .camera-feed-wrapper {
                 width: auto;
@@ -1145,11 +1145,11 @@
                 aspect-ratio: 4/3; /* Common front camera aspect ratio */
             }
         }
-        
+
         .action-buttons {
             margin-top: 20px;
         }
-        
+
         .secondary-button {
             background: rgba(255, 255, 255, 0.8);
             color: var(--color-dark);
@@ -1164,7 +1164,7 @@
             gap: 5px;
             transition: all 0.2s ease;
         }
-        
+
         .secondary-button:active {
             background: rgba(255, 255, 255, 0.6);
             transform: scale(0.98);
@@ -1175,40 +1175,40 @@
             color: var(--eleva-orange);
             transform: scale(1.3);
         }
-        
+
         .star.pulse {
             animation: starPulse 0.5s ease-in-out;
         }
-        
+
         @keyframes starPulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.5); }
             100% { transform: scale(1.3); }
         }
-        
+
         /* Feature Button Selected State */
         .feature-btn.selected {
             background-color: var(--color-white-10);
             border-color: var(--color-white);
             color: var(--color-white);
         }
-        
+
         /* Thumbs-Up Animation */
         .thumbs-up-animation {
             animation: thumbsUp 1s ease-in-out;
         }
-        
+
         @keyframes thumbsUp {
             0% { transform: scale(0) rotate(-20deg); opacity: 0; }
             50% { transform: scale(1.5) rotate(10deg); opacity: 1; }
             100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
-        
+
         /* Shake Animation for Low Ratings */
         .shake-animation {
             animation: shake 0.5s ease-in-out;
         }
-        
+
         @keyframes shake {
             0% { transform: translateX(0); }
             25% { transform: translateX(-5px); }
@@ -1216,12 +1216,12 @@
             75% { transform: translateX(-5px); }
             100% { transform: translateX(0); }
         }
-        
+
         /* Celebration Animation for High Ratings */
         .celebrate-animation {
             animation: celebrate 0.7s ease-in-out;
         }
-        
+
         @keyframes celebrate {
             0% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
@@ -1238,13 +1238,13 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         /* Make sure modal content is above everything */
         #reviewModal > div {
             position: relative;
             z-index: 3001; /* Even higher z-index */
         }
-        
+
         /* Ensure canvas and video are below the modal */
         #cameraFeed, #jewelryCanvas {
             position: absolute;
@@ -1257,7 +1257,7 @@
             pointer-events: none;
             z-index: 5; /* Lower z-index than modal */
         }
-        
+
         /* Modal blocker to prevent interaction with background */
         #modalBlocker {
             position: fixed;
@@ -1280,12 +1280,12 @@
             transition: opacity 0.3s ease;
             pointer-events: none;
         }
-        
+
         .tour-overlay.active {
             opacity: 1;
             pointer-events: auto;
         }
-        
+
         /* The highlighted element will have this outline */
         .tour-highlight {
             position: absolute;
@@ -1295,7 +1295,7 @@
             z-index: 9001;
             pointer-events: none;
         }
-        
+
         /* Pulsing animation for the highlight */
         .tour-highlight::after {
             content: '';
@@ -1309,13 +1309,13 @@
             animation: pulse 1.5s infinite;
             pointer-events: none;
         }
-        
+
         @keyframes pulse {
             0% { transform: scale(1); opacity: 1; }
             50% { transform: scale(1.05); opacity: 0.8; }
             100% { transform: scale(1); opacity: 1; }
         }
-        
+
         /* Tooltip styling */
         .tour-tooltip {
             position: absolute;
@@ -1330,12 +1330,12 @@
             opacity: 0;
             transition: all 0.3s ease;
         }
-        
+
         .tour-tooltip.active {
             transform: translateY(0);
             opacity: 1;
         }
-        
+
         /* Arrow for the tooltip */
         .tour-tooltip::before {
             content: '';
@@ -1346,31 +1346,31 @@
             transform: rotate(45deg);
             z-index: -1;
         }
-        
+
         .tour-tooltip.top::before {
             bottom: -7px;
             left: 50%;
             margin-left: -7px;
         }
-        
+
         .tour-tooltip.bottom::before {
             top: -7px;
             left: 50%;
             margin-left: -7px;
         }
-        
+
         .tour-tooltip.left::before {
             right: -7px;
             top: 50%;
             margin-top: -7px;
         }
-        
+
         .tour-tooltip.right::before {
             left: -7px;
             top: 50%;
             margin-top: -7px;
         }
-        
+
         /* Tooltip content */
         .tour-tooltip-title {
             font-weight: bold;
@@ -1378,13 +1378,13 @@
             margin-bottom: 8px;
             color: var(--color-black);
         }
-        
+
         .tour-tooltip-content {
             font-size: 0.95rem;
             margin-bottom: 15px;
             line-height: 1.4;
         }
-        
+
         /* Tooltip navigation buttons */
         .tour-tooltip-nav {
             display: flex;
@@ -1392,12 +1392,12 @@
             align-items: center;
             margin-top: 10px;
         }
-        
+
         .tour-tooltip-progress {
             font-size: 0.8rem;
             color: #666;
         }
-        
+
         .tour-button {
             background-color: var(--color-black);
             color: var(--color-white);
@@ -1408,20 +1408,20 @@
             font-size: 0.9rem;
             transition: background-color 0.2s ease;
         }
-        
+
         .tour-button:hover {
             background-color: var(--color-black-70);
         }
-        
+
         .tour-button.skip {
             background-color: transparent;
             color: #666;
         }
-        
+
         .tour-button.skip:hover {
             color: #333;
         }
-        
+
         /* Welcome modal for initial introduction */
         .tour-welcome-modal {
             position: fixed;
@@ -1435,12 +1435,12 @@
             visibility: hidden;
             transition: all 0.3s ease;
         }
-        
+
         .tour-welcome-modal.active {
             opacity: 1;
             visibility: visible;
         }
-        
+
         .tour-welcome-content {
             background-color: white;
             border-radius: 15px;
@@ -1452,51 +1452,51 @@
             transform: scale(0.9);
             transition: transform 0.3s ease;
         }
-        
+
         .tour-welcome-modal.active .tour-welcome-content {
             transform: scale(1);
         }
-        
+
         .tour-welcome-title {
             font-size: 1.5rem;
             font-weight: bold;
             margin-bottom: 15px;
             color: var(--color-black);
         }
-        
+
         .tour-welcome-icon {
             font-size: 3rem;
             color: var(--eleva-orange);
             margin-bottom: 20px;
         }
-        
+
         .tour-welcome-buttons {
             display: flex;
             justify-content: center;
             gap: 10px;
             margin-top: 25px;
         }
-        
+
         /* Mobile responsiveness */
         @media (max-width: 768px) {
             .tour-tooltip {
                 max-width: 250px;
                 padding: 12px 15px;
             }
-            
+
             .tour-tooltip-title {
                 font-size: 1rem;
             }
-            
+
             .tour-tooltip-content {
                 font-size: 0.9rem;
             }
-            
+
             .tour-button {
                 padding: 7px 12px;
                 font-size: 0.85rem;
             }
-            
+
             .tour-welcome-content {
                 padding: 20px;
                 width: 300px;
@@ -1591,7 +1591,7 @@
 
             <!-- Luxury Vignette Overlay -->
             <div class="bg-vignette"></div>
-            
+
             <!-- Camera Error Message -->
             <div class="camera-error hidden" id="cameraError">
                 <i class="fas fa-video-slash text-3xl text-red-500 mb-4"></i>
@@ -1645,7 +1645,7 @@
                         <h3 class="text-2xl font-bold text-gray-800">Como foi sua experiência?</h3>
                         <p class="text-gray-600 mt-2">Adoraríamos conhecer sua opinião!</p>
                     </div>
-                    
+
                     <!-- Star Rating with Animation -->
                     <div class="star-rating flex justify-center space-x-3 text-4xl my-6">
                         <button class="star transition-transform" data-rating="1">☆</button>
@@ -1654,12 +1654,12 @@
                         <button class="star transition-transform" data-rating="4">☆</button>
                         <button class="star transition-transform" data-rating="5">☆</button>
                     </div>
-                    
+
                     <!-- Rating Feedback Message (appears after rating) -->
                     <div id="ratingFeedback" class="text-center mb-6 opacity-0 transition-opacity duration-300">
                         <!-- Content will be dynamically updated based on rating -->
                     </div>
-                    
+
                     <!-- Progress & Next Button -->
                     <div class="flex justify-between items-center">
                         <div class="text-gray-400 text-sm">Etapa 1 de 3</div>
@@ -1668,14 +1668,14 @@
                         </button>
                     </div>
                 </div>
-                
+
                 <!-- Step 2: Quick Categories -->
                 <div id="reviewStep2" class="review-step hidden">
                     <div class="text-center mb-4">
                         <h3 class="text-2xl font-bold text-gray-800">O que você mais gostou?</h3>
                         <p class="text-gray-600 mt-2">Selecione tudo que se aplica</p>
                     </div>
-                    
+
                     <!-- Feature Categories -->
                     <div class="grid grid-cols-2 gap-3 my-6">
                         <button class="feature-btn p-3 border border-gray-300 rounded-xl text-gray-700 hover:border-purple-500 hover:bg-purple-50 transition-colors">
@@ -1697,7 +1697,7 @@
                             <i class="fas fa-bolt mr-2"></i> Rápido e Responsivo
                         </button>
                     </div>
-                    
+
                     <!-- Progress & Navigation -->
                     <div class="flex justify-between items-center">
                         <button id="backToStep1" class="px-4 py-2 text-gray-600 hover:text-gray-800">
@@ -1709,14 +1709,14 @@
                         </button>
                     </div>
                 </div>
-                
+
                 <!-- Step 3: Written Feedback & Sharing -->
                 <div id="reviewStep3" class="review-step hidden">
                     <div class="text-center mb-4">
                         <h3 class="text-2xl font-bold text-gray-800">Alguma observação adicional?</h3>
                         <p class="text-gray-600 mt-2">Deixe um comentário rápido (opcional)</p>
                     </div>
-                    
+
                     <!-- Written Feedback -->
                     <textarea id="reviewText" class="w-full p-3 border rounded-lg h-20 mb-4" 
                               placeholder="Seu feedback nos ajuda a melhorar!"></textarea>
@@ -1736,7 +1736,7 @@
                         </button>
                     </div>
                 </div>
-                
+
                 <!-- Social Sharing Step (appears after submission) -->
                 <div id="socialSharingStep" class="review-step hidden">
                     <div class="text-center mb-2">
@@ -1751,7 +1751,7 @@
                     <div id="sharePreviewImage" class="w-full h-40 bg-gray-100 rounded-lg mb-6 flex items-center justify-center overflow-hidden">
                         <img id="shareImage" class="max-w-full max-h-full object-contain" src="" alt="Your try-on image">
                     </div>
-                    
+
                     <!-- Social Sharing Buttons -->
                     <div class="grid grid-cols-4 gap-3 mb-6">
                         <a href="#" id="shareInstagram" class="social-btn flex flex-col items-center justify-center p-3 border rounded-xl hover:bg-purple-50 transition-colors">
@@ -1771,23 +1771,22 @@
                             <span class="text-xs">WhatsApp</span>
                         </a>
                     </div>
-                    
+
                     <!-- Done Button -->
                     <button id="finishReview" class="w-full px-6 py-3 bg-gray-800 text-white rounded-lg">
                         Concluído
                     </button>
                 </div>
-                
+
                 <!-- Confetti Canvas for Celebration Animation -->
                 <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-[3001] hidden"></canvas>
             </div>
         </div>
     </div>
-    
+
     <script>
         // API endpoint URL - replace with your actual API Gateway URL from Step 3
-        const API_URL = 'https://kdkpbjjeze.execute-api.ap-south-1.amazonaws.com/prod1';
-        
+        const API_URL = 'http://localhost:3000';
         // Initial empty JEWELRY object
         let JEWELRY = {};
 
@@ -1797,47 +1796,47 @@
             const results = regex.exec(location.search);
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
-        
+
         // Function to fetch jewelry data from DynamoDB via API
         // Modify the fetchJewelryData function to create SKU mappings
         async function fetchJewelryData() {
             try {
                 console.log('Fetching jewelry data from DynamoDB...');
-                
+
                 const response = await fetch(`${API_URL}/jewelry-data`);
-                
+
                 if (!response.ok) {
                     throw new Error(`API request failed: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
-                
+
                 if (!data.JEWELRY) {
                     throw new Error('Invalid API response: JEWELRY object not found');
                 }
-                
+
                 // Replace the empty JEWELRY object with the data from API
                 JEWELRY = data.JEWELRY;
-                
+
                 // Create mapping from SKU to ID
                 for (const [id, item] of Object.entries(JEWELRY)) {
                     if (item.sku) {
                         appState.skuToJewelryId[item.sku] = id;
                     }
-                    
+
                     // If no SKU exists but the ID looks like a SKU (e.g., "TIK-0001"),
                     // use the ID itself as a mapping key
                     if (id.match(/^[A-Z]{3}-\d{4}$/)) {
                         appState.skuToJewelryId[id] = id;
                     }
                 }
-                
+
                 console.log(`Successfully loaded ${Object.keys(JEWELRY).length} jewelry items`);
                 console.log('SKU to ID mapping created:', appState.skuToJewelryId);
                 return true;
             } catch (error) {
                 console.error('Error fetching jewelry data:', error);
-                
+
                 const loadingError = document.querySelector('.loading-error');
                 if (loadingError) {
                     loadingError.textContent = `Failed to load jewelry data: ${error.message}. Please refresh the page or try again later.`;
@@ -1878,7 +1877,7 @@
             categorySwitched: false,
             skuToJewelryId: {} // For mapping SKUs to internal IDs
         };
-        
+
         // DOM Elements
         let elements = {
             video: null,
@@ -1894,13 +1893,13 @@
             productCard: null,
             toast: null
         };
-        
+
         // MediaPipe Models
         let faceMesh, hands, pose;
-        
+
         // Initialization
         document.addEventListener('DOMContentLoaded', init);
-        
+
         // Modify your init function to handle the URL parameter
         async function init() {
             try {
@@ -1908,13 +1907,13 @@
                 
                 // Show logo animation first
                 showLogoAnimation();
-                
+
                 // Get the jewelry ID from URL
                 const jewelryIdFromUrl = getUrlParameter('jewelryId');
                 if (jewelryIdFromUrl) {
                     console.log(`Found jewelry ID in URL: ${jewelryIdFromUrl}`);
                     appState.initialJewelryId = jewelryIdFromUrl;
-                    
+
                     // Add alternative format (convert hyphens to underscores and vice versa)
                     if (jewelryIdFromUrl.includes('-')) {
                         appState.initialJewelryIdAlternative = jewelryIdFromUrl.replace(/-/g, '_');
@@ -1924,27 +1923,27 @@
                         console.log(`Also trying alternative format: ${appState.initialJewelryIdAlternative}`);
                     }
                 }
-                
+
                 // Initialize elements and event listeners
                 initializeElements();
                 setupEventListeners();
-                
+
                 // Fetch jewelry data
                 updateLoadingStatus("Loading jewelry data...");
                 const dataLoaded = await fetchJewelryData();
                 if (!dataLoaded) {
                     throw new Error("Failed to load jewelry data from API");
                 }
-                
+
                 // Initialize camera, AI models, and preload images
                 await initializeCamera();
                 await initializeAIModels();
                 await preloadJewelryImages();
-                
+
                 // Initialize UI and gesture handlers
                 initializeUI();
                 setupGestureHandlers();
-                
+
                 // Hide logo and show main interface after 3 seconds (like index.html)
                 setTimeout(() => {
                     hideLogoAnimation();
@@ -1958,12 +1957,12 @@
                     setTimeout(() => {
                     // First check if we have a direct ID match
                     let jewelryId = appState.initialJewelryId;
-                    
+
                     // Check if the ID is in our mapping (for SKUs)
                     if (!JEWELRY[jewelryId] && appState.skuToJewelryId[jewelryId]) {
                         jewelryId = appState.skuToJewelryId[jewelryId];
                     }
-                    
+
                     // If no match found, try the alternative format
                     if (!JEWELRY[jewelryId] && appState.initialJewelryIdAlternative) {
                         if (JEWELRY[appState.initialJewelryIdAlternative]) {
@@ -1972,22 +1971,22 @@
                             jewelryId = appState.skuToJewelryId[appState.initialJewelryIdAlternative];
                         }
                     }
-                    
+
                     // If we found a matching jewelry item, load it
                     if (JEWELRY[jewelryId]) {
                         console.log(`Auto-selecting jewelry with ID: ${jewelryId}`);
-                        
+
                         // Get the jewelry item
                         const jewelryItem = JEWELRY[jewelryId];
-                        
+
                         // Switch to the appropriate category
                         if (jewelryItem.group) {
                             switchCategory(jewelryItem.group);
                         }
-                        
+
                         // Add the jewelry
                         addJewelry(jewelryId);
-                        
+
                         // Show toast notification
                         showToast(`${jewelryItem.name} automatically applied`);
                     } else {
@@ -2004,28 +2003,28 @@
                 setTimeout(() => hideLogoAnimation(), 1000);
             }
         }
-        
+
         function initializeElements() {
             elements.video = document.getElementById('cameraFeed');
             elements.canvas = document.getElementById('jewelryCanvas');
             elements.ctx = elements.canvas.getContext('2d');
-            
+
             // Replace bottom panel with preview bar
             elements.previewBar = document.getElementById('previewBar');
             elements.previewHandle = document.getElementById('previewHandle');
             elements.jewelryCarousel = document.getElementById('jewelryCarousel');
-            
+
             // Replace controls panel with floating controls
             elements.floatingControls = document.getElementById('floatingControls');
             elements.controlTitle = document.getElementById('controlTitle');
             elements.controlContent = document.getElementById('controlContent');
             elements.closeControlBtn = document.getElementById('closeControlBtn');
-            
+
             // Replace tab buttons with pill buttons
             elements.categoryPills = document.querySelectorAll('.pill-btn');
-            
+
             elements.captureBtn = document.getElementById('captureBtn');
-            
+
             // Create toast if it doesn't exist
             elements.toast = document.getElementById('toast') || document.createElement('div');
             if (!elements.toast.id) {
@@ -2033,7 +2032,7 @@
                 elements.toast.id = 'toast';
                 document.body.appendChild(elements.toast);
             }
-            
+
             if (!elements.video || !elements.canvas || !elements.ctx) {
                 throw new Error("Required elements not found");
             }
@@ -2049,17 +2048,17 @@
                 });
             });
             }
-            
+
             // Preview bar handle for collapsing
             if (elements.previewHandle) {
             elements.previewHandle.addEventListener('click', togglePreviewBar);
-            
+
             // Touch gestures for preview bar
             let startY = 0;
             elements.previewHandle.addEventListener('touchstart', (e) => {
                 startY = e.touches[0].clientY;
             });
-            
+
             elements.previewHandle.addEventListener('touchmove', (e) => {
                 const deltaY = e.touches[0].clientY - startY;
                 // If swiping up, expand preview bar
@@ -2073,17 +2072,17 @@
                 e.preventDefault();
             });
             }
-            
+
             // Capture button
             if (elements.captureBtn) {
             elements.captureBtn.addEventListener('click', captureScreenshot);
             }
-            
+
             // Close controls button
             if (elements.closeControlBtn) {
             elements.closeControlBtn.addEventListener('click', hideFloatingControls);
             }
-            
+
             // Add canvas click to hide controls if clicked outside
             if (elements.canvas && elements.floatingControls) {
             elements.canvas.addEventListener('click', (e) => {
@@ -2095,7 +2094,7 @@
                 }
             });
             }
-            
+
             // Initialize pinch-to-zoom and drag gestures
             setupGestureHandlers();
         }
@@ -2103,16 +2102,16 @@
         function togglePreviewBar() {
             elements.previewBar.classList.toggle('collapsed');
             // Adjust capture button position based on preview bar state
-            const bottomOffset = elements.previewBar.classList.contains('collapsed') 
-                ? 'var(--preview-bar-collapsed-height)' 
+            const bottomOffset = elements.previewBar.classList.contains('collapsed')
+                ? 'var(--preview-bar-collapsed-height)'
                 : 'var(--preview-bar-height)';
             elements.captureBtn.style.bottom = `calc(${bottomOffset} + 20px)`;
         }
-        
+
         async function initializeCamera() {
             try {
                 updateLoadingStatus("Accessing camera...");
-                
+
                 const constraints = {
                     video: {
                         facingMode: 'user',
@@ -2120,10 +2119,10 @@
                         height: { ideal: 720 }
                     }
                 };
-                
+
                 const stream = await navigator.mediaDevices.getUserMedia(constraints);
                 elements.video.srcObject = stream;
-                
+
                 await new Promise((resolve) => {
                     elements.video.onloadedmetadata = () => {
                         elements.canvas.width = elements.video.videoWidth;
@@ -2133,10 +2132,10 @@
                         resolve();
                     };
                 });
-                
+
                 await elements.video.play();
                 console.log("Camera initialized successfully");
-                
+
                 document.getElementById('cameraError').classList.add('hidden');
             } catch (error) {
                 console.error("Camera access error:", error);
@@ -2144,26 +2143,26 @@
                 throw new Error("Camera access denied. Please enable camera permissions.");
             }
         }
-        
+
         async function initializeAIModels() {
             try {
                 updateLoadingStatus("Loading AI models...");
-                
+
                 // Initialize FaceMesh
                 faceMesh = new FaceMesh({
                     locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/${file}`
                 });
-                
+
                 // Initialize Hands
                 hands = new Hands({
                     locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/${file}`
                 });
-                
+
                 // Initialize Pose
                 pose = new Pose({
                     locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/${file}`
                 });
-                
+
                 // Configure models
                 faceMesh.setOptions({
                     maxNumFaces: 1,
@@ -2171,36 +2170,36 @@
                     minDetectionConfidence: 0.5,
                     minTrackingConfidence: 0.5
                 });
-                
+
                 hands.setOptions({
                     maxNumHands: 2,
                     modelComplexity: 0,
                     minDetectionConfidence: 0.5,
                     minTrackingConfidence: 0.5
                 });
-                
+
                 pose.setOptions({
                     modelComplexity: 0,
                     smoothLandmarks: true,
                     minDetectionConfidence: 0.5,
                     minTrackingConfidence: 0.5
                 });
-                
+
                 // Set up callbacks
                 faceMesh.onResults(onFaceMeshResults);
                 hands.onResults(onHandResults);
                 pose.onResults(onPoseResults);
-                
+
                 // Initialize models
                 updateLoadingStatus("Loading face detection...");
                 await faceMesh.initialize();
-                
+
                 updateLoadingStatus("Loading hand detection...");
                 await hands.initialize();
-                
+
                 updateLoadingStatus("Loading pose detection...");
                 await pose.initialize();
-                
+
                 console.log("AI models initialized successfully");
                 return true;
             } catch (error) {
@@ -2208,34 +2207,34 @@
                 throw new Error("Failed to initialize AI models. Please try refreshing the page.");
             }
         }
-        
+
         async function preloadJewelryImages() {
             updateLoadingStatus("Loading jewelry assets...");
             const preloadPromises = [];
-            
+
             for (const [id, jewelry] of Object.entries(JEWELRY)) {
                 try {
                     if (jewelry.type === 'earrings') {
                         const leftImg = new Image();
                         const rightImg = new Image();
-                        
+
                         // Add crossOrigin attribute
                         leftImg.crossOrigin = "anonymous";
                         rightImg.crossOrigin = "anonymous";
-                        
+
                         leftImg.src = jewelry.left;
                         rightImg.src = jewelry.right;
-                        
+
                         const leftPromise = new Promise((resolve, reject) => {
                             leftImg.onload = resolve;
                             leftImg.onerror = () => reject(new Error(`Failed to load ${jewelry.left}`));
                         });
-                        
+
                         const rightPromise = new Promise((resolve, reject) => {
                             rightImg.onload = resolve;
                             rightImg.onerror = () => reject(new Error(`Failed to load ${jewelry.right}`));
                         });
-                        
+
                         preloadPromises.push(Promise.all([leftPromise, rightPromise])
                             .then(() => {
                                 jewelry.leftImage = leftImg;
@@ -2243,36 +2242,36 @@
                             }));
                     } else {
                         const img = new Image();
-                        
+
                         // Add crossOrigin attribute
                         img.crossOrigin = "anonymous";
-                        
+
                         img.src = jewelry.image;
-                        
+
                         const imgPromise = new Promise((resolve, reject) => {
                             img.onload = resolve;
                             img.onerror = () => reject(new Error(`Failed to load ${jewelry.image}`));
                         });
-                        
+
                         preloadPromises.push(imgPromise.then(() => {
                             jewelry.loadedImage = img;
                         }));
                     }
-                    
+
                     // Preload thumbnail if available
                     if (jewelry.thumbnail) {
                         const thumbImg = new Image();
-                        
+
                         // Add crossOrigin attribute
                         thumbImg.crossOrigin = "anonymous";
-                        
+
                         thumbImg.src = jewelry.thumbnail;
-                        
+
                         const thumbPromise = new Promise((resolve) => {
                             thumbImg.onload = resolve;
                             thumbImg.onerror = resolve; // Continue even if thumbnail fails
                         });
-                        
+
                         preloadPromises.push(thumbPromise.then(() => {
                             jewelry.thumbnailImage = thumbImg;
                         }));
@@ -2281,7 +2280,7 @@
                     console.warn(`Error setting up preload for ${id}:`, error);
                 }
             }
-            
+
             // Wait for all preload promises
             try {
                 await Promise.all(preloadPromises);
@@ -2289,28 +2288,28 @@
             } catch (error) {
                 console.warn("Some images failed to preload:", error);
             }
-            
+
             appState.isResourcesLoaded = true;
         }
-        
+
         function initializeUI() {
             // Show first category
             switchCategory('face');
-            
+
             // Set up controls activity monitoring
             elements.floatingControls.addEventListener('mousemove', resetControlsTimer);
             elements.floatingControls.addEventListener('touchstart', resetControlsTimer);
             elements.floatingControls.addEventListener('click', resetControlsTimer);
-            
+
             // Ensure camera is mirrored initially
             elements.video.style.transform = 'scaleX(-1)';
             elements.canvas.style.transform = 'scaleX(-1)';
         }
-        
+
         // Update the switchCategory function
         function switchCategory(category) {
             console.log(`Switching to category: ${category}`);
-            
+
             // Update active pill
             elements.categoryPills.forEach(btn => {
                 if (btn.dataset.category === category) {
@@ -2319,108 +2318,108 @@
                     btn.classList.remove('active');
                 }
             });
-            
+
             appState.currentCategory = category;
-            
+
             // Hide floating controls when switching categories
             hideFloatingControls();
-            
+
             // Make sure preview bar is expanded
             elements.previewBar.classList.remove('collapsed');
-            
+
             // Render appropriate items
             if (category === 'active') {
                 renderActiveItems();
             } else {
                 renderCategoryItems(category);
             }
-            
+
             // Mark that we've performed a category switch
             appState.categorySwitched = true;
         }
-        
+
         function renderCategoryItems(category) {
             const carousel = elements.jewelryCarousel;
             carousel.innerHTML = '';
-            
+
             // Filter items by category
             const categoryItems = Object.entries(JEWELRY)
                 .filter(([_, item]) => item.group === category);
-            
+
             if (categoryItems.length === 0) {
                 carousel.innerHTML = '<div class="empty-category">No items available</div>';
                 return;
             }
-            
+
             // Create carousel items
             categoryItems.forEach(([id, item]) => {
                 const isActive = appState.activeJewelry.has(id);
-                
+
                 const card = document.createElement('div');
                 card.className = `carousel-item ${isActive ? 'active' : ''}`;
                 card.dataset.jewelryId = id;
-                
+
                 // Use thumbnail if available, otherwise use main image
-                const imageSrc = item.thumbnail || 
+                const imageSrc = item.thumbnail ||
                     (item.type === 'earrings' ? item.left : item.image);
-                
+
                 card.innerHTML = `<img src="${imageSrc}" alt="${item.name}" class="carousel-img">`;
-                
+
                 card.addEventListener('click', () => handleItemClick(id));
                 carousel.appendChild(card);
             });
         }
-        
+
         function renderActiveItems() {
             const carousel = elements.jewelryCarousel;
             carousel.innerHTML = '';
-            
+
             if (appState.activeJewelry.size === 0) {
                 carousel.innerHTML = '<div class="empty-category">No active jewelry</div>';
                 return;
             }
-            
+
             // Create carousel items for active jewelry
             appState.activeJewelry.forEach((item, id) => {
                 const originalItem = JEWELRY[id];
                 if (!originalItem) return;
-                
+
                 const card = document.createElement('div');
                 card.className = 'carousel-item active';
                 card.dataset.jewelryId = id;
-                
+
                 // Use thumbnail if available
-                const imageSrc = originalItem.thumbnail || 
+                const imageSrc = originalItem.thumbnail ||
                     (originalItem.type === 'earrings' ? originalItem.left : originalItem.image);
-                
+
                 card.innerHTML = `<img src="${imageSrc}" alt="${originalItem.name}" class="carousel-img">`;
-                
+
                 card.addEventListener('click', () => {
                     // Show floating controls for this jewelry
                     renderFloatingControls(id);
                     showFloatingControls(id);
                 });
-                
+
                 carousel.appendChild(card);
             });
         }
-        
+
         function handleItemClick(id) {
             const item = JEWELRY[id];
-            
+
             // If item is already active, remove it instead of showing controls
             if (appState.activeJewelry.has(id)) {
                 removeJewelry(id);
                 showToast(`${item.name} removed`);
                 return;
             }
-            
+
             // Add new jewelry item
             addJewelry(id);
-            
+
             // Show toast notification
             showToast(`Added: ${item.name}`);
-            
+
             // Update carousel UI
             const carouselItems = elements.jewelryCarousel.querySelectorAll('.carousel-item');
             carouselItems.forEach(card => {
@@ -2429,15 +2428,15 @@
                 }
             });
         }
-        
+
         // Product Details Function
         function showProductDetails(id) {
             const item = JEWELRY[id];
             if (!item) return;
-            
+
             // Just show a toast notification instead of a product card
             showToast(`Added: ${item.name}`);
-            
+
             // Mark item as active in carousel
             const carouselItems = elements.jewelryCarousel.querySelectorAll('.carousel-item');
             carouselItems.forEach(card => {
@@ -2446,7 +2445,7 @@
                 }
             });
         }
-        
+
         // 2. Controls Panel Toggle - Replaced with Floating Controls
         function toggleControlsPanel(show, jewelryId = null) {
             // Added a null check to prevent unnecessary processing
@@ -2457,19 +2456,19 @@
                 hideFloatingControls();
             }
         }
-        
+
         function renderFloatingControls(id) {
             if (!id || !appState.activeJewelry.has(id)) return;
-            
+
             const jewelry = appState.activeJewelry.get(id);
             const originalJewelry = JEWELRY[id];
-            
+
             // Update control title
             elements.controlTitle.textContent = originalJewelry.name;
-            
+
             // Clear previous controls
             elements.controlContent.innerHTML = '';
-            
+
             // Create a more transparent, minimalist control layout
             const controlsHTML = `
                 <div class="ghost-style ultra-transparent-controls">
@@ -2526,127 +2525,127 @@
                     </div>
                 </div>
             `;
-            
+
             elements.controlContent.innerHTML = controlsHTML;
-            
+
             // Add ghost-style class to the main floating controls element
             elements.floatingControls.classList.add('ghost-style', 'auto-hide');
-            
+
             // Remove any classes that might add backgrounds
             elements.floatingControls.classList.remove('mobile-translucent-controls');
-            
+
             // Force transparency with inline styles
             elements.floatingControls.style.background = 'transparent';
             elements.floatingControls.style.boxShadow = 'none';
             elements.floatingControls.style.backdropFilter = 'none';
             elements.floatingControls.style.webkitBackdropFilter = 'none';
-            
+
             // Remove auto-hide when user interacts with controls
             elements.floatingControls.addEventListener('touchstart', function() {
                 this.classList.remove('auto-hide');
             });
-            
+
             // Show the controls
             elements.floatingControls.classList.remove('hidden');
         }
 
         function showFloatingControls(id) {
             const position = getJewelryPosition(id);
-            
+
             elements.floatingControls.style.top = `${position.y}px`;
             elements.floatingControls.style.left = `${position.x}px`;
-            
+
             // Add ghost styling and remove any background-creating classes
             elements.floatingControls.classList.add('ghost-style');
             elements.floatingControls.classList.remove('mobile-translucent-controls');
-            
+
             // Force transparency with inline styles
             elements.floatingControls.style.background = 'transparent';
             elements.floatingControls.style.boxShadow = 'none';
             elements.floatingControls.style.backdropFilter = 'none';
             elements.floatingControls.style.webkitBackdropFilter = 'none';
             elements.floatingControls.style.border = 'none';
-            
+
             // More explicit visibility management
             elements.floatingControls.style.opacity = '1';
             elements.floatingControls.style.visibility = 'visible';
             elements.floatingControls.classList.remove('hidden');
             elements.floatingControls.classList.add('auto-hide');
-            
+
             appState.selectedJewelryId = id;
-            
+
             // Simplified interaction handler
             const clearAutoHideHandler = () => {
                 elements.floatingControls.classList.remove('auto-hide');
                 elements.floatingControls.removeEventListener('click', clearAutoHideHandler);
             };
-            
+
             elements.floatingControls.addEventListener('click', clearAutoHideHandler, { once: true });
-            
+
             resetControlsTimer();
         }
-        
+
         function hideFloatingControls() {
             // More robust hiding mechanism
             elements.floatingControls.classList.add('hidden');
             elements.floatingControls.classList.remove('mobile-translucent-controls', 'auto-hide', 'ghost-style');
-            
+
             // Reset styles explicitly
             elements.floatingControls.style.opacity = '0';
             elements.floatingControls.style.visibility = 'hidden';
-            
+
             // Clear inline styles for transparency
             elements.floatingControls.style.background = '';
             elements.floatingControls.style.boxShadow = '';
             elements.floatingControls.style.backdropFilter = '';
             elements.floatingControls.style.webkitBackdropFilter = '';
             elements.floatingControls.style.border = '';
-            
+
             appState.selectedJewelryId = null;
             clearTimeout(controlsActivityTimer);
         }
-        
+
         // Auto-hide controls after period of inactivity
         let controlsActivityTimer;
-        
+
         function resetControlsTimer() {
             clearTimeout(controlsActivityTimer);
-            
+
             if (!elements.floatingControls.classList.contains('hidden')) {
                 controlsActivityTimer = setTimeout(() => {
                     hideFloatingControls();
                 }, 5000); // Hide after 5 seconds of inactivity
             }
         }
-        
+
         // Calculate position for floating controls near jewelry
         function getJewelryPosition(jewelryId) {
             // Get capture button dimensions and position
             const captureBtn = document.getElementById('captureBtn');
             const captureBtnRect = captureBtn.getBoundingClientRect();
-            
+
             // Set controls width and height (adjust as needed)
             const controlsWidth = 300;
             const controlsHeight = 350;
-            
+
             // Position in the right corner, just above the capture button
             const x = window.innerWidth - controlsWidth - 20; // 20px from right edge
             const y = captureBtnRect.top - controlsHeight - 20; // 20px above capture button
-            
+
             return { x, y };
         }
-        
+
         // 3. Global Settings
         function renderGlobalSettings() {
             showAppSettings();
         }
 
 
-       function showAppSettings() {
+        function showAppSettings() {
             // Clear control content
             elements.controlTitle.textContent = "App Settings";
             elements.controlContent.innerHTML = '';
-            
+
             // Create settings HTML
             const settingsHTML = `
                 <div class="control-group">
@@ -2681,76 +2680,76 @@
                     </button>
                 </div>
             `;
-            
+
             elements.controlContent.innerHTML = settingsHTML;
-            
+
             // Position controls in center of screen
             elements.floatingControls.style.top = '50%';
             elements.floatingControls.style.left = '50%';
             elements.floatingControls.style.transform = 'translate(-50%, -50%)';
-            
+
             // Show controls
             elements.floatingControls.classList.remove('hidden');
             elements.floatingControls.classList.remove('auto-hide');
-            
+
             // Add event listener for mirror toggle
             document.getElementById('mirrorToggle').addEventListener('change', (e) => {
                 appState.mirrorCamera = e.target.checked;
                 elements.video.style.transform = appState.mirrorCamera ? 'scaleX(-1)' : 'none';
                 elements.canvas.style.transform = appState.mirrorCamera ? 'scaleX(-1)' : 'none';
             });
-        } 
-        
+        }
+
         /// Update jewelry size with visual feedback
         function updateJewelrySize(id, value) {
             if (!appState.activeJewelry.has(id)) return;
-            
+
             const scale = parseFloat(value);
             const jewelry = appState.activeJewelry.get(id);
             jewelry.scale = scale;
-            
+
             // Update size display with animation
             const sizeValue = document.getElementById('sizeValue');
             if (sizeValue) {
                 // Add pulse animation
                 sizeValue.classList.add('pulse-animation');
                 sizeValue.textContent = `${Math.round(scale * 100)}%`;
-                
+
                 // Remove animation after it completes
                 setTimeout(() => {
                     sizeValue.classList.remove('pulse-animation');
                 }, 300);
             }
-            
+
             // Reset auto-hide timer on interaction
             resetControlsTimer();
         }
-        
+
         // Update jewelry opacity
         function updateJewelryOpacity(id, value) {
             if (!appState.activeJewelry.has(id)) return;
-            
+
             const opacity = parseFloat(value);
             const jewelry = appState.activeJewelry.get(id);
             jewelry.opacity = opacity;
-            
+
             // Update opacity display
             const opacityValue = document.getElementById('opacityValue');
             if (opacityValue) {
                 opacityValue.textContent = `${Math.round(opacity * 100)}%`;
             }
-            
+
             // Reset auto-hide timer on interaction
             resetControlsTimer();
         }
-        
+
         // 4. Move Jewelry Function
         function moveJewelry(id, direction) {
             if (!appState.activeJewelry.has(id)) return;
-            
+
             const jewelry = appState.activeJewelry.get(id);
             const step = 5; // Movement step in pixels
-            
+
             // Reverse left/right directions if camera is mirrored
             if (appState.mirrorCamera) {
                 if (direction === 'left') direction = 'right';
@@ -2760,7 +2759,7 @@
                 else if (direction === 'down-left') direction = 'down-right';
                 else if (direction === 'down-right') direction = 'down-left';
             }
-            
+
             switch (direction) {
                 case 'up':
                     jewelry.offset.y -= step;
@@ -2794,7 +2793,7 @@
                     jewelry.offset = { x: 0, y: 0 };
                     break;
             }
-            
+
             // Reset auto-hide timer on interaction
             resetControlsTimer();
         }
@@ -2806,18 +2805,18 @@
                 console.error(`Jewelry not found with ID: ${id}`);
                 return;
             }
-            
+
             // Skip if already active
             if (appState.activeJewelry.has(id)) {
                 console.log(`Jewelry ${id} is already active, skipping`);
                 return;
             }
-            
+
             console.log(`Adding jewelry: ${id}, type: ${originalJewelry.type}, group: ${originalJewelry.group}`);
-            
+
             // Create a deep copy of the jewelry item with loaded images
             const jewelryCopy = JSON.parse(JSON.stringify(originalJewelry));
-            
+
             // Add loaded images (which can't be JSON stringified)
             if (originalJewelry.type === 'earrings') {
                 jewelryCopy.leftImage = originalJewelry.leftImage;
@@ -2825,21 +2824,21 @@
             } else {
                 jewelryCopy.loadedImage = originalJewelry.loadedImage;
             }
-            
+
             // Initialize with default values
             jewelryCopy.scale = originalJewelry.defaultScale || 1.0;
             jewelryCopy.offset = { x: 0, y: 0 };
             jewelryCopy.visible = true;
             jewelryCopy.opacity = 1.0;
-            
+
             // For hand jewelry, set default hand and finger
             if (originalJewelry.type === 'hand') {
                 jewelryCopy.handIndex = 0; // Default to first detected hand
             }
-            
+
             // Add to active jewelry
             appState.activeJewelry.set(id, jewelryCopy);
-            
+
             // Update UI
             if (appState.currentCategory === 'active') {
                 renderActiveItems();
@@ -2852,29 +2851,29 @@
                     }
                 });
             }
-            
+
             // Show toast notification only if not auto-loaded
             if (id !== appState.initialJewelryId) {
                 showToast(`${originalJewelry.name} added`);
             }
-        }    
-        
+        }
+
         // 6. Remove Jewelry Function
         function removeJewelry(id) {
             const jewelry = JEWELRY[id];
             if (!jewelry) return;
-            
+
             // Remove from active jewelry
             appState.activeJewelry.delete(id);
-            
+
             // Hide floating controls if they were for this jewelry
             if (appState.selectedJewelryId === id) {
                 hideFloatingControls();
             }
-            
+
             // Show toast
             showToast(`${jewelry.name} removed`);
-            
+
             // Re-render carousel if needed
             if (appState.currentCategory === 'active') {
                 renderActiveItems();
@@ -2888,31 +2887,31 @@
                 });
             }
         }
-        
+
         function showToast(message) {
             const toast = elements.toast;
             toast.textContent = message;
             toast.classList.add('visible');
-            
+
             // Hide toast after 2 seconds
             setTimeout(() => {
                 toast.classList.remove('visible');
             }, 2000);
         }
-        
+
         // AI detection loop
         async function detectAll() {
             if (!appState.isInitialized || !appState.isCameraReady) {
                 requestAnimationFrame(detectAll);
                 return;
             }
-        
+
             if (!elements.video.videoWidth) {
                 console.log("Video not ready yet");
                 requestAnimationFrame(detectAll);
                 return;
             }
-        
+
             try {
                 await Promise.all([
                     faceMesh.send({image: elements.video}),
@@ -2922,50 +2921,50 @@
             } catch (error) {
                 console.error("Detection error:", error);
             }
-            
+
             requestAnimationFrame(detectAll);
         }
-        
+
         // MediaPipe result handlers
         function onFaceMeshResults(results) {
-            appState.faceLandmarks = results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0 
-                ? results.multiFaceLandmarks[0] 
+            appState.faceLandmarks = results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0
+                ? results.multiFaceLandmarks[0]
                 : null;
-            
+
             renderJewelry();
         }
-        
+
         function onHandResults(results) {
             appState.handLandmarks = results.multiHandLandmarks || [];
             renderJewelry();
         }
-        
+
         function onPoseResults(results) {
             appState.poseLandmarks = results.poseLandmarks || null;
             renderJewelry();
         }
-        
+
         // Main rendering function
         function renderJewelry() {
             if (!elements.canvas || !elements.ctx) return;
-            
+
             // Make sure canvas dimensions match video
-            if (elements.canvas.width !== elements.video.videoWidth || 
+            if (elements.canvas.width !== elements.video.videoWidth ||
                 elements.canvas.height !== elements.video.videoHeight) {
                 elements.canvas.width = elements.video.videoWidth;
                 elements.canvas.height = elements.video.videoHeight;
             }
-            
+
             // Clear canvas
             elements.ctx.clearRect(0, 0, elements.canvas.width, elements.canvas.height);
-            
+
             // Nothing to render if no jewelry or no landmarks
             if (appState.activeJewelry.size === 0) return;
-            
+
             // Render each active jewelry item
             appState.activeJewelry.forEach((jewelry, id) => {
                 if (!jewelry.visible) return;
-                
+
                 if (jewelry.type === 'necklace') {
                     if (appState.poseLandmarks) {
                         drawNecklace(jewelry, id);
@@ -2989,108 +2988,108 @@
                 }
             });
         }
-        
+
         // Drawing functions for each jewelry type
         function drawNecklace(jewelry, id) {
             if (!jewelry.loadedImage) return;
-            
+
             const leftShoulder = appState.poseLandmarks[11];
             const rightShoulder = appState.poseLandmarks[12];
-            
+
             if (!leftShoulder || !rightShoulder) return;
-        
+
             // Calculate base positions from shoulders
             const shoulderWidth = Math.abs(rightShoulder.x - leftShoulder.x) * elements.canvas.width;
             const collarOffset = 0.15;
             const leftX = leftShoulder.x * elements.canvas.width + shoulderWidth * collarOffset;
             const rightX = rightShoulder.x * elements.canvas.width - shoulderWidth * collarOffset;
             const baseY = leftShoulder.y * elements.canvas.height;
-        
+
             // Apply measurements with mobile-friendly adjustments
             const VERTICAL_OFFSET = -115;
             const DROP_HEIGHT = 45;
-            
+
             const adjustedY = baseY + VERTICAL_OFFSET + jewelry.offset.y;
             const centerX = (leftX + rightX) / 2 + jewelry.offset.x;
-            
+
             // Calculate necklace dimensions
             const necklaceWidth = shoulderWidth * jewelry.scale;
             const necklaceHeight = jewelry.loadedImage.height * (necklaceWidth / jewelry.loadedImage.width);
-        
+
             // Calculate the actual drawing position in canvas coordinates
             const drawX = centerX - necklaceWidth/2;
             const drawY = adjustedY - DROP_HEIGHT/2;
-        
+
             // Set opacity if defined
             if (jewelry.opacity !== undefined) {
                 elements.ctx.globalAlpha = jewelry.opacity;
             }
-        
+
             // Draw the necklace
             elements.ctx.save();
             elements.ctx.shadowColor = 'rgba(0,0,0,0.3)';
             elements.ctx.shadowBlur = 8;
             elements.ctx.shadowOffsetX = 2;
             elements.ctx.shadowOffsetY = 2;
-        
+
             elements.ctx.drawImage(
                 jewelry.loadedImage,
                 drawX, drawY, necklaceWidth, necklaceHeight
             );
-            
+
             elements.ctx.restore();
         }
-        
+
         function drawEarrings(jewelry, id) {
             if (!jewelry.leftImage || !jewelry.rightImage) return;
-            
+
             const landmarks = appState.faceLandmarks;
             if (!landmarks) return;
-            
+
             const nose = landmarks[1];
             const leftEar = landmarks[234];
             const rightEar = landmarks[454];
-            
+
             if (!nose || !leftEar || !rightEar) return;
-            
+
             const faceRotation = (rightEar.z - leftEar.z);
             let gap = jewelry.gap || 0;
-            
+
             // Adjust gap based on face rotation
             if (Math.abs(faceRotation) <= 0.1) {
                 gap += 3;
             } else {
                 gap += 24;
             }
-            
+
             const leftLobe = landmarks[177];
             const rightLobe = landmarks[401];
-            
+
             if (!leftLobe || !rightLobe) return;
-            
+
             const faceWidth = Math.abs(rightEar.x - leftEar.x) * elements.canvas.width;
             const gapAdjustment = (gap / 100) * faceWidth;
-            
+
             const earHeight = Math.abs(landmarks[234].y - leftLobe.y) * elements.canvas.height;
             const baseScale = (earHeight * 0.8) / jewelry.leftImage.height;
             const scale = baseScale * jewelry.scale; // Combine base scale with user adjustable scale
-            
+
             // Set opacity if defined
             if (jewelry.opacity !== undefined) {
                 elements.ctx.globalAlpha = jewelry.opacity;
             }
-            
+
             elements.ctx.save();
             elements.ctx.shadowColor = 'rgba(0,0,0,0.3)';
             elements.ctx.shadowBlur = 5;
             elements.ctx.shadowOffsetX = 2;
             elements.ctx.shadowOffsetY = 2;
-            
+
             // Draw left earring if face is not turned too far right
             if (faceRotation > -0.1) {
                 const leftX = leftLobe.x * elements.canvas.width - gapAdjustment + jewelry.offset.x;
                 const leftY = leftLobe.y * elements.canvas.height + jewelry.offset.y;
-                
+
                 const leftWidth = jewelry.leftImage.width * scale;
                 const leftHeight = jewelry.leftImage.height * scale;
                 elements.ctx.drawImage(
@@ -3101,12 +3100,12 @@
                     leftHeight
                 );
             }
-            
+
             // Draw right earring if face is not turned too far left
             if (faceRotation < 0.1) {
                 const rightX = rightLobe.x * elements.canvas.width + gapAdjustment + jewelry.offset.x + 5;
                 const rightY = rightLobe.y * elements.canvas.height + jewelry.offset.y;
-                
+
                 const rightWidth = jewelry.rightImage.width * scale;
                 const rightHeight = jewelry.rightImage.height * scale;
                 elements.ctx.drawImage(
@@ -3117,30 +3116,30 @@
                     rightHeight
                 );
             }
-            
+
             elements.ctx.restore();
         }
-        
+
         function drawSinglePiece(jewelry, id) {
             if (!jewelry.loadedImage) return;
-            
+
             const landmarks = appState.faceLandmarks;
             if (!landmarks) return;
-            
+
             let x, y, baseScale, scale;
-            
+
             // For tikka
             if (jewelry.landmark === 151) {
                 const centerPoint = landmarks[151]; // Center of forehead
                 const topPoint = landmarks[10];     // Top of forehead
                 const refPoint = landmarks[9];      // Reference point
-                
+
                 if (!centerPoint || !topPoint || !refPoint) return;
-                
+
                 // Calculate position on the forehead
                 x = ((centerPoint.x + refPoint.x) / 2) * elements.canvas.width + jewelry.offset.x;
                 y = ((centerPoint.y + topPoint.y) / 2) * elements.canvas.height - 20 + jewelry.offset.y - 5;
-                
+
                 // Scale based on forehead width
                 const foreheadWidth = Math.abs(landmarks[71].x - landmarks[301].x) * elements.canvas.width;
                 baseScale = (foreheadWidth * 0.4) / jewelry.loadedImage.width;
@@ -3149,27 +3148,27 @@
                 // Default to center of face if landmark isn't recognized
                 const nose = landmarks[1];
                 if (!nose) return;
-                
+
                 x = nose.x * elements.canvas.width + jewelry.offset.x;
                 y = nose.y * elements.canvas.height + jewelry.offset.y;
                 scale = jewelry.scale;
             }
-            
+
             // Set opacity if defined
             if (jewelry.opacity !== undefined) {
                 elements.ctx.globalAlpha = jewelry.opacity;
             }
-            
+
             // Draw the jewelry
             elements.ctx.save();
             elements.ctx.shadowColor = 'rgba(0,0,0,0.3)';
             elements.ctx.shadowBlur = 8;
             elements.ctx.shadowOffsetX = 2;
             elements.ctx.shadowOffsetY = 2;
-            
+
             const width = jewelry.loadedImage.width * scale;
             const height = jewelry.loadedImage.height * scale;
-            
+
             elements.ctx.drawImage(
                 jewelry.loadedImage,
                 x - width/2,
@@ -3177,47 +3176,47 @@
                 width,
                 height
             );
-            
+
             elements.ctx.restore();
         }
 
         function drawRing(jewelry, id) {
             if (!jewelry.loadedImage) return;
-            
+
             // Check if we have hand landmarks and the right hand index
             const handIndex = jewelry.handIndex || 0;
             if (!appState.handLandmarks || !appState.handLandmarks[handIndex]) return;
-            
+
             const handLandmarks = appState.handLandmarks[handIndex];
             const fingerTip = handLandmarks[jewelry.fingerIndex];
             const fingerBase = handLandmarks[jewelry.fingerIndex - 3];
-            
+
             if (!fingerTip || !fingerBase) return;
-            
+
             // Calculate position along the finger (closer to base)
             const positionRatio = 0.3; // 30% from base to tip
             const x = (fingerBase.x + (fingerTip.x - fingerBase.x) * positionRatio) * elements.canvas.width + jewelry.offset.x;
             const y = (fingerBase.y + (fingerTip.y - fingerBase.y) * positionRatio) * elements.canvas.height + jewelry.offset.y;
-            
+
             // Calculate rotation angle
             const angle = Math.atan2(
                 fingerTip.y - fingerBase.y,
                 fingerTip.x - fingerBase.x
             );
-            
+
             // Set opacity if defined
             if (jewelry.opacity !== undefined) {
                 elements.ctx.globalAlpha = jewelry.opacity;
             }
-            
+
             // Draw rotated ring
             elements.ctx.save();
             elements.ctx.translate(x, y);
             elements.ctx.rotate(angle - Math.PI/2);
-            
+
             const width = jewelry.loadedImage.width * jewelry.scale;
             const height = jewelry.loadedImage.height * jewelry.scale;
-            
+
             elements.ctx.drawImage(
                 jewelry.loadedImage,
                 -width/2,
@@ -3225,58 +3224,58 @@
                 width,
                 height
             );
-            
+
             elements.ctx.restore();
         }
-        
+
         function drawBangle(jewelry, id) {
             if (!jewelry.loadedImage) return;
-            
+
             // Check if we have hand landmarks and the right hand index
             const handIndex = jewelry.handIndex || 0;
             if (!appState.handLandmarks || !appState.handLandmarks[handIndex]) return;
-            
+
             const handLandmarks = appState.handLandmarks[handIndex];
             const wrist = handLandmarks[0];
             const palmBase = handLandmarks[9];
-            
+
             if (!wrist || !palmBase) return;
-            
+
             // Add offsets to position bangle
             const verticalOffset = 30;
             const horizontalOffset = -20;
-            
+
             const x = wrist.x * elements.canvas.width + horizontalOffset + jewelry.offset.x;
             const y = wrist.y * elements.canvas.height + verticalOffset + jewelry.offset.y;
-            
+
             // Calculate rotation angle
             const angle = Math.atan2(
                 palmBase.y - wrist.y,
                 palmBase.x - wrist.x
             );
-            
+
             // Calculate size based on wrist width
             const wristLeft = handLandmarks[17];
             const wristRight = handLandmarks[5];
-            
+
             if (!wristLeft || !wristRight) return;
-            
+
             const wristWidth = Math.abs(wristRight.x - wristLeft.x) * elements.canvas.width;
             const baseScale = 3.2;
-            
+
             // Set opacity if defined
             if (jewelry.opacity !== undefined) {
                 elements.ctx.globalAlpha = jewelry.opacity;
             }
-            
+
             // Draw rotated bangle
             elements.ctx.save();
             elements.ctx.translate(x, y);
             elements.ctx.rotate(angle - Math.PI/2);
-            
+
             const width = wristWidth * baseScale * jewelry.scale;
             const height = jewelry.loadedImage.height * (width / jewelry.loadedImage.width);
-            
+
             elements.ctx.drawImage(
                 jewelry.loadedImage,
                 -width/2,
@@ -3284,10 +3283,10 @@
                 width,
                 height
             );
-            
+
             elements.ctx.restore();
         }
-        
+
         // Camera access request
         async function requestCameraAccess() {
             try {
@@ -3306,26 +3305,26 @@
                 document.getElementById('cameraError').classList.remove('hidden');
             }
         }
-        
+
         function captureScreenshot() {
             try {
                 // Pause the video stream
                 elements.video.pause();
-                
+
                 // Create a new full-size canvas matching video dimensions
                 const captureCanvas = document.createElement('canvas');
                 captureCanvas.width = elements.video.videoWidth;
                 captureCanvas.height = elements.video.videoHeight;
                 const ctx = captureCanvas.getContext('2d');
-                
+
                 // Draw the video frame with mirroring if enabled
                 ctx.save();
                 if (appState.mirrorCamera) {
                     ctx.scale(-1, 1);
                     ctx.drawImage(
-                        elements.video, 
-                        -captureCanvas.width, 0, 
-                        captureCanvas.width, 
+                        elements.video,
+                        -captureCanvas.width, 0,
+                        captureCanvas.width,
                         captureCanvas.height
                     );
                 } else {
@@ -3337,15 +3336,15 @@
                     );
                 }
                 ctx.restore();
-                
+
                 // Draw jewelry canvas with the same mirroring if enabled
                 ctx.save();
                 if (appState.mirrorCamera) {
                     ctx.scale(-1, 1);
                     ctx.drawImage(
-                        elements.canvas, 
-                        -captureCanvas.width, 0, 
-                        captureCanvas.width, 
+                        elements.canvas,
+                        -captureCanvas.width, 0,
+                        captureCanvas.width,
                         captureCanvas.height
                     );
                 } else {
@@ -3357,10 +3356,10 @@
                     );
                 }
                 ctx.restore();
-                
+
                 // Try to get the data URL (this is where it might fail)
                 const dataUrl = captureCanvas.toDataURL('image/png');
-                
+
                 // Create modal for preview and save
                 const modal = document.createElement('div');
                 modal.style.position = 'fixed';
@@ -3374,16 +3373,16 @@
                 modal.style.flexDirection = 'column';
                 modal.style.alignItems = 'center';
                 modal.style.justifyContent = 'center';
-                
+
                 const previewImg = document.createElement('img');
                 previewImg.src = dataUrl;
                 previewImg.style.maxWidth = '90%';
                 previewImg.style.maxHeight = '80%';
                 previewImg.style.objectFit = 'contain';
-                
+
                 const buttonContainer = document.createElement('div');
                 buttonContainer.style.marginTop = '20px';
-                
+
                 const saveButton = document.createElement('button');
                 saveButton.textContent = 'Save';
                 saveButton.style.margin = '0 10px';
@@ -3401,11 +3400,11 @@
                     link.click();
                     document.body.removeChild(modal);
                     elements.video.play();
-                    
+
                     // Show review modal with the screenshot
                     showReviewModal(dataUrl);
                 };
-                
+
                 const cancelButton = document.createElement('button');
                 cancelButton.textContent = 'Cancel';
                 cancelButton.style.margin = '0 10px';
@@ -3419,28 +3418,28 @@
                 cancelButton.onclick = () => {
                     document.body.removeChild(modal);
                     elements.video.play();
-                    
+
                     // Show review modal even if they cancel
                     showReviewModal(dataUrl);
                 };
-                
+
                 buttonContainer.appendChild(saveButton);
                 buttonContainer.appendChild(cancelButton);
-                
+
                 modal.appendChild(previewImg);
                 modal.appendChild(buttonContainer);
-                
+
                 document.body.appendChild(modal);
-                
+
             } catch (error) {
                 console.error("Screenshot error:", error);
-                
+
                 // Resume video playback
                 elements.video.play();
-                
+
                 // Show error message to user
                 showToast("Cannot capture screenshot due to image security restrictions. Please try reloading the page.");
-                
+
                 // You can still show the review modal with a placeholder image
                 const placeholderImage = "https://via.placeholder.com/800x600?text=Screenshot+Unavailable";
                 showReviewModal(placeholderImage);
@@ -3454,39 +3453,39 @@
             if (shareImage) {
                 shareImage.src = imageUrl;
             }
-            
+
             // Activate the modal blocker to prevent interactions with the camera view
             const modalBlocker = document.getElementById('modalBlocker');
             if (modalBlocker) {
                 modalBlocker.style.display = 'block';
                 modalBlocker.style.pointerEvents = 'auto';
             }
-            
+
             // Show the review modal with proper z-index
             const reviewModal = document.getElementById('reviewModal');
             if (reviewModal) {
                 reviewModal.classList.remove('hidden');
                 reviewModal.style.zIndex = '3000';
             }
-            
+
             // Reset to first step
             resetReviewForm();
         }
-        
+
         // Add this to your finishReview event handler
         function closeReviewModal() {
             document.getElementById('reviewModal').classList.add('hidden');
-            
+
             // Hide the modal blocker
             const modalBlocker = document.getElementById('modalBlocker');
             if (modalBlocker) {
                 modalBlocker.style.display = 'none';
                 modalBlocker.style.pointerEvents = 'none';
             }
-            
+
             resetReviewForm();
         }
-        
+
         function resetReviewForm() {
             // Reset reviewData
             reviewData = {
@@ -3496,24 +3495,24 @@
                 name: '',
                 screenshot: reviewData.screenshot
             };
-            
+
             // Reset UI elements
             const stars = document.querySelectorAll('.star');
             stars.forEach(star => {
                 star.textContent = "☆";
                 star.classList.remove('active', 'pulse');
             });
-            
+
             const featureButtons = document.querySelectorAll('.feature-btn');
             featureButtons.forEach(button => {
                 button.classList.remove('selected');
             });
-            
+
             const reviewText = document.getElementById('reviewText');
             const reviewName = document.getElementById('reviewName');
             if (reviewText) reviewText.value = '';
             if (reviewName) reviewName.value = '';
-            
+
             // Reset to first step
             const steps = [
                 document.getElementById('reviewStep1'),
@@ -3521,46 +3520,46 @@
                 document.getElementById('reviewStep3'),
                 document.getElementById('socialSharingStep')
             ];
-            
+
             if (steps[0]) steps[0].classList.remove('hidden');
             if (steps[1]) steps[1].classList.add('hidden');
             if (steps[2]) steps[2].classList.add('hidden');
             if (steps[3]) steps[3].classList.add('hidden');
-            
+
             // Reset next button state
             const nextToStep2 = document.getElementById('nextToStep2');
             if (nextToStep2) {
                 nextToStep2.classList.add('opacity-50', 'cursor-not-allowed');
             }
-            
+
             // Hide rating feedback
             const ratingFeedback = document.getElementById('ratingFeedback');
             if (ratingFeedback) {
                 ratingFeedback.classList.add('opacity-0');
             }
         }
-        
+
         // 15. Setup Gesture Handlers
         function setupGestureHandlers() {
             initializeDragGesture();
             initializePinchGesture();
             initializeTapGesture();
-            
+
             // Add preview bar gestures
             const previewHandle = elements.previewHandle;
             if (previewHandle) {
                 let startY = 0;
-                
+
                 previewHandle.addEventListener('click', togglePreviewBar);
-                
+
                 previewHandle.addEventListener('touchstart', (e) => {
                     startY = e.touches[0].clientY;
                     e.preventDefault();
                 });
-                
+
                 previewHandle.addEventListener('touchmove', (e) => {
                     const deltaY = e.touches[0].clientY - startY;
-                    
+
                     // If swiping up more than 10px, expand preview bar
                     if (deltaY < -10) {
                         elements.previewBar.classList.remove('collapsed');
@@ -3569,12 +3568,12 @@
                     else if (deltaY > 10) {
                         elements.previewBar.classList.add('collapsed');
                     }
-                    
+
                     e.preventDefault();
                 });
             }
         }
-        
+
         // 14. Initialize Drag Gesture
         function initializeDragGesture() {
             const canvas = elements.canvas;
@@ -3582,70 +3581,70 @@
             let dragJewelryId = null;
             let dragStartPosition = { x: 0, y: 0 };
             let jewelryStartOffset = { x: 0, y: 0 };
-            
+
             // For canvas jewelry dragging
             canvas.addEventListener('touchstart', (e) => {
                 if (e.touches.length !== 1 || appState.activeJewelry.size === 0) return;
-                
+
                 const touch = e.touches[0];
                 const position = { x: touch.clientX, y: touch.clientY };
-                
+
                 // Find jewelry at touch point
                 const jewelryId = findJewelryAtPoint(position.x, position.y);
                 if (jewelryId) {
                     isDragging = true;
                     dragJewelryId = jewelryId;
                     dragStartPosition = position;
-                    
+
                     // Store starting offset
                     const jewelry = appState.activeJewelry.get(jewelryId);
                     jewelryStartOffset = { ...jewelry.offset };
-                    
+
                     // Prevent scrolling while dragging jewelry
                     e.preventDefault();
                 }
             });
-            
+
             canvas.addEventListener('touchmove', (e) => {
                 if (!isDragging || !dragJewelryId) return;
-                
+
                 const touch = e.touches[0];
                 const position = { x: touch.clientX, y: touch.clientY };
-                
+
                 // Calculate movement delta
                 const deltaX = position.x - dragStartPosition.x;
                 const deltaY = position.y - dragStartPosition.y;
-                
+
                 // Update jewelry position
                 const jewelry = appState.activeJewelry.get(dragJewelryId);
                 if (jewelry) {
                     jewelry.offset.x = jewelryStartOffset.x + deltaX;
                     jewelry.offset.y = jewelryStartOffset.y + deltaY;
                 }
-                
+
                 // Reset auto-hide timer when dragging
                 resetControlsTimer();
-                
+
                 // Prevent scrolling
                 e.preventDefault();
             });
-            
+
             canvas.addEventListener('touchend', (e) => {
                 isDragging = false;
                 dragJewelryId = null;
             });
-            
+
             canvas.addEventListener('touchcancel', (e) => {
                 isDragging = false;
                 dragJewelryId = null;
             });
-            
+
             // For dragging the floating controls panel
             const controlHeader = elements.floatingControls.querySelector('.control-header');
             let isDraggingControls = false;
             let controlsStartX = 0;
             let controlsStartY = 0;
-            
+
             if (controlHeader) {
                 controlHeader.addEventListener('mousedown', (e) => {
                     isDraggingControls = true;
@@ -3654,7 +3653,7 @@
                     controlHeader.style.cursor = 'grabbing';
                     e.preventDefault();
                 });
-                
+
                 controlHeader.addEventListener('touchstart', (e) => {
                     isDraggingControls = true;
                     controlsStartX = e.touches[0].clientX - elements.floatingControls.getBoundingClientRect().left;
@@ -3662,70 +3661,70 @@
                     e.preventDefault();
                 });
             }
-            
+
             window.addEventListener('mousemove', (e) => {
                 if (!isDraggingControls) return;
-                
+
                 const x = e.clientX - controlsStartX;
                 const y = e.clientY - controlsStartY;
-                
+
                 // Constrain to viewport
                 const maxX = window.innerWidth - elements.floatingControls.offsetWidth;
                 const maxY = window.innerHeight - elements.floatingControls.offsetHeight;
-                
+
                 elements.floatingControls.style.left = `${Math.max(0, Math.min(maxX, x))}px`;
                 elements.floatingControls.style.top = `${Math.max(0, Math.min(maxY, y))}px`;
-                
+
                 // Remove any transform that might be applied
                 elements.floatingControls.style.transform = 'none';
-                
+
                 // Reset auto-hide timer when dragging controls
                 resetControlsTimer();
             });
-            
+
             window.addEventListener('touchmove', (e) => {
                 if (!isDraggingControls) return;
-                
+
                 const x = e.touches[0].clientX - controlsStartX;
                 const y = e.touches[0].clientY - controlsStartY;
-                
+
                 // Constrain to viewport
                 const maxX = window.innerWidth - elements.floatingControls.offsetWidth;
                 const maxY = window.innerHeight - elements.floatingControls.offsetHeight;
-                
+
                 elements.floatingControls.style.left = `${Math.max(0, Math.min(maxX, x))}px`;
                 elements.floatingControls.style.top = `${Math.max(0, Math.min(maxY, y))}px`;
-                
+
                 // Remove any transform that might be applied
                 elements.floatingControls.style.transform = 'none';
-                
+
                 // Reset auto-hide timer when dragging controls
                 resetControlsTimer();
-                
+
                 e.preventDefault();
             });
-            
+
             window.addEventListener('mouseup', () => {
                 if (isDraggingControls && controlHeader) {
                     controlHeader.style.cursor = 'grab';
                 }
                 isDraggingControls = false;
             });
-            
+
             window.addEventListener('touchend', () => {
                 isDraggingControls = false;
             });
         }
-        
+
         // 13. Initialize Pinch Gesture
         function initializePinchGesture() {
             const canvas = elements.canvas;
             let initialDistance = 0;
             let selectedJewelryId = null;
-            
+
             canvas.addEventListener('touchstart', (e) => {
                 if (e.touches.length !== 2 || appState.activeJewelry.size === 0) return;
-                
+
                 // Calculate initial distance between touch points
                 const touch1 = e.touches[0];
                 const touch2 = e.touches[1];
@@ -3733,20 +3732,20 @@
                     touch2.clientX - touch1.clientX,
                     touch2.clientY - touch1.clientY
                 );
-                
+
                 // Find jewelry at midpoint of touch
                 const midX = (touch1.clientX + touch2.clientX) / 2;
                 const midY = (touch1.clientY + touch2.clientY) / 2;
                 selectedJewelryId = findJewelryAtPoint(midX, midY);
-                
+
                 if (selectedJewelryId) {
                     e.preventDefault(); // Prevent default zoom behavior
                 }
             });
-            
+
             canvas.addEventListener('touchmove', (e) => {
                 if (e.touches.length !== 2 || !selectedJewelryId) return;
-                
+
                 // Calculate new distance between touch points
                 const touch1 = e.touches[0];
                 const touch2 = e.touches[1];
@@ -3754,59 +3753,59 @@
                     touch2.clientX - touch1.clientX,
                     touch2.clientY - touch1.clientY
                 );
-                
+
                 // Calculate scale factor
                 const scaleFactor = currentDistance / initialDistance;
-                
+
                 // Get jewelry and update scale
                 const jewelry = appState.activeJewelry.get(selectedJewelryId);
                 if (jewelry) {
                     // Apply a dampening factor to make the scale change smoother
                     const dampening = 0.03;
                     const newScale = jewelry.scale * (1 + (scaleFactor - 1) * dampening);
-                    
+
                     // Limit scale to reasonable bounds
                     jewelry.scale = Math.max(0.2, Math.min(3.0, newScale));
-                    
+
                     // Update size value in control panel if visible
                     const sizeValue = document.getElementById('sizeValue');
                     if (sizeValue) {
                         sizeValue.textContent = `${Math.round(jewelry.scale * 100)}%`;
                     }
                 }
-                
+
                 // Reset auto-hide timer on interaction
                 resetControlsTimer();
-                
+
                 e.preventDefault(); // Prevent default zoom behavior
             });
-            
+
             canvas.addEventListener('touchend', (e) => {
                 if (e.touches.length === 0) {
                     selectedJewelryId = null;
                 }
             });
         }
-        
+
         // 12. Initialize Tap Gesture
         function initializeTapGesture() {
             const canvas = elements.canvas;
             let lastTapTime = 0;
             let lastTapPosition = { x: 0, y: 0 };
-            
+
             canvas.addEventListener('touchend', (e) => {
                 if (e.touches.length > 0 || appState.activeJewelry.size === 0) return;
-                
+
                 const touch = e.changedTouches[0];
                 const currentTime = new Date().getTime();
                 const tapPosition = { x: touch.clientX, y: touch.clientY };
-                
+
                 // Detect if this is a genuine tap
                 const moveDistance = Math.sqrt(
-                    Math.pow(tapPosition.x - lastTapPosition.x, 2) + 
+                    Math.pow(tapPosition.x - lastTapPosition.x, 2) +
                     Math.pow(tapPosition.y - lastTapPosition.y, 2)
                 );
-                
+
                 if (moveDistance < 10) {
                     // Find jewelry at tap position
                     const jewelryId = findJewelryAtPoint(tapPosition.x, tapPosition.y);
@@ -3821,26 +3820,26 @@
                                 hideFloatingControls();
                             }
                         }
-                        
+
                         lastTapTime = currentTime;
                     } else {
                         // If tap on empty space, hide controls
                         hideFloatingControls();
                     }
                 }
-                
+
                 lastTapPosition = tapPosition;
             });
-            
+
             // Single click for desktop support
             canvas.addEventListener('click', (e) => {
                 if (appState.activeJewelry.size === 0) return;
-                
+
                 // Find jewelry at click position
                 const jewelryId = findJewelryAtPoint(e.clientX, e.clientY);
                 if (jewelryId) {
                     // Toggle controls
-                    if (elements.floatingControls.classList.contains('hidden') || 
+                    if (elements.floatingControls.classList.contains('hidden') ||
                         appState.selectedJewelryId !== jewelryId) {
                         appState.selectedJewelryId = jewelryId;
                         renderFloatingControls(jewelryId);
@@ -3854,39 +3853,39 @@
                 }
             });
         }
-        
+
         // 11. Find Jewelry at Point
         function findJewelryAtPoint(clientX, clientY) {
             // Convert client coordinates to canvas coordinates
             const rect = elements.canvas.getBoundingClientRect();
             const canvasX = (clientX - rect.left) * (elements.canvas.width / rect.width);
             const canvasY = (clientY - rect.top) * (elements.canvas.height / rect.height);
-            
+
             // Check each active jewelry
             for (const [id, jewelry] of appState.activeJewelry.entries()) {
                 if (!jewelry.visible) continue;
-                
+
                 // Simplified hit testing based on jewelry type
                 let hit = false;
-                
+
                 if (jewelry.type === 'earrings' && appState.faceLandmarks) {
                     // Test both earrings
                     const leftLobe = appState.faceLandmarks[177];
                     const rightLobe = appState.faceLandmarks[401];
-                    
+
                     if (leftLobe && rightLobe) {
                         const leftX = leftLobe.x * elements.canvas.width + jewelry.offset.x;
                         const leftY = leftLobe.y * elements.canvas.height + jewelry.offset.y;
                         const rightX = rightLobe.x * elements.canvas.width + jewelry.offset.x;
                         const rightY = rightLobe.y * elements.canvas.height + jewelry.offset.y;
-                        
+
                         // Hit radius based on scale
                         const radius = 50 * jewelry.scale;
-                        
+
                         // Check if touch is inside either earring's hit area
                         const leftDist = Math.sqrt(Math.pow(canvasX - leftX, 2) + Math.pow(canvasY - leftY, 2));
                         const rightDist = Math.sqrt(Math.pow(canvasX - rightX, 2) + Math.pow(canvasY - rightY, 2));
-                        
+
                         if (leftDist < radius || rightDist < radius) {
                             hit = true;
                         }
@@ -3894,14 +3893,14 @@
                 } else if (jewelry.type === 'necklace' && appState.poseLandmarks) {
                     const leftShoulder = appState.poseLandmarks[11];
                     const rightShoulder = appState.poseLandmarks[12];
-                    
+
                     if (leftShoulder && rightShoulder) {
                         const centerX = (leftShoulder.x + rightShoulder.x) / 2 * elements.canvas.width + jewelry.offset.x;
                         const centerY = leftShoulder.y * elements.canvas.height - 100 + jewelry.offset.y;
-                        
+
                         // Hit area based on necklace size
                         const hitRadius = 100 * jewelry.scale;
-                        
+
                         const dist = Math.sqrt(Math.pow(canvasX - centerX, 2) + Math.pow(canvasY - centerY, 2));
                         if (dist < hitRadius) {
                             hit = true;
@@ -3909,14 +3908,14 @@
                     }
                 } else if (jewelry.type === 'single' && appState.faceLandmarks) {
                     const centerPoint = appState.faceLandmarks[151];
-                    
+
                     if (centerPoint) {
                         const x = centerPoint.x * elements.canvas.width + jewelry.offset.x;
                         const y = centerPoint.y * elements.canvas.height - 20 + jewelry.offset.y;
-                        
+
                         // Hit radius based on scale
                         const radius = 50 * jewelry.scale;
-                        
+
                         const dist = Math.sqrt(Math.pow(canvasX - x, 2) + Math.pow(canvasY - y, 2));
                         if (dist < radius) {
                             hit = true;
@@ -3924,23 +3923,23 @@
                     }
                 } else if (jewelry.type === 'hand' && appState.handLandmarks && appState.handLandmarks.length > 0) {
                     const handIndex = jewelry.handIndex || 0;
-                    
+
                     if (appState.handLandmarks[handIndex]) {
                         // For ring
                         if (id.startsWith('ring')) {
                             const handLandmarks = appState.handLandmarks[handIndex];
                             const fingerTip = handLandmarks[jewelry.fingerIndex];
                             const fingerBase = handLandmarks[jewelry.fingerIndex - 3];
-                            
+
                             if (fingerTip && fingerBase) {
                                 // Position ring between tip and base
                                 const positionRatio = 0.3;
                                 const x = (fingerBase.x + (fingerTip.x - fingerBase.x) * positionRatio) * elements.canvas.width + jewelry.offset.x;
                                 const y = (fingerBase.y + (fingerTip.y - fingerBase.y) * positionRatio) * elements.canvas.height + jewelry.offset.y;
-                                
+
                                 // Hit radius based on ring size
                                 const radius = 30 * jewelry.scale;
-                                
+
                                 const dist = Math.sqrt(Math.pow(canvasX - x, 2) + Math.pow(canvasY - y, 2));
                                 if (dist < radius) {
                                     hit = true;
@@ -3949,14 +3948,14 @@
                         } else if (id.startsWith('bangle')) {
                             const handLandmarks = appState.handLandmarks[handIndex];
                             const wrist = handLandmarks[0];
-                            
+
                             if (wrist) {
                                 const x = wrist.x * elements.canvas.width + jewelry.offset.x;
                                 const y = wrist.y * elements.canvas.height + jewelry.offset.y;
-                                
+
                                 // Hit radius based on bangle size
                                 const radius = 40 * jewelry.scale;
-                                
+
                                 const dist = Math.sqrt(Math.pow(canvasX - x, 2) + Math.pow(canvasY - y, 2));
                                 if (dist < radius) {
                                     hit = true;
@@ -3965,20 +3964,20 @@
                         }
                     }
                 }
-                
+
                 if (hit) {
                     return id;
                 }
             }
-            
+
             return null; // No jewelry found at touch point
         }
-        
+
         // 10. Add to Cart Function
         function addToCart(id) {
             const item = JEWELRY[id];
             if (!item) return;
-            
+
             // Just show toast notification
             showToast(`${item.name} added to cart`);
         }
@@ -4007,101 +4006,101 @@
             // For compatibility with existing code - now just logs
             console.log('Loading status:', message);
         }
-        
+
         function showError(message) {
             console.error('Loading error:', message);
             showToast(message, 'error');
         }
-        
+
         function hideLoadingScreen() {
             hideLogoAnimation();
         }
-        
+
         function setPerformanceMode(mode) {
             appState.performanceMode = mode;
-            
+
             // Update UI buttons
             const lowBtn = document.querySelector('button[onclick="setPerformanceMode(\'low\')"]');
             const mediumBtn = document.querySelector('button[onclick="setPerformanceMode(\'medium\')"]');
             const highBtn = document.querySelector('button[onclick="setPerformanceMode(\'high\')"]');
-            
+
             if (lowBtn) lowBtn.classList.toggle('bg-primary', mode === 'low');
             if (lowBtn) lowBtn.classList.toggle('text-white', mode === 'low');
             if (mediumBtn) mediumBtn.classList.toggle('bg-primary', mode === 'medium');
             if (mediumBtn) mediumBtn.classList.toggle('text-white', mode === 'medium');
             if (highBtn) highBtn.classList.toggle('bg-primary', mode === 'high');
             if (highBtn) highBtn.classList.toggle('text-white', mode === 'high');
-            
+
             // Apply performance settings to AI models
             switch(mode) {
                 case 'low':
-                    if (faceMesh) faceMesh.setOptions({ 
+                    if (faceMesh) faceMesh.setOptions({
                         maxNumFaces: 1,
-                        refineLandmarks: false, 
-                        minDetectionConfidence: 0.7, 
-                        minTrackingConfidence: 0.7 
+                        refineLandmarks: false,
+                        minDetectionConfidence: 0.7,
+                        minTrackingConfidence: 0.7
                     });
-                    if (hands) hands.setOptions({ 
-                        maxNumHands: 1, 
-                        modelComplexity: 0, 
-                        minDetectionConfidence: 0.7, 
-                        minTrackingConfidence: 0.7 
+                    if (hands) hands.setOptions({
+                        maxNumHands: 1,
+                        modelComplexity: 0,
+                        minDetectionConfidence: 0.7,
+                        minTrackingConfidence: 0.7
                     });
-                    if (pose) pose.setOptions({ 
-                        modelComplexity: 0, 
+                    if (pose) pose.setOptions({
+                        modelComplexity: 0,
                         smoothLandmarks: true,
-                        minDetectionConfidence: 0.7, 
-                        minTrackingConfidence: 0.7 
+                        minDetectionConfidence: 0.7,
+                        minTrackingConfidence: 0.7
                     });
                     showToast('Low performance mode active');
                     break;
-                    
+
                 case 'medium':
-                    if (faceMesh) faceMesh.setOptions({ 
+                    if (faceMesh) faceMesh.setOptions({
                         maxNumFaces: 1,
-                        refineLandmarks: true, 
-                        minDetectionConfidence: 0.5, 
-                        minTrackingConfidence: 0.5 
+                        refineLandmarks: true,
+                        minDetectionConfidence: 0.5,
+                        minTrackingConfidence: 0.5
                     });
-                    if (hands) hands.setOptions({ 
-                        maxNumHands: 2, 
-                        modelComplexity: 0, 
-                        minDetectionConfidence: 0.5, 
-                        minTrackingConfidence: 0.5 
+                    if (hands) hands.setOptions({
+                        maxNumHands: 2,
+                        modelComplexity: 0,
+                        minDetectionConfidence: 0.5,
+                        minTrackingConfidence: 0.5
                     });
-                    if (pose) pose.setOptions({ 
-                        modelComplexity: 0, 
+                    if (pose) pose.setOptions({
+                        modelComplexity: 0,
                         smoothLandmarks: true,
-                        minDetectionConfidence: 0.5, 
-                        minTrackingConfidence: 0.5 
+                        minDetectionConfidence: 0.5,
+                        minTrackingConfidence: 0.5
                     });
                     showToast('Medium performance mode active');
                     break;
-                    
+
                 case 'high':
-                    if (faceMesh) faceMesh.setOptions({ 
+                    if (faceMesh) faceMesh.setOptions({
                         maxNumFaces: 1,
-                        refineLandmarks: true, 
-                        minDetectionConfidence: 0.5, 
-                        minTrackingConfidence: 0.5 
+                        refineLandmarks: true,
+                        minDetectionConfidence: 0.5,
+                        minTrackingConfidence: 0.5
                     });
-                    if (hands) hands.setOptions({ 
-                        maxNumHands: 2, 
-                        modelComplexity: 1, 
-                        minDetectionConfidence: 0.5, 
-                        minTrackingConfidence: 0.5 
+                    if (hands) hands.setOptions({
+                        maxNumHands: 2,
+                        modelComplexity: 1,
+                        minDetectionConfidence: 0.5,
+                        minTrackingConfidence: 0.5
                     });
-                    if (pose) pose.setOptions({ 
-                        modelComplexity: 1, 
+                    if (pose) pose.setOptions({
+                        modelComplexity: 1,
                         smoothLandmarks: true,
-                        minDetectionConfidence: 0.5, 
-                        minTrackingConfidence: 0.5 
+                        minDetectionConfidence: 0.5,
+                        minTrackingConfidence: 0.5
                     });
                     showToast('High performance mode active');
                     break;
             }
         }
-        
+
         // Window resize handler
         window.addEventListener('resize', () => {
             // Update canvas dimensions to match video
@@ -4109,14 +4108,14 @@
                 elements.canvas.width = elements.video.videoWidth;
                 elements.canvas.height = elements.video.videoHeight;
             }
-            
+
             // Hide floating controls to prevent them being in wrong position
             hideFloatingControls();
-            
+
             // Re-render active jewelry after resize
             renderJewelry();
         });
-        
+
         // Handle orientation change
         window.addEventListener('orientationchange', () => {
             // Short delay to allow UI to stabilize after rotation
@@ -4126,15 +4125,15 @@
                     elements.canvas.width = elements.video.videoWidth;
                     elements.canvas.height = elements.video.videoHeight;
                 }
-                
+
                 // Hide floating controls
                 hideFloatingControls();
-                
+
                 // Re-render active jewelry
                 renderJewelry();
             }, 300);
         });
-        
+
         // Initialize the app when the document is loaded
         document.addEventListener('DOMContentLoaded', init);
         let reviewData = {
@@ -4144,7 +4143,7 @@
             name: '',
             screenshot: null
         };
-        
+
         // DOM Elements
         const reviewModal = document.getElementById('reviewModal');
         const reviewStep1 = document.getElementById('reviewStep1');
@@ -4161,7 +4160,7 @@
         const stars = document.querySelectorAll('.star');
         const featureButtons = document.querySelectorAll('.feature-btn');
         const confettiCanvas = document.getElementById('confettiCanvas');
-        
+
         // Initialize confetti context
         const confettiCtx = confettiCanvas ? confettiCanvas.getContext('2d') : null;
         // Initialize event listeners for review system after DOM is loaded
@@ -4172,13 +4171,13 @@
                 star.addEventListener('click', () => {
                     const rating = parseInt(star.dataset.rating);
                     reviewData.rating = rating;
-                    
+
                     // Update visual appearance of stars
                     stars.forEach((s, index) => {
                         const starRating = parseInt(s.dataset.rating);
                         // Remove all classes first
                         s.classList.remove('active', 'pulse');
-                        
+
                         // Add appropriate classes
                         if (starRating <= rating) {
                             s.textContent = "★";
@@ -4191,11 +4190,11 @@
                             s.textContent = "☆";
                         }
                     });
-                    
+
                     // Show appropriate feedback based on rating
                     const ratingFeedback = document.getElementById('ratingFeedback');
                     ratingFeedback.classList.remove('opacity-0');
-                    
+
                     if (rating <= 2) {
                         // Low rating feedback with shake animation
                         ratingFeedback.innerHTML = `
@@ -4220,28 +4219,28 @@
                                 <p>We're thrilled you enjoyed it!</p>
                             </div>
                         `;
-                        
+
                         // Show confetti for high ratings
                         showConfetti();
                     }
-                    
+
                     // Enable the next button
                     const nextToStep2 = document.getElementById('nextToStep2');
                     nextToStep2.classList.remove('opacity-50', 'cursor-not-allowed');
-                    
+
                     // Remove animation classes after they play
                     setTimeout(() => {
                         ratingFeedback.classList.remove('shake-animation', 'celebrate-animation');
                     }, 1000);
                 });
             });
-            
+
             // Initialize feature buttons
             const featureButtons = document.querySelectorAll('.feature-btn');
             featureButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     button.classList.toggle('selected');
-                    
+
                     // Update the features array in reviewData
                     const featureText = button.textContent.trim();
                     if (button.classList.contains('selected')) {
@@ -4255,7 +4254,7 @@
                     }
                 });
             });
-            
+
             // Initialize navigation buttons
             const nextToStep2 = document.getElementById('nextToStep2');
             if (nextToStep2) {
@@ -4266,7 +4265,7 @@
                     }
                 });
             }
-            
+
             const backToStep1 = document.getElementById('backToStep1');
             if (backToStep1) {
                 backToStep1.addEventListener('click', () => {
@@ -4274,7 +4273,7 @@
                     document.getElementById('reviewStep1').classList.remove('hidden');
                 });
             }
-            
+
             const nextToStep3 = document.getElementById('nextToStep3');
             if (nextToStep3) {
                 nextToStep3.addEventListener('click', () => {
@@ -4282,7 +4281,7 @@
                     document.getElementById('reviewStep3').classList.remove('hidden');
                 });
             }
-            
+
             const backToStep2 = document.getElementById('backToStep2');
             if (backToStep2) {
                 backToStep2.addEventListener('click', () => {
@@ -4290,7 +4289,7 @@
                     document.getElementById('reviewStep2').classList.remove('hidden');
                 });
             }
-            
+
             // Initialize submit review
             const submitReview = document.getElementById('submitReview');
             if (submitReview) {
@@ -4300,10 +4299,10 @@
                     const reviewName = document.getElementById('reviewName');
                     reviewData.feedback = reviewText ? reviewText.value : '';
                     reviewData.name = reviewName && reviewName.value ? reviewName.value : 'Anonymous';
-                    
+
                     // Here you would typically send this data to your server
                     console.log('Review submitted:', reviewData);
-                    
+
                     // Show thumbs up animation before moving to social step
                     const thumbsUp = document.createElement('div');
                     thumbsUp.innerHTML = `
@@ -4312,7 +4311,7 @@
                         </div>
                     `;
                     document.body.appendChild(thumbsUp);
-                    
+
                     // Show social sharing step after a brief delay
                     setTimeout(() => {
                         document.body.removeChild(thumbsUp);
@@ -4321,7 +4320,7 @@
                     }, 1500);
                 });
             }
-            
+
             // Initialize social sharing
             const shareInstagram = document.getElementById('shareInstagram');
             if (shareInstagram) {
@@ -4330,7 +4329,7 @@
                     window.open('https://www.instagram.com', '_blank');
                 });
             }
-            
+
             const shareTwitter = document.getElementById('shareTwitter');
             if (shareTwitter) {
                 shareTwitter.addEventListener('click', (e) => {
@@ -4340,7 +4339,7 @@
                     window.open(shareUrl, '_blank');
                 });
             }
-            
+
             const shareFacebook = document.getElementById('shareFacebook');
             if (shareFacebook) {
                 shareFacebook.addEventListener('click', (e) => {
@@ -4349,7 +4348,7 @@
                     window.open(shareUrl, '_blank');
                 });
             }
-            
+
             const shareWhatsapp = document.getElementById('shareWhatsapp');
             if (shareWhatsapp) {
                 shareWhatsapp.addEventListener('click', (e) => {
@@ -4359,7 +4358,7 @@
                     window.open(shareUrl, '_blank');
                 });
             }
-            
+
             // Initialize close button
             // In the finish review function
             const finishReview = document.getElementById('finishReview');
@@ -4370,25 +4369,25 @@
                 });
             }
         }); // Add this closing brace
-        
+
         // Confetti Animation Function
         function showConfetti() {
             const confettiCanvas = document.getElementById('confettiCanvas');
             if (!confettiCanvas) return;
-            
+
             const confettiCtx = confettiCanvas.getContext('2d');
             confettiCanvas.classList.remove('hidden');
-            
+
             // Set canvas dimensions
             confettiCanvas.width = window.innerWidth;
             confettiCanvas.height = window.innerHeight;
-            
+
             const particles = [];
             const particleCount = 150;
             const gravity = 0.5;
             const colors = ['#0d2e55', '#2ec4db', '#7c349b', '#ff8a3d', '#ffb37b'];
             const shapes = ['circle', 'square', 'triangle'];
-            
+
             // Create particles
             for (let i = 0; i < particleCount; i++) {
                 particles.push({
@@ -4405,32 +4404,32 @@
                     rotationSpeed: Math.random() * 10 - 5
                 });
             }
-            
+
             // Animation loop
             function animate() {
                 if (confettiCanvas.classList.contains('hidden')) return;
-                
+
                 confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-                
+
                 let stillAnimating = false;
-                
+
                 particles.forEach(p => {
                     p.y += p.velocity.y;
                     p.x += p.velocity.x;
                     p.velocity.y += gravity / 10;
                     p.rotation += p.rotationSpeed;
-                    
+
                     // Check if any particles are still visible
                     if (p.y < confettiCanvas.height) {
                         stillAnimating = true;
                     }
-                    
+
                     confettiCtx.save();
                     confettiCtx.translate(p.x, p.y);
                     confettiCtx.rotate(p.rotation * Math.PI / 180);
-                    
+
                     confettiCtx.fillStyle = p.color;
-                    
+
                     if (p.shape === 'circle') {
                         confettiCtx.beginPath();
                         confettiCtx.arc(0, 0, p.size, 0, Math.PI * 2);
@@ -4445,17 +4444,17 @@
                         confettiCtx.closePath();
                         confettiCtx.fill();
                     }
-                    
+
                     confettiCtx.restore();
                 });
-                
+
                 if (stillAnimating) {
                     requestAnimationFrame(animate);
                 } else {
                     confettiCanvas.classList.add('hidden');
                 }
             }
-            
+
             animate();
         }
 
@@ -4475,18 +4474,18 @@
                 this.startButton = document.getElementById('tourStart');
                 this.dismissButton = document.getElementById('tourDismiss');
                 this.restartButton = document.getElementById('restartTour');
-                
+
                 // Check if elements exist
                 if (!this.overlay || !this.highlight || !this.tooltip) {
                     console.error('Tour elements not found in the DOM');
                     return;
                 }
-                
+
                 // Tour state
                 this.currentStep = 0;
                 this.tourActive = false;
                 this.hasSeenTour = localStorage.getItem('hasSeenTour') === 'true';
-                
+
                 // Tour steps configuration
                 this.tourSteps = [
                     {
@@ -4541,12 +4540,12 @@
                         isLast: true
                     }
                 ];
-                
+
                 // Initialize event listeners
                 this.initEventListeners();
                 console.log('GuidedTour initialized successfully');
             }
-            
+
             initEventListeners() {
                 // Welcome modal buttons
                 if (this.startButton) {
@@ -4556,7 +4555,7 @@
                         this.startTour();
                     });
                 }
-                
+
                 if (this.dismissButton) {
                     this.dismissButton.addEventListener('click', () => {
                         console.log('Dismiss tour clicked');
@@ -4565,7 +4564,7 @@
                         this.showRestartButton();
                     });
                 }
-                
+
                 // Tour navigation buttons
                 if (this.nextButton) {
                     this.nextButton.addEventListener('click', () => {
@@ -4573,14 +4572,14 @@
                         this.nextStep();
                     });
                 }
-                
+
                 if (this.skipButton) {
                     this.skipButton.addEventListener('click', () => {
                         console.log('Skip button clicked');
                         this.endTour();
                     });
                 }
-                
+
                 // Restart tour button
                 if (this.restartButton) {
                     this.restartButton.addEventListener('click', () => {
@@ -4588,7 +4587,7 @@
                         this.startTour();
                     });
                 }
-                
+
                 // Listen for window resize to reposition elements
                 window.addEventListener('resize', () => {
                     if (this.tourActive) {
@@ -4596,38 +4595,38 @@
                         this.positionElements();
                     }
                 });
-                
+
                 console.log('Tour event listeners initialized');
             }
-            
+
             showWelcomeModal() {
                 console.log('Showing welcome modal');
                 if (this.welcomeModal) {
                     this.welcomeModal.classList.add('active');
                 }
             }
-            
+
             hideWelcomeModal() {
                 console.log('Hiding welcome modal');
                 if (this.welcomeModal) {
                     this.welcomeModal.classList.remove('active');
                 }
             }
-            
+
             showRestartButton() {
                 console.log('Showing restart button');
                 if (this.restartButton) {
                     this.restartButton.style.display = 'flex';
                 }
             }
-            
+
             hideRestartButton() {
                 console.log('Hiding restart button');
                 if (this.restartButton) {
                     this.restartButton.style.display = 'none';
                 }
             }
-            
+
             startTour() {
                 console.log('Starting tour');
                 this.currentStep = 0;
@@ -4636,27 +4635,27 @@
                 this.goToStep(0);
                 localStorage.setItem('hasSeenTour', 'true');
             }
-            
+
             endTour() {
                 console.log('Ending tour');
                 this.tourActive = false;
-                
+
                 if (this.overlay) {
                     this.overlay.classList.remove('active');
                 }
                 if (this.tooltip) {
                     this.tooltip.classList.remove('active');
                 }
-                
+
                 // Clean up any temporary changes
                 const currentStep = this.tourSteps[this.currentStep];
                 if (currentStep && currentStep.cleanupFunction) {
                     currentStep.cleanupFunction();
                 }
-                
+
                 this.showRestartButton();
             }
-            
+
             nextStep() {
                 console.log(`Moving from step ${this.currentStep} to next step`);
                 // Clean up any temporary changes
@@ -4664,47 +4663,47 @@
                 if (currentStep && currentStep.cleanupFunction) {
                     currentStep.cleanupFunction();
                 }
-                
+
                 if (this.currentStep < this.tourSteps.length - 1) {
                     this.goToStep(this.currentStep + 1);
                 } else {
                     this.endTour();
                 }
             }
-            
+
             goToStep(stepIndex) {
                 if (stepIndex < 0 || stepIndex >= this.tourSteps.length) return;
-                
+
                 console.log(`Going to step ${stepIndex}: ${this.tourSteps[stepIndex].title}`);
                 this.currentStep = stepIndex;
                 const step = this.tourSteps[stepIndex];
-                
+
                 // Update progress text
                 if (this.progressText) {
                     this.progressText.textContent = `Step ${stepIndex + 1} of ${this.tourSteps.length}`;
                 }
-                
+
                 // Update tooltip content
                 if (this.tooltipTitle && this.tooltipContent) {
                     this.tooltipTitle.textContent = step.title;
                     this.tooltipContent.textContent = step.content;
                 }
-                
+
                 // Change Next button text on last step
                 if (this.nextButton) {
                     this.nextButton.textContent = step.isLast ? 'Finish' : 'Next';
                 }
-                
+
                 // Run any setup function for this step
                 if (step.setupFunction) {
                     step.setupFunction();
                 }
-                
+
                 // Show the overlay
                 if (this.overlay) {
                     this.overlay.classList.add('active');
                 }
-                
+
                 // Short delay to ensure elements are ready
                 setTimeout(() => {
                     this.positionElements();
@@ -4713,12 +4712,12 @@
                     }
                 }, 300);
             }
-            
+
             positionElements() {
                 console.log('Positioning tour elements');
                 const step = this.tourSteps[this.currentStep];
                 if (!step) return;
-                
+
                 // For modal steps (center of screen)
                 if (step.isModal) {
                     console.log('Positioning modal step');
@@ -4729,38 +4728,38 @@
                         this.tooltip.style.transform = 'translate(-50%, -50%)';
                         this.tooltip.className = 'tour-tooltip active';
                     }
-                    
+
                     // No highlight for modals
                     if (this.highlight) {
                         this.highlight.style.display = 'none';
                     }
                     return;
                 }
-                
+
                 // For regular steps that highlight elements
                 if (this.highlight) {
                     this.highlight.style.display = 'block';
                 }
-                
+
                 const elementToHighlight = document.querySelector(step.element);
                 if (!elementToHighlight) {
                     console.error(`Element not found: ${step.element}`);
                     return;
                 }
-                
+
                 // Get element position and dimensions
                 const rect = elementToHighlight.getBoundingClientRect();
                 console.log(`Element rect: ${JSON.stringify(rect)}`);
-                
+
                 // Add padding to the highlight
                 const padding = step.padding || 0;
-                
+
                 // Position the highlight
                 if (this.highlight) {
                     if (step.spotlight === 'circle') {
                         const diameter = Math.max(rect.width, rect.height) + padding * 2;
                         const radius = diameter / 2;
-                        
+
                         this.highlight.style.width = `${diameter}px`;
                         this.highlight.style.height = `${diameter}px`;
                         this.highlight.style.borderRadius = '50%';
@@ -4775,15 +4774,15 @@
                         this.highlight.style.left = `${rect.left - padding}px`;
                     }
                 }
-                
+
                 // Position the tooltip
                 if (this.tooltip) {
                     const tooltipWidth = this.tooltip.offsetWidth || 300;
                     const tooltipHeight = this.tooltip.offsetHeight || 150;
-                    
+
                     // Remove all position classes
                     this.tooltip.className = 'tour-tooltip active';
-                    
+
                     // Position based on the specified direction
                     switch(step.position) {
                         case 'top':
@@ -4791,44 +4790,44 @@
                             this.tooltip.style.top = `${rect.top - tooltipHeight - 15}px`;
                             this.tooltip.style.left = `${rect.left + rect.width/2 - tooltipWidth/2}px`;
                             break;
-                            
+
                         case 'bottom':
                             this.tooltip.classList.add('top');
                             this.tooltip.style.top = `${rect.bottom + 15}px`;
                             this.tooltip.style.left = `${rect.left + rect.width/2 - tooltipWidth/2}px`;
                             break;
-                            
+
                         case 'left':
                             this.tooltip.classList.add('right');
                             this.tooltip.style.top = `${rect.top + rect.height/2 - tooltipHeight/2}px`;
                             this.tooltip.style.left = `${rect.left - tooltipWidth - 15}px`;
                             break;
-                            
+
                         case 'right':
                             this.tooltip.classList.add('left');
                             this.tooltip.style.top = `${rect.top + rect.height/2 - tooltipHeight/2}px`;
                             this.tooltip.style.left = `${rect.right + 15}px`;
                             break;
-                            
+
                         default:
                             // Default centered
                             this.tooltip.style.top = '50%';
                             this.tooltip.style.left = '50%';
                             this.tooltip.style.transform = 'translate(-50%, -50%)';
                     }
-                    
+
                     // Ensure tooltip stays within viewport
                     const tooltipRect = this.tooltip.getBoundingClientRect();
                     const viewportWidth = window.innerWidth;
                     const viewportHeight = window.innerHeight;
-                    
+
                     // Adjust horizontal position if needed
                     if (tooltipRect.right > viewportWidth - 10) {
                         this.tooltip.style.left = `${viewportWidth - tooltipWidth - 10}px`;
                     } else if (tooltipRect.left < 10) {
                         this.tooltip.style.left = '10px';
                     }
-                    
+
                     // Adjust vertical position if needed
                     if (tooltipRect.bottom > viewportHeight - 10) {
                         this.tooltip.style.top = `${viewportHeight - tooltipHeight - 10}px`;
@@ -4838,7 +4837,7 @@
                 }
             }
         }
-        
+
         // Initialize the tour with a proper delay
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOM loaded, initializing guided tour after delay');
@@ -4846,7 +4845,7 @@
             setTimeout(() => {
                 console.log('Creating new GuidedTour instance');
                 window.guidedTour = new GuidedTour();
-                
+
                 // Check if it's first visit to show welcome modal
                 setTimeout(() => {
                     if (window.guidedTour && !window.guidedTour.hasSeenTour) {
@@ -4864,7 +4863,7 @@
     <div id="tourOverlay" class="tour-overlay">
         <!-- Highlight element that will be positioned over targeted elements -->
         <div id="tourHighlight" class="tour-highlight"></div>
-        
+
         <!-- Tooltip that will show explanatory text -->
         <div id="tourTooltip" class="tour-tooltip">
             <div id="tourTooltipTitle" class="tour-tooltip-title"></div>
@@ -4878,7 +4877,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Welcome modal for first-time visitors -->
     <div id="tourWelcomeModal" class="tour-welcome-modal">
         <div class="tour-welcome-content">
@@ -4893,7 +4892,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- A floating button to restart the tour (hidden by default) -->
     <button id="restartTour" class="tour-restart-button" style="position: fixed; bottom: 250px; right: 20px; z-index: 100; background: var(--color-white); color: var(--color-black); border: 1px solid var(--color-white-20); border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); cursor: pointer; display: none;">
         <i class="fas fa-question"></i>

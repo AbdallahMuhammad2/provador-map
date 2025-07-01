@@ -1,16 +1,30 @@
 {
-  "name": "provador-virtual",
+  "name": "provador-map",
   "version": "1.0.0",
-  "description": "Virtual Try-On System",
+  "description": "Virtual jewelry try-on system",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "sync": "node sync_jewelry_data.js",
+    "sync-and-start": "node sync_jewelry_data.js && npm start",
+    "monitor": "node monitor_api.js",
+    "check": "node monitor_api.js --check",
+    "adjust": "node adjust_positions.js adjust",
+    "positions": "node adjust_positions.js list",
+    "reset-positions": "node adjust_positions.js reset",
+    "adjust-earrings": "node adjust_earrings.js adjust",
+    "earring-types": "node adjust_earrings.js list",
+    "analyze-earrings": "node adjust_earrings.js analyze"
   },
+  "keywords": ["jewelry", "virtual", "try-on", "AR"],
+  "author": "Eleva Labs",
+  "license": "MIT",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "nodemon": "^3.0.1"
   }
 }
