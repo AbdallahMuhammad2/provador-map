@@ -1842,7 +1842,7 @@
     
     <script>
         // API endpoint URL - replace with your actual API Gateway URL from Step 3
-        const API_URL = 'https://provador-map.onrender.com';
+        const API_URL = 'http://localhost:3000';
         
         // Initial empty JEWELRY object
         let JEWELRY = {};
@@ -1932,7 +1932,12 @@
             isInitialized: false,
             initialJewelryId: null,
             categorySwitched: false,
-            skuToJewelryId: {} // For mapping SKUs to internal IDs
+            skuToJewelryId: {}, // For mapping SKUs to internal IDs
+            // Sistema de suavização para reduzir tremulação
+            positionHistory: {
+                left: { x: [], y: [] },
+                right: { x: [], y: [] }
+            }
         };
         
         // DOM Elements
@@ -3217,18 +3222,25 @@
         return;
     }
     
-    // CORREÇÃO CRÍTICA: Usar landmarks mais estáveis e precisos para fixação
-    const leftLobe = landmarks[177];  // Lóbulo esquerdo principal
-    const rightLobe = landmarks[401]; // Lóbulo direito principal
+    // SISTEMA SIMPLIFICADO E CONFIÁVEL PARA STUDS
+    const leftLobe = landmarks[177];  // Lóbulo esquerdo - ÚNICO landmark para studs
+    const rightLobe = landmarks[401]; // Lóbulo direito - ÚNICO landmark para studs
     
-    // Backup landmarks para maior estabilidade
-    const leftEar = landmarks[234];   // Orelha esquerda estrutural
-    const rightEar = landmarks[454];  // Orelha direita estrutural
+    // Landmarks estruturais apenas para cálculos auxiliares
+    const leftEar = landmarks[234];   // Orelha esquerda estrutural (para gap)
+    const rightEar = landmarks[454];  // Orelha direita estrutural (para gap)
 
     if (!leftLobe || !rightLobe) {
         console.log(`⚠️ Missing ear landmarks for ${id}`);
         return;
     }
+
+    // POSIÇÕES FIXAS E CONFIÁVEIS PARA STUDS
+    // Para studs: usar APENAS o lóbulo, sem misturar landmarks
+    let stabilizedLeftX = leftLobe.x;
+    let stabilizedLeftY = leftLobe.y;
+    let stabilizedRightX = rightLobe.x;
+    let stabilizedRightY = rightLobe.y;
 
     // SISTEMA DE ROTAÇÃO FACIAL INTELIGENTE E GRADUAL
     const nose = landmarks[1];
@@ -3262,29 +3274,33 @@
     const faceWidth = Math.abs(rightEar.x - leftEar.x) * elements.canvas.width;
     const gapAdjustment = (gap / 100) * faceWidth;
 
-    // SISTEMA DE ESCALA REFINADO POR TIPO DE BRINCO
-    let scale;
-    const earHeight = Math.abs(leftEar.y - leftLobe.y) * elements.canvas.height;
-    
-         // Configurações específicas por tipo de brinco
+         // SISTEMA DE ESCALA UNIFORME E ROBUSTO
+     let scale;
+     const earHeight = Math.abs(leftEar.y - leftLobe.y) * elements.canvas.height;
+     
+     // Base scale calculation para todos os tipos
+     const baseScale = Math.max(0.1, (earHeight * 0.6) / (jewelry.leftImage ? jewelry.leftImage.height : 100));
+     
+     // Configurações específicas por tipo de brinco - UNIFICADAS
      switch (jewelry.earringType) {
          case 'stud':
-             // CORREÇÃO CRÍTICA PARA EAR_0005 - studs pequenos e bem fixados
-             scale = 0.04 * jewelry.defaultScale; // Scale MICROSCÓPICO para studs realistas
+             // EAR_0005: studs bem visíveis mas apropriados
+             scale = baseScale * 0.8 * jewelry.defaultScale; // 80% do tamanho base
              break;
-        case 'drop':
-        case 'chandelier':
-            const baseScale = (earHeight * 0.7) / jewelry.leftImage.height;
-            scale = baseScale * jewelry.defaultScale;
-            break;
-        case 'hoop':
-            scale = 0.12 * jewelry.defaultScale; // Argolas muito pequenas
-            break;
-        default:
-            // Fallback baseado no height da orelha
-            const defaultBaseScale = (earHeight * 0.8) / jewelry.leftImage.height;
-            scale = defaultBaseScale * jewelry.defaultScale;
-    }
+         case 'drop':
+         case 'chandelier':
+             scale = baseScale * 1.2 * jewelry.defaultScale; // 120% do tamanho base
+             break;
+         case 'hoop':
+             scale = baseScale * 0.6 * jewelry.defaultScale; // 60% do tamanho base
+             break;
+         default:
+             // Fallback consistente
+             scale = baseScale * jewelry.defaultScale;
+     }
+     
+     // GARANTIA MÍNIMA E MÁXIMA DE SCALE
+     scale = Math.max(0.05, Math.min(2.0, scale)); // Entre 5% e 200%
 
     // CONFIGURAÇÃO DE CONTEXTO DE RENDERIZAÇÃO
     elements.ctx.save();
@@ -3308,9 +3324,46 @@
         leftOpacity = Math.max(0, Math.min(1, 1 - fadeAmount));
     }
     
-    if (shouldDrawLeft && leftOpacity > 0.1) {
-        const leftX = leftLobe.x * elements.canvas.width - gapAdjustment + jewelry.offset.x;
-        const leftY = leftLobe.y * elements.canvas.height + jewelry.offset.y;
+         if (shouldDrawLeft && leftOpacity > 0.1) {
+         // Usar posições estabilizadas para studs
+         let baseLeftX = stabilizedLeftX * elements.canvas.width - gapAdjustment + jewelry.offset.x;
+         let baseLeftY = stabilizedLeftY * elements.canvas.height + jewelry.offset.y;
+         
+         // Sistema de suavização CONSERVADORA para studs
+         if (jewelry.earringType === 'stud') {
+             // Adicionar à história de posições
+             appState.positionHistory.left.x.push(baseLeftX);
+             appState.positionHistory.left.y.push(baseLeftY);
+             
+             // Manter apenas as últimas 3 posições (menos histórico = mais responsivo)
+             if (appState.positionHistory.left.x.length > 3) {
+                 appState.positionHistory.left.x.shift();
+                 appState.positionHistory.left.y.shift();
+             }
+             
+                           // Suavização leve: 70% posição atual + 30% histórico
+              if (appState.positionHistory.left.x.length >= 2) {
+                  const avgX = appState.positionHistory.left.x.reduce((a, b) => a + b, 0) / appState.positionHistory.left.x.length;
+                  const avgY = appState.positionHistory.left.y.reduce((a, b) => a + b, 0) / appState.positionHistory.left.y.length;
+                  
+                  // Verificar se a posição não está saindo muito do lugar (anti-salto)
+                  const deltaX = Math.abs(baseLeftX - avgX);
+                  const deltaY = Math.abs(baseLeftY - avgY);
+                  
+                  // Se o movimento for muito brusco (>50 pixels), resetar histórico
+                  if (deltaX > 50 || deltaY > 50) {
+                      console.log(`🚨 EAR_0005 Left: Movimento brusco detectado (${deltaX.toFixed(1)}, ${deltaY.toFixed(1)}), resetando histórico`);
+                      appState.positionHistory.left.x = [baseLeftX];
+                      appState.positionHistory.left.y = [baseLeftY];
+                  } else {
+                      baseLeftX = (baseLeftX * 0.7) + (avgX * 0.3);
+                      baseLeftY = (baseLeftY * 0.7) + (avgY * 0.3);
+                  }
+              }
+         }
+         
+         const leftX = baseLeftX;
+         const leftY = baseLeftY;
 
         const leftWidth = jewelry.leftImage.width * scale;
         const leftHeight = jewelry.leftImage.height * scale;
@@ -3355,9 +3408,46 @@
          rightOpacity = Math.max(0, Math.min(1, 1 - fadeAmount));
      }
      
-     if (shouldDrawRight && rightOpacity > 0.1) {
-        const rightX = rightLobe.x * elements.canvas.width + gapAdjustment + jewelry.offset.x;
-        const rightY = rightLobe.y * elements.canvas.height + jewelry.offset.y;
+           if (shouldDrawRight && rightOpacity > 0.1) {
+          // Usar posições estabilizadas para studs
+          let baseRightX = stabilizedRightX * elements.canvas.width + gapAdjustment + jewelry.offset.x;
+          let baseRightY = stabilizedRightY * elements.canvas.height + jewelry.offset.y;
+          
+                     // Sistema de suavização CONSERVADORA para studs
+           if (jewelry.earringType === 'stud') {
+               // Adicionar à história de posições
+               appState.positionHistory.right.x.push(baseRightX);
+               appState.positionHistory.right.y.push(baseRightY);
+               
+               // Manter apenas as últimas 3 posições (menos histórico = mais responsivo)
+               if (appState.positionHistory.right.x.length > 3) {
+                   appState.positionHistory.right.x.shift();
+                   appState.positionHistory.right.y.shift();
+               }
+               
+                               // Suavização leve: 70% posição atual + 30% histórico
+                if (appState.positionHistory.right.x.length >= 2) {
+                    const avgX = appState.positionHistory.right.x.reduce((a, b) => a + b, 0) / appState.positionHistory.right.x.length;
+                    const avgY = appState.positionHistory.right.y.reduce((a, b) => a + b, 0) / appState.positionHistory.right.y.length;
+                    
+                    // Verificar se a posição não está saindo muito do lugar (anti-salto)
+                    const deltaX = Math.abs(baseRightX - avgX);
+                    const deltaY = Math.abs(baseRightY - avgY);
+                    
+                    // Se o movimento for muito brusco (>50 pixels), resetar histórico
+                    if (deltaX > 50 || deltaY > 50) {
+                        console.log(`🚨 EAR_0005 Right: Movimento brusco detectado (${deltaX.toFixed(1)}, ${deltaY.toFixed(1)}), resetando histórico`);
+                        appState.positionHistory.right.x = [baseRightX];
+                        appState.positionHistory.right.y = [baseRightY];
+                    } else {
+                        baseRightX = (baseRightX * 0.7) + (avgX * 0.3);
+                        baseRightY = (baseRightY * 0.7) + (avgY * 0.3);
+                    }
+                }
+           }
+          
+          const rightX = baseRightX;
+          const rightY = baseRightY;
 
         const rightWidth = jewelry.rightImage.width * scale;
         const rightHeight = jewelry.rightImage.height * scale;
@@ -3392,17 +3482,19 @@
     
          // DEBUG LOG ESPECÍFICO PARA EAR_0005
      if (id === 'EAR_0005') {
-         console.log(`🔧 EAR_0005 Debug:`, {
+         console.log(`🔧 EAR_0005 Debug - Scale Corrigido:`, {
              faceRotation: faceRotation.toFixed(3),
-             scale: scale.toFixed(4),
+             baseScale: baseScale?.toFixed(4) || 'N/A',
+             finalScale: scale.toFixed(4),
+             defaultScale: jewelry.defaultScale,
+             earHeight: earHeight.toFixed(1),
+             imageSize: jewelry.leftImage ? `${jewelry.leftImage.width}x${jewelry.leftImage.height}` : 'N/A',
              gap,
              gapAdjustment: gapAdjustment.toFixed(1),
              shouldDrawLeft,
              shouldDrawRight,
              leftOpacity: leftOpacity?.toFixed(2) || 'N/A',
-             rightOpacity: rightOpacity?.toFixed(2) || 'N/A',
-             leftLobe: `${(leftLobe.x * elements.canvas.width).toFixed(1)}, ${(leftLobe.y * elements.canvas.height).toFixed(1)}`,
-             rightLobe: `${(rightLobe.x * elements.canvas.width).toFixed(1)}, ${(rightLobe.y * elements.canvas.height).toFixed(1)}`
+             rightOpacity: rightOpacity?.toFixed(2) || 'N/A'
          });
      }
 }
