@@ -3217,70 +3217,119 @@
         return;
     }
     
-    const leftEar = landmarks[234];  // Lóbulo esquerdo
-    const rightEar = landmarks[454]; // Lóbulo direito
+    // CORREÇÃO CRÍTICA: Usar landmarks mais estáveis e precisos para fixação
+    const leftLobe = landmarks[177];  // Lóbulo esquerdo principal
+    const rightLobe = landmarks[401]; // Lóbulo direito principal
+    
+    // Backup landmarks para maior estabilidade
+    const leftEar = landmarks[234];   // Orelha esquerda estrutural
+    const rightEar = landmarks[454];  // Orelha direita estrutural
 
-    if (!leftEar || !rightEar) return;
+    if (!leftLobe || !rightLobe) {
+        console.log(`⚠️ Missing ear landmarks for ${id}`);
+        return;
+    }
 
+    // SISTEMA DE ROTAÇÃO FACIAL INTELIGENTE E GRADUAL
     const nose = landmarks[1];
-    const faceRotation = (rightEar.z - leftEar.z);
+    const leftCheek = landmarks[116];  // Landmark mais estável da bochecha esquerda
+    const rightCheek = landmarks[345]; // Landmark mais estável da bochecha direita
+    const leftTemple = landmarks[234]; // Têmpora esquerda
+    const rightTemple = landmarks[454]; // Têmpora direita
+    
+    let faceRotation = 0;
+    if (leftCheek && rightCheek && leftTemple && rightTemple) {
+        // Cálculo de rotação baseado em múltiplos pontos para maior precisão
+        const cheekRotation = (rightCheek.z - leftCheek.z);
+        const templeRotation = (rightTemple.z - leftTemple.z);
+        faceRotation = (cheekRotation + templeRotation) / 2; // Média para maior estabilidade
+    }
+
+    // AJUSTE DE GAP OTIMIZADO PARA TODOS OS TIPOS DE BRINCO
     let gap = jewelry.gap || 0;
+    
+    // Ajuste dinâmico baseado na rotação facial - MUITO MAIS SENSÍVEL
+    const rotationThreshold = 0.05; // Limite mais baixo para melhor responsividade
+    if (Math.abs(faceRotation) <= rotationThreshold) {
+        gap += 2; // Reduzido para face frontal
+    } else if (Math.abs(faceRotation) <= 0.15) {
+        gap += 8; // Rotação média
+    } else {
+        gap += 20; // Rotação maior
+    }
 
-         // Ajuste no gap - SIMPLIFICADO para argolas ficarem no lugar do furo
-     // TODOS os brincos usam a MESMA lógica de gap
-     if (Math.abs(faceRotation) <= 0.1) {
-         gap += 3;
-     } else {
-         gap += 24;
-     }
-
-         // CORREÇÃO: TODOS usam landmarks do LÓBULO (mesmo lugar do furo)
-     const leftLobe = landmarks[177];  // Lóbulo esquerdo - onde se faz o furo
-     const rightLobe = landmarks[401]; // Lóbulo direito - onde se faz o furo
-
-    if (!leftLobe || !rightLobe) return;
-
-    // Cálculo da largura da face e ajuste do gap
+    // Cálculo da largura da face para ajuste proporcional do gap
     const faceWidth = Math.abs(rightEar.x - leftEar.x) * elements.canvas.width;
     const gapAdjustment = (gap / 100) * faceWidth;
 
-         // CORREÇÃO URGENTE: Scale FIXO para argolas
-     let scale;
-     if (jewelry.earringType === 'hoop') {
-         scale = 0.15 * jewelry.scale; // Scale MUITO pequeno e fixo para argolas
-     } else {
-         const earHeight = Math.abs(leftEar.y - leftLobe.y) * elements.canvas.height;
-         const baseScale = (earHeight * 0.8) / jewelry.leftImage.height;
-         scale = baseScale * jewelry.scale;
-     }
+    // SISTEMA DE ESCALA REFINADO POR TIPO DE BRINCO
+    let scale;
+    const earHeight = Math.abs(leftEar.y - leftLobe.y) * elements.canvas.height;
+    
+         // Configurações específicas por tipo de brinco
+     switch (jewelry.earringType) {
+         case 'stud':
+             // CORREÇÃO CRÍTICA PARA EAR_0005 - studs pequenos e bem fixados
+             scale = 0.04 * jewelry.defaultScale; // Scale MICROSCÓPICO para studs realistas
+             break;
+        case 'drop':
+        case 'chandelier':
+            const baseScale = (earHeight * 0.7) / jewelry.leftImage.height;
+            scale = baseScale * jewelry.defaultScale;
+            break;
+        case 'hoop':
+            scale = 0.12 * jewelry.defaultScale; // Argolas muito pequenas
+            break;
+        default:
+            // Fallback baseado no height da orelha
+            const defaultBaseScale = (earHeight * 0.8) / jewelry.leftImage.height;
+            scale = defaultBaseScale * jewelry.defaultScale;
+    }
 
+    // CONFIGURAÇÃO DE CONTEXTO DE RENDERIZAÇÃO
     elements.ctx.save();
-    elements.ctx.globalAlpha = jewelry.opacity !== undefined ? jewelry.opacity : 1.0;  // Garantir opacidade total por padrão
-    elements.ctx.shadowColor = 'rgba(0,0,0,0.3)';
-    elements.ctx.shadowBlur = 5;
-    elements.ctx.shadowOffsetX = 2;
-    elements.ctx.shadowOffsetY = 2;
+    elements.ctx.globalAlpha = jewelry.opacity !== undefined ? jewelry.opacity : 1.0;
+    elements.ctx.shadowColor = 'rgba(0,0,0,0.2)'; // Sombra mais sutil
+    elements.ctx.shadowBlur = 3;
+    elements.ctx.shadowOffsetX = 1;
+    elements.ctx.shadowOffsetY = 1;
 
-         // Desenho do brinco esquerdo
-     if (faceRotation > -0.1) {
-         const leftX = leftLobe.x * elements.canvas.width - gapAdjustment + jewelry.offset.x;
-         const leftY = leftLobe.y * elements.canvas.height + jewelry.offset.y;
+    // SISTEMA INTELIGENTE DE VISIBILIDADE DO BRINCO ESQUERDO
+    // Visível quando face está frontal ou virada para a DIREITA (mostrando orelha esquerda)
+    const leftVisibilityThreshold = -0.15; // Quando face vira para esquerda, esconde brinco esquerdo
+    const shouldDrawLeft = faceRotation > leftVisibilityThreshold;
+    
+    // Cálculo de opacidade gradual para transição suave
+    let leftOpacity = 1.0;
+    if (faceRotation < -0.05) {
+        // Começa a desvanecer quando face vira ligeiramente para esquerda
+        const fadeRange = leftVisibilityThreshold - (-0.05);
+        const fadeAmount = (faceRotation - (-0.05)) / fadeRange;
+        leftOpacity = Math.max(0, Math.min(1, 1 - fadeAmount));
+    }
+    
+    if (shouldDrawLeft && leftOpacity > 0.1) {
+        const leftX = leftLobe.x * elements.canvas.width - gapAdjustment + jewelry.offset.x;
+        const leftY = leftLobe.y * elements.canvas.height + jewelry.offset.y;
 
-         let extraOffsetX = 0;
-         let extraOffsetY = 0;
+        const leftWidth = jewelry.leftImage.width * scale;
+        const leftHeight = jewelry.leftImage.height * scale;
 
-         const leftWidth = jewelry.leftImage.width * scale;
-         const leftHeight = jewelry.leftImage.height * scale;
+        // OFFSET ESPECÍFICO PARA EAR_0005 (studs)
+        let finalOffsetX = 0;
+        let finalOffsetY = 0;
+        
+        if (jewelry.earringType === 'stud') {
+            finalOffsetX = -2; // Pequeno ajuste para centralizar melhor
+            finalOffsetY = -1; // Posição ligeiramente acima do lóbulo
+        }
 
-         // Todos os brincos usam os mesmos offsets
-         if (jewelry.earringType === 'hoop') {
-              // Argolas só ficam menores, mas mesma posição
-          }
+                 const finalX = leftX - leftWidth / 2 + finalOffsetX;
+         const finalY = leftY - leftHeight / 2 + finalOffsetY;
 
-         const finalX = leftX - leftWidth / 2 + extraOffsetX;
-         const finalY = leftY - leftHeight / 2 + extraOffsetY;
-
-
+         // Aplicar opacidade gradual para transição suave
+         const currentAlpha = elements.ctx.globalAlpha;
+         elements.ctx.globalAlpha = currentAlpha * leftOpacity;
 
          elements.ctx.drawImage(
              jewelry.leftImage,
@@ -3288,29 +3337,46 @@
              leftWidth, leftHeight
          );
 
+         // Restaurar opacidade original
+         elements.ctx.globalAlpha = currentAlpha;
+    }
 
+         // SISTEMA INTELIGENTE DE VISIBILIDADE DO BRINCO DIREITO
+     // Visível quando face está frontal ou virada para a ESQUERDA (mostrando orelha direita)
+     const rightVisibilityThreshold = 0.15; // Quando face vira para direita, esconde brinco direito
+     const shouldDrawRight = faceRotation < rightVisibilityThreshold;
+     
+     // Cálculo de opacidade gradual para transição suave
+     let rightOpacity = 1.0;
+     if (faceRotation > 0.05) {
+         // Começa a desvanecer quando face vira ligeiramente para direita
+         const fadeRange = rightVisibilityThreshold - 0.05;
+         const fadeAmount = (faceRotation - 0.05) / fadeRange;
+         rightOpacity = Math.max(0, Math.min(1, 1 - fadeAmount));
      }
+     
+     if (shouldDrawRight && rightOpacity > 0.1) {
+        const rightX = rightLobe.x * elements.canvas.width + gapAdjustment + jewelry.offset.x;
+        const rightY = rightLobe.y * elements.canvas.height + jewelry.offset.y;
 
-         // Desenho do brinco direito
-     if (faceRotation < 0.1) {
-         const rightX = rightLobe.x * elements.canvas.width + gapAdjustment + jewelry.offset.x;
-         const rightY = rightLobe.y * elements.canvas.height + jewelry.offset.y;
+        const rightWidth = jewelry.rightImage.width * scale;
+        const rightHeight = jewelry.rightImage.height * scale;
 
-         let extraOffsetX = 0;
-         let extraOffsetY = 0;
+        // OFFSET ESPECÍFICO PARA EAR_0005 (studs)
+        let finalOffsetX = 0;
+        let finalOffsetY = 0;
+        
+        if (jewelry.earringType === 'stud') {
+            finalOffsetX = 2; // Pequeno ajuste para centralizar melhor (oposto do esquerdo)
+            finalOffsetY = -1; // Posição ligeiramente acima do lóbulo
+        }
 
-         const rightWidth = jewelry.rightImage.width * scale;
-         const rightHeight = jewelry.rightImage.height * scale;
+                 const finalX = rightX - rightWidth / 2 + finalOffsetX;
+         const finalY = rightY - rightHeight / 2 + finalOffsetY;
 
-         // Todos os brincos usam os mesmos offsets
-         if (jewelry.earringType === 'hoop') {
-              // Argolas só ficam menores, mas mesma posição
-          }
-
-         const finalX = rightX - rightWidth / 2 + extraOffsetX;
-         const finalY = rightY - rightHeight / 2 + extraOffsetY;
-
-
+         // Aplicar opacidade gradual para transição suave
+         const currentAlpha = elements.ctx.globalAlpha;
+         elements.ctx.globalAlpha = currentAlpha * rightOpacity;
 
          elements.ctx.drawImage(
              jewelry.rightImage,
@@ -3318,10 +3384,27 @@
              rightWidth, rightHeight
          );
 
-
-     }
+         // Restaurar opacidade original
+         elements.ctx.globalAlpha = currentAlpha;
+    }
 
     elements.ctx.restore();
+    
+         // DEBUG LOG ESPECÍFICO PARA EAR_0005
+     if (id === 'EAR_0005') {
+         console.log(`🔧 EAR_0005 Debug:`, {
+             faceRotation: faceRotation.toFixed(3),
+             scale: scale.toFixed(4),
+             gap,
+             gapAdjustment: gapAdjustment.toFixed(1),
+             shouldDrawLeft,
+             shouldDrawRight,
+             leftOpacity: leftOpacity?.toFixed(2) || 'N/A',
+             rightOpacity: rightOpacity?.toFixed(2) || 'N/A',
+             leftLobe: `${(leftLobe.x * elements.canvas.width).toFixed(1)}, ${(leftLobe.y * elements.canvas.height).toFixed(1)}`,
+             rightLobe: `${(rightLobe.x * elements.canvas.width).toFixed(1)}, ${(rightLobe.y * elements.canvas.height).toFixed(1)}`
+         });
+     }
 }
 
         function drawSinglePiece(jewelry, id) {
